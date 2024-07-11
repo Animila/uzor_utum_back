@@ -1,7 +1,5 @@
 import {ITokenRepository} from "../../repositories/ITokenRepository";
 import {Token} from "../../domain/user/token";
-import {User} from "../../domain/user/user";
-import {generateCode} from "../../infrastructure/crypto/generateCode";
 import {TokenCode} from "../../domain/user/valueObjects/tokenCode";
 
 interface CreateTokenInput {

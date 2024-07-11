@@ -29,12 +29,11 @@ export class PrismaTokenRepo implements ITokenRepository {
         return !!tokenRecord;
     }
 
-    async findValidToken(userId: string, token: number): Promise<Token | null> {
+    async findValidToken(token: number): Promise<Token | null> {
         const tokenRecord = await this.prisma.tokens.findFirst({
             where: {
-                user_id: userId,
                 token: token,
-                activated_at: true,
+                activated_at: false,
             },
         });
         if (!tokenRecord) return null;

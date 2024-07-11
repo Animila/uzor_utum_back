@@ -6,6 +6,7 @@ import {UserMap} from "../../mappers/UserMap";
 import {rabbit} from "../../config/SMTPOptions";
 import {PrismaTokenRepo} from "../../infrastructure/prisma/repo/PrismaTokenRepo";
 import CreateToken from "../../useCases/token/tokenCreate";
+import UpdateToken from "../../useCases/token/tokenUpdate";
 
 const userRepo = new PrismaUserRepo();
 const tokenRepo = new PrismaTokenRepo();
@@ -73,16 +74,13 @@ export async function verifyController(request: FastifyRequest<AuthRequest>, rep
 
         const codeInt = parseInt(code)
 
-        const getUser = new GetUser(userRepo)
-        // const newUser =  await getUser.execute({phone: phone});
-        // console.log(newUser)
+        const updateToken = new UpdateToken(tokenRepo)
+        const exitToken =  await updateToken.execute({token: codeInt});
+        console.log(exitToken)
         // const createToken = new CreateToken(tokenRepo)
         // const newToken = await createToken.execute({userId: newUser.getId()})
 
-        reply.status(200).send({
-            success: true,
-            data: codeInt
-        });
+        reply.status(exitToken ? 201 : 401);
     } catch (error: any) {
         console.log('345678', error.message)
         const errors = JSON.parse(error.message)
