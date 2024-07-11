@@ -18,11 +18,6 @@ export class User {
     protected readonly _id: string
     public readonly props: IUser
 
-    /**
-     * Метод allInRange проверяет, что все числа в массиве находятся в пределах заданного диапазона.
-     * @param {IUser} props - Минимальное значение диапазона.
-     * @param {string} id - Максимальное значение диапазона.
-     */
     constructor(props: IUser, id?: string) {
         this._id = id || generateUUID('user');
         this.props = props;

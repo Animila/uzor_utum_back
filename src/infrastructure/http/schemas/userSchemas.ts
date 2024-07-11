@@ -4,13 +4,6 @@ const registerSchema = {
     schema: {
         description: 'Регистрация пользователей',
         tags: ['Auth'],
-        // params: {
-        //     type: 'object',
-        //     properties: {
-        //         id: { type: 'string' }
-        //     },
-        //     required: ['id']
-        // },
         body: {
             type: 'object',
             properties: {
@@ -58,11 +51,62 @@ const registerSchema = {
                         }
                     }
                 }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const loginSchema = {
+    schema: {
+        description: 'Авторизация по номеру',
+        tags: ['Auth'],
+        body: {
+            type: 'object',
+            properties: {
+                phone: { type: 'string' },
+            },
+        },
+        response: {
+            200: {
+                description: 'Код успешно отправлен',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        additionalProperties: true, // Разрешает любые свойства
+                    },
+                }
+            },
+            404: {
+                description: 'Если такого номера нет',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
             }
         }
     }
 };
 
 export {
-    registerSchema
+    registerSchema,
+    loginSchema
 }

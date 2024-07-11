@@ -1,5 +1,6 @@
 import {buildApp, AppOptions} from "./app";
 import pino from "pino";
+import {rabbit} from "./config/SMTPOptions";
 
 const options: AppOptions = {
     logger: pino({level: 'info'})
@@ -15,8 +16,9 @@ const start = async () => {
         })
     } catch (error) {
         app.log.error(error)
+        await rabbit.closeConnection()
         process.exit(1)
     }
 }
 
-start()
+start().then(r => console.log('Успешный запуск'))

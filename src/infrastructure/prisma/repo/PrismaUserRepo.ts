@@ -28,13 +28,20 @@ export class PrismaUserRepo implements IUserRepository {
     }
 
     async findByPhone(phone: string): Promise<User | null> {
-        const user = await this.prisma.users.findUnique({
-            where: {
-                phone: phone
-            }
-        })
-        if(!user) return null
-        return UserMap.toDomain(user)
+        try {
+            const user = await this.prisma.users.findUnique({
+                where: {
+                    phone: phone
+                }
+            })
+            if (!user) return null
+            return UserMap.toDomain(user)
+        } catch (error) {
+            throw new Error(JSON.stringify({
+                status: 500,
+                message: 'Проблемы с базой данных'
+            }));
+        }
     }
 
     async save(user: User): Promise<User | null> {

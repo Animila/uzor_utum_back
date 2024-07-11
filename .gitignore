@@ -1,5 +1,6 @@
-node_modules
 build
 database
+node_modules
+rabbitmq
 .idea
 .env
