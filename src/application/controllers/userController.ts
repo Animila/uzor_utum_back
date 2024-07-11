@@ -1,4 +1,4 @@
-import { FastifyRequest, FastifyReply } from "fastify";
+import {FastifyRequest, FastifyReply, FastifyInstance} from "fastify";
 import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
 import {CreateUser} from "../../useCases/user/userCreate";
 import {GetUser} from "../../useCases/user/userGet";
@@ -68,19 +68,25 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
     }
 }
 
-export async function verifyController(request: FastifyRequest<AuthRequest>, reply: FastifyReply) {
+export async function verifyController(request: FastifyRequest<AuthRequest>, reply: FastifyReply, fastify: FastifyInstance) {
     try {
         const {code} = request.body;
 
         const codeInt = parseInt(code)
 
         const updateToken = new UpdateToken(tokenRepo)
-        const exitToken =  await updateToken.execute({token: codeInt});
-        console.log(exitToken)
+        const user_id =  await updateToken.execute({token: codeInt});
+        console.log(user_id)
         // const createToken = new CreateToken(tokenRepo)
         // const newToken = await createToken.execute({userId: newUser.getId()})
 
-        reply.status(exitToken ? 201 : 401);
+        const token = fastify.jwt.sign({ data: user_id })
+        reply.status(200).send({
+            success: true,
+            data: {
+                token: token
+            }
+        });
     } catch (error: any) {
         console.log('345678', error.message)
         const errors = JSON.parse(error.message)

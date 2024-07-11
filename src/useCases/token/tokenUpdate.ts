@@ -13,7 +13,7 @@ export default class UpdateToken {
         this.tokenRepository = tokenRepository;
     }
 
-    async execute(input: UpdateTokenInput): Promise<boolean> {
+    async execute(input: UpdateTokenInput): Promise<string> {
         try {
             const {token} = input
             const existingToken = await this.tokenRepository.findValidToken(token)
@@ -24,9 +24,12 @@ export default class UpdateToken {
                 }))
             existingToken.activateToken()
             await this.tokenRepository.save(existingToken)
-            return true
+            return existingToken.getId()
         } catch (error) {
-            return false
+            throw new Error(JSON.stringify({
+                status: 500,
+                message: 'Ошибка'
+            }))
         }
     }
 }
