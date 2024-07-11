@@ -33,23 +33,23 @@ export class UserMap {
         id: string
         phone: string
         email: string
-        firstName: string
-        lastName: string
+        first_name: string
+        last_name: string
         role: string
-        acceptedAt: boolean
-        createdAt: Date
-        updatedAt?: Date
+        accepted_at: boolean
+        created_at: Date
+        updated_at?: Date
     } {
         return {
             id: user.getId(),
-            firstName: user.getFirstName(),
-            lastName: user.getLastName(),
+            first_name: user.getFirstName(),
+            last_name: user.getLastName(),
             email: user.getEmail().getFull(),
             phone: user.getPhone().getFullPhone(),
             role: user.getRole().getValue(),
-            acceptedAt: user.getAcceptedAs(),
-            createdAt: user.getCreatedAt(),
-            updatedAt: user.getUpdatedAt()
+            accepted_at: user.getAcceptedAs(),
+            created_at: user.getCreatedAt(),
+            updated_at: user.getUpdatedAt()
         }
     }
 }

@@ -54,24 +54,24 @@ export class PrismaUserRepo implements IUserRepository {
                     id: data.id,
                     email: data.email,
                     phone: data.phone,
-                    first_name: data.firstName,
-                    last_name: data.lastName,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
                     role: data.role as Roles,
-                    created_at: data.createdAt,
-                    updated_at: data.updatedAt,
-                    accepted_at: data.acceptedAt
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    accepted_at: data.accepted_at
 
                 },
                 update: {
                     id: data.id,
                     email: data.email,
                     phone: data.phone,
-                    first_name: data.firstName,
-                    last_name: data.lastName,
+                    first_name: data.first_name,
+                    last_name: data.last_name,
                     role: data.role as Roles,
-                    created_at: data.createdAt,
-                    updated_at: data.updatedAt,
-                    accepted_at: data.acceptedAt
+                    created_at: data.created_at,
+                    updated_at: data.updated_at,
+                    accepted_at: data.accepted_at
 
                 },
             })

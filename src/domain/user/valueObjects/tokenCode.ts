@@ -12,7 +12,7 @@ export class TokenCode {
         this.props = Object.freeze(props)
     }
 
-    public static create(value?: number): TokenCode|Error {
+    public static create(value?: number): TokenCode {
         const propsResult = Guard.againstNullOrUndefined(value, 'email_code')
         if (!propsResult.succeeded) value = generateCode()
 

@@ -1,8 +1,9 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
+import {TokenCode} from "./valueObjects/tokenCode";
 
 interface IToken {
     userId: string;
-    token: number;
+    token: TokenCode
     activatedAt: boolean;
     createdAt: Date;
 }
@@ -11,14 +12,16 @@ export class Token {
     protected readonly _id: string
     public readonly props: IToken
 
-    private constructor(props: IToken, id?: string) {
+    constructor(props: IToken, id?: string) {
         this._id = id || generateUUID('token');
         this.props = props;
     }
 
+    getId(): string { return this._id }
+
     getUserId(): string { return this.props.userId }
 
-    getToken(): number { return this.props.token }
+    getToken(): TokenCode { return this.props.token }
 
     getActivatedAs(): boolean { return this.props.activatedAt }
 

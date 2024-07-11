@@ -106,7 +106,49 @@ const loginSchema = {
     }
 };
 
+const verifySchema = {
+    schema: {
+        description: 'Потверждение кода',
+        tags: ['Auth'],
+        body: {
+            type: 'object',
+            properties: {
+                code: { type: 'number' },
+            },
+        },
+        response: {
+            200: {
+                description: 'Код успешно отправлен',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        code: { type: 'number' },
+                    },
+                }
+            },
+            404: {
+                description: 'Если такого номера нет',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 export {
     registerSchema,
-    loginSchema
+    loginSchema,
+    verifySchema
 }
