@@ -3,7 +3,7 @@
     "target": "esnext",
     "module": "commonjs",
     "rootDir": "./src",
-    "moduleResolution": "node10",
+    "moduleResolution": "node",
     "allowJs": true,
     "outDir": "./build",
     "esModuleInterop": true,

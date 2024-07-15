@@ -1,6 +1,6 @@
 import SMTPMail from "../infrastructure/smtp/SMTPMail";
-import RabbitMQ from "../infrastructure/rabbitmq/RabbitMQ";
 import SendMail from "../useCases/mail/sendMail";
+import {RabbitMQ} from "../infrastructure/rabbitmq/RabbitMQ";
 
 export const smtpService = new SMTPMail({
     service: process.env.SMTP_SERVICE || 'gmail',
