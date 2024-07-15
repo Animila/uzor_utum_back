@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "rootDir": "./src",
+    "rootDir": "./src/",
     "moduleResolution": "node",
     "allowJs": true,
     "outDir": "./build",
@@ -16,8 +16,6 @@
   "exclude": [
     "node_modules",
     "dist",
-    "build",
-    "src",
     "examples"
   ]
 }
