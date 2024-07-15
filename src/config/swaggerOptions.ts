@@ -6,7 +6,16 @@ export const swaggerOptions = {
             description: 'API документация',
             version: '0.1.0'
         },
-        host: 'localhost:3000',
+        servers: [
+            {
+                url: 'http://localhost:3000',
+                description: 'Локальный сервер'
+            },
+            {
+                url: 'https://api.animila.ru',
+                description: 'Тестовый сервер'
+            }
+        ],
         schemes: ['http'],
         consumes: ['application/json'],
         produces: ['application/json'],
