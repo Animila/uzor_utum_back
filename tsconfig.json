@@ -2,10 +2,10 @@
   "compilerOptions": {
     "target": "esnext",
     "module": "commonjs",
-    "rootDir": "src",
+    "rootDir": "./src",
     "moduleResolution": "node10",
     "allowJs": true,
-    "outDir": "build",
+    "outDir": "./build",
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,

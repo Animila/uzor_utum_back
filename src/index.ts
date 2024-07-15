@@ -12,7 +12,7 @@ const start = async () => {
     try {
         await app.listen({
             port: 3000,
-            host: 'localhost'
+            host: '0.0.0.0'
         })
     } catch (error) {
         app.log.error(error)

@@ -3,7 +3,7 @@ import {
     loginController,
     registerController, verifyController
 } from "../../../application/controllers/userController";
-import {loginSchema, registerSchema, verifySchema} from "../schemas/userSchemas";
+import {checkAuth, loginSchema, registerSchema, verifySchema} from "../schemas/userSchemas";
 
 export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/register', registerSchema, registerController);
@@ -11,9 +11,15 @@ export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/verify', verifySchema, async (request: FastifyRequest<AuthRequest>, reply: FastifyReply) => {
         await verifyController(request, reply, fastify)
     });
-    fastify.get('/auth/test', async (request: FastifyRequest<AuthRequest>, reply: FastifyReply) => {
+    fastify.get('/auth/check', checkAuth,async (request: FastifyRequest<AuthRequest>, reply: FastifyReply) => {
         await request.jwtVerify()
         const data = request.user
-        reply.send(data)
+        reply.send({
+            success: true,
+            data: {
+                // @ts-ignore
+                user_id: data.data
+            }
+        })
     });
 }

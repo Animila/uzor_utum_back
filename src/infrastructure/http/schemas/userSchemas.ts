@@ -106,6 +106,30 @@ const loginSchema = {
     }
 };
 
+const checkAuth = {
+    schema: {
+        description: 'Проверка авторизации',
+        tags: ['Auth'],
+        security: [{ApiToken: []}],
+        response: {
+            200: {
+                description: 'Все успешно',
+                type: 'object',
+                properties: {
+                    success: {type: 'boolean'},
+                    data: {
+                        user_id: {type: 'number'},
+                    },
+                }
+            },
+            401: {
+                description: 'Не авторизован',
+                type: 'object',
+            },
+        }
+    }
+}
+
 const verifySchema = {
     schema: {
         description: 'Потверждение кода',
@@ -150,5 +174,6 @@ const verifySchema = {
 export {
     registerSchema,
     loginSchema,
-    verifySchema
+    verifySchema,
+    checkAuth
 }

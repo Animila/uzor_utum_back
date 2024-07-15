@@ -18,7 +18,7 @@ async function buildApp(options: AppOptions = {}) {
     await fastify.register(require("@fastify/swagger-ui"), swaggerUIOptions)
     await fastify.register(require('fastify-graceful-shutdown'))
     await fastify.register(require('@fastify/jwt'), {
-        secret: process.env.JWT_SECRET || 'NCfpbKgRsaUsRjX6l1KYLuqQs0Pmi6'
+        secret: process.env.JWT_SECRET || 'NCfpbKgRsaUsRjX6l1KYLuqQs0Pmi6',
     })
 
     fastify.addHook('onClose', async () => {

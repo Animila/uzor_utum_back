@@ -3,12 +3,12 @@ import RabbitMQ from "../infrastructure/rabbitmq/RabbitMQ";
 import SendMail from "../useCases/mail/sendMail";
 
 export const smtpService = new SMTPMail({
-    service: 'gmail',
+    service: process.env.SMTP_SERVICE || 'gmail',
     password: process.env.SMTP_PASSWORD || '',
     user: process.env.SMTP_USERNAME || '',
 });
 
 export const rabbit = new RabbitMQ(
-    `amqp://${process.env.LOGIN_RABBIT}:${process.env.PASS_RABBIT}@localhost:5672`,
+    process.env.RABBIT_MQ || '',
     new SendMail(smtpService)
 )

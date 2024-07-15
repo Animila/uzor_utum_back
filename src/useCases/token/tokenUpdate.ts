@@ -24,7 +24,7 @@ export default class UpdateToken {
                 }))
             existingToken.activateToken()
             await this.tokenRepository.save(existingToken)
-            return existingToken.getId()
+            return existingToken.getUserId()
         } catch (error) {
             throw new Error(JSON.stringify({
                 status: 500,

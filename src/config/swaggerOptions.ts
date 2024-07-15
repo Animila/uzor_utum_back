@@ -9,7 +9,15 @@ export const swaggerOptions = {
         host: 'localhost:3000',
         schemes: ['http'],
         consumes: ['application/json'],
-        produces: ['application/json']
+        produces: ['application/json'],
+        securityDefinitions: {
+            ApiToken: {
+                description: 'Токен для авторизации: Bearer {TOKEN}',
+                type: 'apiKey',
+                name: 'Authorization',
+                in: 'header'
+            }
+        }
     }
 }
 

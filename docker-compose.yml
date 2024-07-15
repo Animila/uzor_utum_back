@@ -25,12 +25,6 @@ services:
     env_file:
       - .env
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 6373:8080
-
   rabbitmq:
     image: rabbitmq:3.9-management
     hostname: rabbitmq
@@ -53,3 +47,13 @@ services:
       retries: 3
     env_file:
       - .env
+#  api:
+#    build: .
+#    ports:
+#      - '3000:3000'
+#    depends_on:
+#      - db
+#      - rabbitmq
+#    volumes:
+#      - .:/app
+#      - /app/node_modules
