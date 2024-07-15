@@ -25,6 +25,10 @@ async function buildApp(options: AppOptions = {}) {
         await rabbit.closeConnection();
     });
 
+    fastify.get('/', (_, res) => {
+        res.redirect('/documentation')
+    })
+
     registerRoutes(fastify)
     return fastify
 }

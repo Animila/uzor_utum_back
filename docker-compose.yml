@@ -47,13 +47,16 @@ services:
       retries: 3
     env_file:
       - .env
-#  api:
-#    build: .
-#    ports:
-#      - '3000:3000'
-#    depends_on:
-#      - db
-#      - rabbitmq
-#    volumes:
-#      - .:/app
-#      - /app/node_modules
+  api:
+    container_name: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    depends_on:
+      - db
+      - rabbitmq
+    volumes:
+      - .:/app
+      - /app/node_modules
