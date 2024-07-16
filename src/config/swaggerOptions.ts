@@ -16,7 +16,7 @@ export const swaggerOptions = {
                 description: 'Тестовый сервер'
             }
         ],
-        schemes: ['http'],
+        schemes: ['http', 'https'],
         consumes: ['application/json'],
         produces: ['application/json'],
         securityDefinitions: {
