@@ -2,8 +2,8 @@ import {FastifyInstance, FastifyReply, FastifyRequest, RouteShorthandOptions} fr
 import {
     loginController,
     registerController, verifyController
-} from "../../../application/controllers/userController";
-import {checkAuth, loginSchema, registerSchema, verifySchema} from "../schemas/userSchemas";
+} from "../../../application/controllers/authController";
+import {checkAuth, loginSchema, registerSchema, verifySchema} from "../schemas/authSchemas";
 
 export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/register', registerSchema, registerController);

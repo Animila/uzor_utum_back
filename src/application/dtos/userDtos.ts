@@ -1,9 +1,12 @@
-interface AuthRequest {
+interface UserRequest {
+    Params: {
+        user_id: string
+    },
     Body: {
-        first_name: string,
-        last_name: string,
-        email: string,
-        phone: string,
-        code: string
-    };
+        email?: string,
+        phone?: string,
+        first_name?: string,
+        last_name?: string,
+        role?: string
+    }
 }

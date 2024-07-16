@@ -1,34 +1,21 @@
-import {FastifyRequest, FastifyReply, FastifyInstance} from "fastify";
 import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
-import {CreateUser} from "../../useCases/user/userCreate";
-import {GetUser} from "../../useCases/user/userGet";
+import {FastifyReply, FastifyRequest} from "fastify";
+import {GetUserAll} from "../../useCases/user/userGetAll";
+import {GetUserById} from "../../useCases/user/userGetById";
 import {UserMap} from "../../mappers/UserMap";
-import {rabbit} from "../../config/SMTPOptions";
-import {PrismaTokenRepo} from "../../infrastructure/prisma/repo/PrismaTokenRepo";
-import CreateToken from "../../useCases/token/tokenCreate";
-import UpdateToken from "../../useCases/token/tokenUpdate";
+import {UpdateUser} from "../../useCases/user/userUpdate";
+import {DeleteUserById} from "../../useCases/user/userDeleteById";
 
 const userRepo = new PrismaUserRepo();
-const tokenRepo = new PrismaTokenRepo();
 
-export async function registerController(request: FastifyRequest<AuthRequest>, reply: FastifyReply) {
+export async function getAllController(request: FastifyRequest, reply: FastifyReply) {
     try {
-        const data = request.body;
 
-        const createUser = new CreateUser(userRepo)
-        const newUser =  await createUser.execute({phone: data.phone, email: data.email, last_name: data.last_name, first_name: data.first_name});
-        const createToken = new CreateToken(tokenRepo)
-        const newToken = await createToken.execute({userId: newUser.getId()})
-        await rabbit.sendEmail({
-            code: newToken.getToken().props.value,
-            subject: 'Код для регистрации',
-            to: newUser.getEmail().getFull()
-        })
+        const getAllUser = new GetUserAll(userRepo)
+        const users =  await getAllUser.execute();
         reply.status(200).send({
             success: true,
-            data: {
-                id: newUser.getId(),
-            }
+            data: users
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -40,23 +27,15 @@ export async function registerController(request: FastifyRequest<AuthRequest>, r
     }
 }
 
-export async function loginController(request: FastifyRequest<AuthRequest>, reply: FastifyReply) {
+export async function getByIdController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
-        const {phone} = request.body;
+        const {user_id} = request.params
+        const getUser = new GetUserById(userRepo)
+        const user =  await getUser.execute({user_id: user_id});
 
-        const getUser = new GetUser(userRepo)
-        const newUser =  await getUser.execute({phone: phone});
-        console.log(newUser)
-        const createToken = new CreateToken(tokenRepo)
-        const newToken = await createToken.execute({userId: newUser.getId()})
-        await rabbit.sendEmail({
-            code: newToken.getToken().props.value,
-            subject: 'Код для входа',
-            to: newUser.getEmail().getFull()
-        })
         reply.status(200).send({
             success: true,
-            data: UserMap.toPersistence(newUser)
+            data: UserMap.toPersistence(user)
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -68,23 +47,44 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
     }
 }
 
-export async function verifyController(request: FastifyRequest<AuthRequest>, reply: FastifyReply, fastify: FastifyInstance) {
+export async function updateController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
-        const {code} = request.body;
+        const {user_id} = request.params
+        const data = request.body || {};
+        const updateUser = new UpdateUser(userRepo)
+        const user = await updateUser.execute({
+            id: user_id,
+            phone: data.phone,
+            email: data.email,
+            last_name: data.last_name,
+            first_name: data.first_name,
+            role: data.role
+        });
 
-        const codeInt = parseInt(code)
+        reply.status(200).send({
+            success: true,
+            data: UserMap.toPersistence(user)
+        });
+    } catch (error: any) {
+        console.log('345678', error.message)
+        const errors = JSON.parse(error.message)
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        })
+    }
+}
 
-        const updateToken = new UpdateToken(tokenRepo)
-        const user_id =  await updateToken.execute({token: codeInt});
-        console.log(user_id)
-        // const createToken = new CreateToken(tokenRepo)
-        // const newToken = await createToken.execute({userId: newUser.getId()})
+export async function deleteController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
+    try {
+        const {user_id} = request.params
+        const delUser = new DeleteUserById(userRepo)
+        const data = await delUser.execute({user_id: user_id})
 
-        const token = fastify.jwt.sign({ data: user_id })
         reply.status(200).send({
             success: true,
             data: {
-                token: token
+                success: data
             }
         });
     } catch (error: any) {

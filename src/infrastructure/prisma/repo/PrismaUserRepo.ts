@@ -2,10 +2,14 @@ import {IUserRepository} from "../../../repositories/IUserRepository";
 import {User} from "../../../domain/user/user";
 import {PrismaClient, Roles} from "@prisma/client";
 import {UserMap} from "../../../mappers/UserMap";
-import {Role} from "../../../domain/user/valueObjects/role";
 
 export class PrismaUserRepo implements IUserRepository {
     private prisma = new PrismaClient();
+
+    async findAll(): Promise<User[]> {
+        const users_data = await this.prisma.users.findMany();
+        return users_data.map(item => UserMap.toDomain(item)).filter((user): user is User => user !== null);
+    }
 
     async findByEmail(email: string): Promise<User | null> {
         const user = await this.prisma.users.findUnique({
@@ -47,7 +51,6 @@ export class PrismaUserRepo implements IUserRepository {
     async save(user: User): Promise<User | null> {
         try {
             const data = UserMap.toPersistence(user)
-
             const newUser = await this.prisma.users.upsert({
                 where: { id: data.id },
                 create: {
@@ -78,6 +81,8 @@ export class PrismaUserRepo implements IUserRepository {
 
             if(!newUser) return null
 
+            console.log(newUser)
+
             return UserMap.toDomain(newUser)
         } catch (error: any) {
             throw new Error(JSON.stringify({
@@ -87,6 +92,24 @@ export class PrismaUserRepo implements IUserRepository {
 
         }
 
+    }
+
+    async delete(id: string): Promise<boolean> {
+        console.log(id)
+        try {
+            await this.prisma.users.delete({
+                where: {
+                    id: id
+                }
+            })
+            return true
+        } catch (error: any) {
+            throw new Error(JSON.stringify({
+                status: 404,
+                message: 'Такой пользователь не найден'
+            }));
+
+        }
     }
 
 }

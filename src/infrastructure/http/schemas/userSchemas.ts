@@ -1,21 +1,57 @@
-import {User} from "../../../domain/user/user";
-
-const registerSchema = {
+const getAllSchema = {
     schema: {
-        description: 'Регистрация пользователей',
-        tags: ['Auth'],
-        body: {
-            type: 'object',
-            properties: {
-                first_name: { type: 'string' },
-                last_name: { type: 'string' },
-                phone: { type: 'string' },
-                email: { type: 'string' },
+        description: 'Получить всех пользователей',
+        tags: ['User'],
+        security: [{ApiToken: []}],
+        response: {
+            200: {
+                description: 'Успешное выполнение',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                id: { type: 'string' },
+                                phone: { type: 'string' },
+                                email: { type: 'string' },
+                                first_name: { type: 'string' },
+                                last_name: { type: 'string' },
+                                role: { type: 'string' },
+                                accepted_at: { type: 'boolean' },
+                                created_at: { type: 'string', format: 'date-time' },
+                                updated_at: { type: 'string', format: 'date-time', nullable: true }
+                            },
+                            required: ['id', 'phone', 'email', 'first_name', 'last_name', 'role', 'accepted_at', 'created_at']
+                        }
+                    }
+                }
             },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const getUserSchema = {
+    schema: {
+        description: 'Получить пользователя',
+        tags: ['User'],
+        security: [{ApiToken: []}],
+        parameters: {
+            user_id: { type: 'string' },
         },
         response: {
             200: {
-                description: 'Успешно создано',
+                description: 'Успешное выполнение',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
@@ -23,16 +59,70 @@ const registerSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                        }
+                            phone: { type: 'string' },
+                            email: { type: 'string' },
+                            first_name: { type: 'string' },
+                            last_name: { type: 'string' },
+                            role: { type: 'string' },
+                            accepted_at: { type: 'boolean' },
+                            created_at: { type: 'string', format: 'date-time' },
+                            updated_at: { type: 'string', format: 'date-time', nullable: true }
+                        },
+                        required: ['id', 'phone', 'email', 'first_name', 'last_name', 'role', 'accepted_at', 'created_at']
                     }
                 }
             },
-            409: {
-                description: 'Если телефон или почта уже существует',
+            500: {
+                description: 'Если все взорвалось',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
                     message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const updateUserSchema = {
+    schema: {
+        description: 'Обвноить пользователя',
+        tags: ['User'],
+        security: [{ApiToken: []}],
+        parameters: {
+            user_id: { type: 'string' },
+        },
+        body: {
+            type: 'object',
+            properties: {
+                first_name: { type: 'string' },
+                last_name: { type: 'string' },
+                phone: { type: 'string' },
+                email: { type: 'string' },
+                role: {type: 'string'}
+            },
+        },
+        response: {
+            200: {
+                description: 'Успешно обновился',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'string' },
+                            phone: { type: 'string' },
+                            email: { type: 'string' },
+                            first_name: { type: 'string' },
+                            last_name: { type: 'string' },
+                            role: { type: 'string' },
+                            accepted_at: { type: 'boolean' },
+                            created_at: { type: 'string', format: 'date-time' },
+                            updated_at: { type: 'string', format: 'date-time', nullable: true }
+                        },
+                        required: ['id', 'phone', 'email', 'first_name', 'last_name', 'role', 'accepted_at', 'created_at']
+                    }
                 }
             },
             400: {
@@ -64,99 +154,20 @@ const registerSchema = {
     }
 };
 
-const loginSchema = {
+const deleteUserSchema = {
     schema: {
-        description: 'Авторизация по номеру',
-        tags: ['Auth'],
-        body: {
-            type: 'object',
-            properties: {
-                phone: { type: 'string' },
-            },
-        },
-        response: {
-            200: {
-                description: 'Код успешно отправлен',
-                type: 'object',
-                properties: {
-                    success: { type: 'boolean' },
-                    data: {
-                        type: 'object',
-                        additionalProperties: true, // Разрешает любые свойства
-                    },
-                }
-            },
-            404: {
-                description: 'Если такого номера нет',
-                type: 'object',
-                properties: {
-                    success: { type: 'boolean' },
-                    message: { type: 'string' },
-                }
-            },
-            500: {
-                description: 'Если все взорвалось',
-                type: 'object',
-                properties: {
-                    success: { type: 'boolean' },
-                    message: { type: 'string' },
-                }
-            }
-        }
-    }
-};
-
-const checkAuth = {
-    schema: {
-        description: 'Проверка авторизации',
-        tags: ['Auth'],
+        description: 'Удалить пользователя',
+        tags: ['User'],
         security: [{ApiToken: []}],
-        response: {
-            200: {
-                description: 'Все успешно',
-                type: 'object',
-                properties: {
-                    success: {type: 'boolean'},
-                    data: {
-                        user_id: {type: 'number'},
-                    },
-                }
-            },
-            401: {
-                description: 'Не авторизован',
-                type: 'object',
-            },
-        }
-    }
-}
-
-const verifySchema = {
-    schema: {
-        description: 'Потверждение кода',
-        tags: ['Auth'],
-        body: {
-            type: 'object',
-            properties: {
-                code: { type: 'number' },
-            },
+        parameters: {
+            user_id: { type: 'string' },
         },
         response: {
             200: {
-                description: 'Код успешно отправлен',
+                description: 'Успешное удаление',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
-                    data: {
-                        code: { type: 'number' },
-                    },
-                }
-            },
-            404: {
-                description: 'Если такого номера нет',
-                type: 'object',
-                properties: {
-                    success: { type: 'boolean' },
-                    message: { type: 'string' },
                 }
             },
             500: {
@@ -172,8 +183,8 @@ const verifySchema = {
 };
 
 export {
-    registerSchema,
-    loginSchema,
-    verifySchema,
-    checkAuth
+    getAllSchema,
+    getUserSchema,
+    updateUserSchema,
+    deleteUserSchema
 }

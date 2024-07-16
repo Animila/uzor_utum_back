@@ -19,13 +19,21 @@ async function buildApp(options: AppOptions = {}) {
     await fastify.register(require('fastify-graceful-shutdown'))
     await fastify.register(require('@fastify/jwt'), {
         secret: process.env.JWT_SECRET || 'NCfpbKgRsaUsRjX6l1KYLuqQs0Pmi6',
+        sign: {
+            expiresIn: process.env.JWT_SIGN_EXPIRES_IN || '30d',
+        },
     })
 
     fastify.addHook('onClose', async () => {
         await rabbit.closeConnection();
     });
 
-    fastify.get('/', (_, res) => {
+    fastify.get('/', {
+        schema: {
+            // @ts-ignore
+            hide: true,
+        }
+    }, (_, res) => {
         res.redirect('/documentation')
     })
 

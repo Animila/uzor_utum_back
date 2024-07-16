@@ -5,31 +5,26 @@ import {Email} from "../../domain/user/valueObjects/email";
 import {Phone} from "../../domain/user/valueObjects/phone";
 import {Guard} from "../../domain/guard";
 
-interface GetUserInput {
-    phone: string
+interface GetUserByIdInput {
+    user_id: string
 }
 
-export class GetUser {
+export class GetUserById {
     private userRepository: IUserRepository
 
     constructor(userRepository: IUserRepository) {
         this.userRepository = userRepository
     }
 
-    async execute(input: GetUserInput): Promise<User> {
-        const { phone} = input
-        const errors: Array<{type: string, message: string}> = []
-
-        const phoneOrError = Phone.create(phone)
-
-        phoneOrError instanceof Error && errors.push({type: 'phone', message: phoneOrError.message})
-        if(errors.length !== 0)
+    async execute(input: GetUserByIdInput): Promise<User> {
+        const { user_id } = input
+        const check = Guard.againstNullOrUndefined(user_id, 'user_id')
+        if(!check.succeeded)
             throw new Error(JSON.stringify({
                 status: 400,
-                message: errors
+                message: 'Нет user_id'
             }))
-        const successPhone = phoneOrError as Phone
-        const existingUser = await this.userRepository.findByPhone(successPhone.getFullPhone())
+        const existingUser = await this.userRepository.findById(user_id)
 
         if(!existingUser)
             throw new Error(JSON.stringify({
