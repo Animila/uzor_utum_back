@@ -30,6 +30,27 @@ model tokens {
   user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
+model categories {
+  id String @id
+  title String
+}
+
+model materials {
+  id String @id
+  title String
+}
+
+model sizes {
+  id String @id
+  title String
+}
+
+model decor_types {
+  id String @id
+  title String
+}
+
+
 enum Roles {
   user
   moderator
