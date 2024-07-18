@@ -1,58 +1,76 @@
 generator client {
-  provider = "prisma-client-js"
-  output = "../../../node_modules/.prisma/client"
+	provider = "prisma-client-js"
+	output   = "../../../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+	provider = "postgresql"
+	url      = env("DATABASE_URL")
 }
 
 model users {
-  id String @id
-  phone String @unique
-  email String @unique
-  first_name String
-  last_name String
-  accepted_at Boolean @default(false)
-  created_at DateTime @default(now())
-  updated_at DateTime? @default(now())
-  role Roles @default(user)
-  tokens tokens[]
+	id          String    @id
+	phone       String    @unique
+	email       String    @unique
+	first_name  String
+	last_name   String
+	accepted_at Boolean   @default(false)
+	created_at  DateTime  @default(now())
+	updated_at  DateTime? @default(now())
+	role        Roles     @default(user)
+	tokens      tokens[]
 }
 
 model tokens {
-  id String @id
-  token Int @unique
-  activated_at Boolean @default(false)
-  created_at DateTime @default(now())
-  user_id String
-  user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+	id           String   @id
+	token        Int      @unique
+	activated_at Boolean  @default(false)
+	created_at   DateTime @default(now())
+	user_id      String
+	user         users    @relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
 
 model categories {
-  id String @id
-  title String
+	id       String     @id
+	title    String @unique
+	products products[]
 }
 
 model materials {
-  id String @id
-  title String
+	id    String @id
+	title String @unique
+	products products[]
 }
 
-model sizes {
-  id String @id
-  title String
-}
+model products {
+	id          String     @id
+	title       String
+	article     String     @unique
+	price       Int
+	path_images String[]
+	description String
+	details     String
+	delivery    String
+	sex					Sex				 @default(all)
+	attributes  Json       @db.JsonB
+	available   Int        @default(0)
+	created_at 	DateTime 	 @default(now())
+	updated_at  DateTime	 @default(now())
 
-model decor_types {
-  id String @id
-  title String
+	category_id String
+	category    categories @relation(fields: [category_id], references: [id])
+	material_id String
+	material    materials  @relation(fields: [material_id], references: [id])
 }
-
 
 enum Roles {
-  user
-  moderator
-  admin
+	user
+	moderator
+	admin
+}
+
+enum Sex {
+	male
+	female
+	all
 }

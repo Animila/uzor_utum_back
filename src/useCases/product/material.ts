@@ -67,7 +67,7 @@ export class GetByIdMaterial {
         if(!existingMaterials) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Категория не найдена'
+                message: 'Материал не найден'
             }))
         }
         return existingMaterials

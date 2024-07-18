@@ -1,9 +1,4 @@
 import {IUserRepository} from "../../repositories/IUserRepository";
-import {User} from "../../domain/user/user";
-import {Role, Roles} from "../../domain/user/valueObjects/role";
-import {Email} from "../../domain/user/valueObjects/email";
-import {Phone} from "../../domain/user/valueObjects/phone";
-import {Guard} from "../../domain/guard";
 import {UserMap} from "../../mappers/UserMap";
 
 
