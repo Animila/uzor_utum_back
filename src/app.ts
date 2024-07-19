@@ -23,6 +23,11 @@ async function buildApp(options: AppOptions = {}) {
             expiresIn: process.env.JWT_SIGN_EXPIRES_IN || '30d',
         },
     })
+    await fastify.register(require('@fastify/cors'), {
+        origin: [process.env.LOCALHOST || '', process.env.WEBSITE || ''], // разрешить запросы с localhost:4000
+        methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], // разрешить все основные методы
+        credentials: true
+    })
 
     fastify.addHook('onClose', async () => {
         await rabbit.closeConnection();
