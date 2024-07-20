@@ -30,15 +30,13 @@ export class GetByIdProducts {
         updatedAt: Date
     }> {
         const { id } = input;
-        console.log('234: ')
         const existingData = await this.productRepository.findById(id)
         if(!existingData)
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Продукт не найден'
             }))
-        const product =  ProductMap.toPersistence(existingData)
-        return product;
+        return ProductMap.toPersistence(existingData);
 
     }
 }

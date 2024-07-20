@@ -1,15 +1,15 @@
 import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
 import {FastifyReply, FastifyRequest} from "fastify";
 import {ProductMap} from "../../mappers/ProductMap";
-import {CreateProduct} from "../../useCases/product/createProduct";
+import {CreateProduct} from "../../useCases/product/productCreate";
 import {PrismaCategoryRepo} from "../../infrastructure/prisma/repo/PrismaCategoryRepo";
 import {PrismaMaterialRepo} from "../../infrastructure/prisma/repo/PrismaMaterialRepo";
 import {GetByIdCategory} from "../../useCases/product/category";
 import {GetByIdMaterial} from "../../useCases/product/material";
-import {GetAllProducts} from "../../useCases/product/getAllProducts";
-import {GetByIdProducts} from "../../useCases/product/getByIdProducts";
-import {UpdateProduct} from "../../useCases/product/updateProduct";
-import {DeleteProduct} from "../../useCases/product/deleteProduct";
+import {GetAllProducts} from "../../useCases/product/productGetAll";
+import {GetByIdProducts} from "../../useCases/product/productGetById";
+import {UpdateProduct} from "../../useCases/product/productUpdate";
+import {DeleteProduct} from "../../useCases/product/productDelete";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();

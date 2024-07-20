@@ -1,7 +1,7 @@
 import amqp, * as rab from 'amqplib'
 import {Email} from "../../domain/user/valueObjects/email";
 import {Mail} from "../../domain/mail/mail";
-import SendMail from "../../useCases/mail/sendMail";
+import SendMail from "../../useCases/mail/mailSend";
 
 class RabbitMQ {
     private connectionUrl: string

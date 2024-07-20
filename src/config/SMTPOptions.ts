@@ -1,5 +1,5 @@
 import SMTPMail from "../infrastructure/smtp/SMTPMail";
-import SendMail from "../useCases/mail/sendMail";
+import SendMail from "../useCases/mail/mailSend";
 import RabbitMQ from "../infrastructure/rabbitmq/RabbitMQ";
 
 export const smtpService = new SMTPMail({

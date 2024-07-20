@@ -37,7 +37,6 @@ export class GetAllProducts {
         updatedAt: Date
     }[]> {
         const { filters, sortBy, order, categoryId, materialId, search, minPrice, maxPrice } = input;
-        console.log('234: ')
         const existingData = await this.productRepository.findAll(categoryId, materialId, filters, sortBy, order, search, minPrice, maxPrice )
         const users = existingData.map(item => {
             return ProductMap.toPersistence(item)

@@ -61,6 +61,8 @@ model products {
 	category    categories @relation(fields: [category_id], references: [id])
 	material_id String
 	material    materials  @relation(fields: [material_id], references: [id])
+
+	discounts discounts[]
 }
 
 enum Roles {
@@ -73,4 +75,14 @@ enum Sex {
 	male
 	female
 	all
+}
+
+model discounts {
+	id String @id
+	percentage Float
+	start_date DateTime
+	end_date DateTime
+	activated Boolean @default(false)
+	product_id String
+	product products @relation(references: [id], fields: [product_id], onDelete: Cascade)
 }
