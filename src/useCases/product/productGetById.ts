@@ -25,6 +25,7 @@ export class GetByIdProducts {
         attributes: JSON,
         available: number,
         categoryId: string,
+        discount?: any,
         materialId: string,
         createdAt: Date,
         updatedAt: Date

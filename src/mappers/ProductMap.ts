@@ -19,7 +19,7 @@ export class ProductMap {
             delivery: raw.delivery,
             article: raw.article,
             price: raw.price,
-            path_images: raw.path_images,
+            pathImages: raw.path_images,
             createdAt: raw.created_at,
             updatedAt: raw.updated_at,
             attributes: attributes,

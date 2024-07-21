@@ -59,7 +59,7 @@ export class CreateProduct {
             title: title,
             article: article,
             price: price,
-            path_images: path_images,
+            pathImages: path_images,
             sex: sexOrError as Sex,
             description: description,
             details: details,

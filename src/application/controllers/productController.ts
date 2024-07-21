@@ -10,10 +10,14 @@ import {GetAllProducts} from "../../useCases/product/productGetAll";
 import {GetByIdProducts} from "../../useCases/product/productGetById";
 import {UpdateProduct} from "../../useCases/product/productUpdate";
 import {DeleteProduct} from "../../useCases/product/productDelete";
+import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscountRepo";
+import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
+import {DiscountMap} from "../../mappers/DiscountMap";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
 const materialRepo = new PrismaMaterialRepo();
+const discountRepo = new PrismaDiscountRepo();
 
 
 export async function createProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
@@ -38,7 +42,6 @@ export async function createProductController(request: FastifyRequest<ProductReq
     try {
         const createProduct = new CreateProduct(productRepo);
         const product = await createProduct.execute(data);
-
         reply.status(201).send({
             success: true,
             data: ProductMap.toPersistence(product)
@@ -69,7 +72,18 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
         const json = filters ? JSON.parse(filters!) : undefined
         const getAllProduct = new GetAllProducts(productRepo);
+        const getDiscount = new GetByProductIdDiscount(discountRepo)
         const products = await getAllProduct.execute({categoryId, materialId, filters: json, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
+        await Promise.all(
+            products.map(async item => {
+                try {
+                    const result = await getDiscount.execute({ product_id: item.id });
+                    item.discount = DiscountMap.toPersistence(result);
+                } catch (error) {
+
+                }
+            })
+        )
         console.log(products)
         reply.status(200).send({
             success: true,
@@ -90,7 +104,11 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
         const { id } = request.params;
         const getProduct = new GetByIdProducts(productRepo);
         const product = await getProduct.execute({ id });
-
+        const getDiscount = new GetByProductIdDiscount(discountRepo)
+        try {
+            const result = await getDiscount.execute({product_id: product.id})
+            product.discount = DiscountMap.toPersistence(result)
+        } catch (err) {}
         reply.status(200).send({
             success: true,
             data: product

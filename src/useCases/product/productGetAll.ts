@@ -1,5 +1,6 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {ProductMap} from "../../mappers/ProductMap";
+import {Discount} from "../../domain/discount/discount";
 
 interface GetAllProductsInput {
     filters?: JSON;
@@ -30,6 +31,7 @@ export class GetAllProducts {
         details: string,
         delivery: string,
         attributes: JSON,
+        discount?: any,
         available: number,
         categoryId: string,
         materialId: string,

@@ -1,23 +1,17 @@
-const createProductSchema = {
+const createNewsSchema = {
     schema: {
-        description: 'Создать продукт',
-        tags: ['Product'],
+        description: 'Создать новость',
+        tags: ['News'],
         security: [{ApiToken: []}],
         body: {
             type: 'object',
             properties: {
                 title: { type: 'string' },
-                article: { type: 'string' },
-                price: { type: 'number' },
-                path_images: { type: 'array', items: { type: 'string' } },
-                sex: { type: 'string' },
-                description: { type: 'string' },
-                details: { type: 'string' },
-                delivery: { type: 'string' },
-                attributes: { type: 'object', additionalProperties: true },
-                available: { type: 'number' },
-                categoryId: { type: 'string' },
-                materialId: { type: 'string' },
+                about: { type: 'string' },
+                text: {type: 'string'},
+                preview_path: { type: 'string' },
+                views: { type: 'number' },
+                journal_id: { type: 'string' },
             },
         },
         response: {
@@ -30,7 +24,12 @@ const createProductSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: { type: 'string' },
+                            about: { type: 'string' },
+                            text: {type: 'string'},
+                            preview_path: { type: 'string' },
+                            views: { type: 'number' },
+                            journal_id: { type: 'string' },
                         },
                     }
                 }
@@ -47,23 +46,10 @@ const createProductSchema = {
     }
 };
 
-const getAllProductSchema = {
+const getAllNewsSchema = {
     schema: {
-        description: 'Получить список всех продуктов',
-        tags: ['Product'],
-        querystring: {
-            type: 'object',
-            properties: {
-                filters: { type: 'string' },
-                sortBy: { type: 'string' },
-                order: { type: 'string' },
-                categoryId: { type: 'string' },
-                materialId: { type: 'string' },
-                q: {type: 'string'},
-                minPrice: {type: 'string'},
-                maxPrice: {type: 'string'},
-            },
-        },
+        description: 'Получить список все новости',
+        tags: ['News'],
         response: {
             200: {
                 description: 'Успешно получены',
@@ -77,20 +63,13 @@ const getAllProductSchema = {
                             properties: {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
-                                article: { type: 'string' },
-                                price: { type: 'number' },
-                                path_images: { type: 'array', items: { type: 'string' } },
-                                sex: { type: 'string' },
-                                description: { type: 'string' },
-                                details: { type: 'string' },
-                                delivery: { type: 'string' },
-                                discount: { type: 'object', additionalProperties: true },
-                                attributes: { type: 'object', additionalProperties: true },
-                                available: { type: 'number' },
-                                categoryId: { type: 'string' },
-                                materialId: { type: 'string' },
-                            },
-                            required: ['id', 'title']
+                                about: { type: 'string' },
+                                text: {type: 'string'},
+                                preview_path: { type: 'string' },
+                                views: { type: 'number' },
+                                journal_id: { type: 'string' },
+                                create_at: { type: 'string' },
+                            }
                         }
                     }
                 }
@@ -107,10 +86,13 @@ const getAllProductSchema = {
     }
 };
 
-const getByIdProductSchema = {
+const getByIdNewsSchema = {
     schema: {
-        description: 'Получить продукт',
-        tags: ['Product'],
+        description: 'Получить новость',
+        tags: ['News'],
+        parameters: {
+          id: { type: 'string' },
+        },
         response: {
             200: {
                 description: 'Успешно получен',
@@ -122,18 +104,12 @@ const getByIdProductSchema = {
                         properties: {
                             id: { type: 'string' },
                             title: { type: 'string' },
-                            article: { type: 'string' },
-                            price: { type: 'number' },
-                            path_images: { type: 'array', items: { type: 'string' } },
-                            sex: { type: 'string' },
-                            description: { type: 'string' },
-                            details: { type: 'string' },
-                            delivery: { type: 'string' },
-                            discount: { type: 'object', additionalProperties: true },
-                            attributes: { type: 'object', additionalProperties: true },
-                            available: { type: 'number' },
-                            categoryId: { type: 'string' },
-                            materialId: { type: 'string' },
+                            about: { type: 'string' },
+                            text: {type: 'string'},
+                            preview_path: { type: 'string' },
+                            views: { type: 'number' },
+                            journal_id: { type: 'string' },
+                            create_at: { type: 'string' },
                         },
                     }
                 }
@@ -150,26 +126,23 @@ const getByIdProductSchema = {
     }
 };
 
-const updateProductSchema = {
+const updateNewsSchema = {
     schema: {
-        description: 'Обновить продукт',
-        tags: ['Product'],
+        description: 'Обновить новость',
+        tags: ['News'],
         security: [{ApiToken: []}],
+        parameters: {
+            id: { type: 'string' },
+        },
         body: {
             type: 'object',
             properties: {
                 title: { type: 'string' },
-                article: { type: 'string' },
-                price: { type: 'number' },
-                path_images: { type: 'array', items: { type: 'string' } },
-                sex: { type: 'string' },
-                description: { type: 'string' },
-                details: { type: 'string' },
-                delivery: { type: 'string' },
-                attributes: { type: 'object', additionalProperties: true },
-                available: { type: 'number' },
-                categoryId: { type: 'string' },
-                materialId: { type: 'string' },
+                about: { type: 'string' },
+                text: {type: 'string'},
+                preview_path: { type: 'string' },
+                views: { type: 'number' },
+                journal_id: { type: 'string' }
             },
         },
         response: {
@@ -182,7 +155,13 @@ const updateProductSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: { type: 'string' },
+                            about: { type: 'string' },
+                            text: {type: 'string'},
+                            preview_path: { type: 'string' },
+                            views: { type: 'number' },
+                            journal_id: { type: 'string' },
+                            create_at: { type: 'string' },
                         },
                     }
                 }
@@ -199,14 +178,17 @@ const updateProductSchema = {
     }
 };
 
-const deleteProductSchema = {
+const deleteNewsSchema = {
     schema: {
-        description: 'Удалить продукт',
-        tags: ['Product'],
+        description: 'Удалить новость',
+        tags: ['News'],
         security: [{ApiToken: []}],
+        parameters: {
+            id: { type: 'string' },
+        },
         response: {
             200: {
-                description: 'Успешно удалить',
+                description: 'Успешно удалено',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
@@ -232,9 +214,9 @@ const deleteProductSchema = {
 };
 
 export {
-    createProductSchema,
-    getAllProductSchema,
-    getByIdProductSchema,
-    updateProductSchema,
-    deleteProductSchema
+    createNewsSchema,
+    getAllNewsSchema,
+    getByIdNewsSchema,
+    updateNewsSchema,
+    deleteNewsSchema
 }

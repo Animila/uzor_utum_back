@@ -5,6 +5,8 @@ import {registerCategoryRouting} from "./routing/categoryRouting";
 import {registerMaterialRouting} from "./routing/materialRouting";
 import {registerProductRouting} from "./routing/productRouting";
 import {registerDiscountRouting} from "./routing/discountRouting";
+import {registerJournalRouting} from "./routing/journalRouting";
+import {registerNewsRouting} from "./routing/newsRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify);
@@ -13,4 +15,6 @@ export default function registerRoutes(fastify: FastifyInstance) {
     registerMaterialRouting(fastify)
     registerProductRouting(fastify)
     registerDiscountRouting(fastify)
+    registerJournalRouting(fastify)
+    registerNewsRouting(fastify)
 }

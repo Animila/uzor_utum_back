@@ -86,3 +86,34 @@ model discounts {
 	product_id String
 	product products @relation(references: [id], fields: [product_id], onDelete: Cascade)
 }
+
+model journals {
+	id String @id
+	title String @unique
+	news news[]
+}
+
+model news {
+	id String @id
+	title String
+	about String
+	text String
+	preview_path String
+	views Int
+	created_at DateTime @default(now())
+	journal_id String
+	journal journals @relation(fields: [journal_id], references: [id], onDelete: Cascade)
+}
+
+// model promocodes {
+// 	id String @id
+// 	code String @unique
+// 	description String
+// 	discount Float
+// 	valid_from DateTime
+// 	valid_to DateTime
+// 	active Boolean @default(true)
+// }
+
+
+

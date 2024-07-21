@@ -67,7 +67,7 @@ export class UpdateProduct {
             description: description || existingData.getDescription(),
             delivery: delivery || existingData.getDelivery(),
             details: details || existingData.getDetails(),
-            path_images: path_images || existingData.getPathImages(),
+            pathImages: path_images || existingData.getPathImages(),
             sex: sexOrError as Sex || existingData.getSex(),
             materialId: materialId || existingData.getMaterial(),
             available: available || existingData.getAvailable(),
