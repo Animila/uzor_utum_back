@@ -1,18 +1,18 @@
-import {discounts as PersistenceDiscount} from "@prisma/client";
-import {Discount} from "../domain/discount/discount";
+import { discounts as PersistenceData } from "@prisma/client";
+import { Discount } from "../domain/discount/discount";
 
 
 export class DiscountMap {
-    public static toDomain(raw: PersistenceDiscount): Discount | null {
-        const data = new Discount({
+    public static toDomain(raw: PersistenceData): Discount | null {
+        const result = new Discount({
             productId: raw.product_id,
             activated: raw.activated,
             percentage: raw.percentage,
             endDate: raw.end_date,
             startDate: raw.start_date
         }, raw.id)
-        if(!data) return null
-        return data
+        if(!result) return null
+        return result
     }
 
     public static toPersistence(data: Discount): {

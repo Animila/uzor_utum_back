@@ -1,7 +1,7 @@
-import {User} from "../domain/user/user";
+import { User } from "../domain/user/user";
 
 export interface IUserRepository {
-    save(user: User): Promise<User | null>
+    save(data: User): Promise<User | null>
     findAll(): Promise<User[]>
     findByEmail(email: string): Promise<User | null>
     findById(uuid: string): Promise<User | null>

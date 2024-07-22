@@ -1,18 +1,18 @@
-import {users as PersistenceUser} from "@prisma/client";
-import {User} from "../domain/user/user";
-import {Email} from "../domain/user/valueObjects/email";
-import {Phone} from "../domain/user/valueObjects/phone";
-import {Role} from "../domain/user/valueObjects/role";
+import { users as PersistenceData } from "@prisma/client";
+import { User } from "../domain/user/user";
+import { Email } from "../domain/user/valueObjects/email";
+import { Phone } from "../domain/user/valueObjects/phone";
+import { Role } from "../domain/user/valueObjects/role";
 
 
 export class UserMap {
-    public static toDomain(raw: PersistenceUser): User | null {
+    public static toDomain(raw: PersistenceData): User | null {
         const emailOrError = Email.create(raw.email)
         const phoneOrError = Phone.create(raw.phone)
         const roleOrError = Role.create(raw.role)
 
         if(emailOrError instanceof Error || phoneOrError instanceof Error || roleOrError instanceof Error) return null
-        const user = new User({
+        const result = new User({
             phone: phoneOrError,
             email: emailOrError,
             firstName: raw.first_name,
@@ -23,12 +23,11 @@ export class UserMap {
             role: roleOrError
         }, raw.id)
 
-        if(!user) return null
-
-        return user
+        if(!result) return null
+        return result
     }
 
-    public static toPersistence(user: User): {
+    public static toPersistence(data: User): {
         id: string
         phone: string
         email: string
@@ -40,15 +39,15 @@ export class UserMap {
         updated_at?: Date
     } {
         return {
-            id: user.getId(),
-            first_name: user.getFirstName(),
-            last_name: user.getLastName(),
-            email: user.getEmail().getFull(),
-            phone: user.getPhone().getFullPhone(),
-            role: user.getRole().getValue(),
-            accepted_at: user.getAcceptedAs(),
-            created_at: user.getCreatedAt(),
-            updated_at: user.getUpdatedAt()
+            id: data.getId(),
+            first_name: data.getFirstName(),
+            last_name: data.getLastName(),
+            email: data.getEmail().getFull(),
+            phone: data.getPhone().getFullPhone(),
+            role: data.getRole().getValue(),
+            accepted_at: data.getAcceptedAs(),
+            created_at: data.getCreatedAt(),
+            updated_at: data.getUpdatedAt()
         }
     }
 }

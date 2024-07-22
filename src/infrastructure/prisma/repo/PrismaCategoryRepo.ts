@@ -12,37 +12,29 @@ export class PrismaCategoryRepo implements ICategoryRepository {
     }
 
     async findById(id: string): Promise<Category | null> {
-        const data = await this.prisma.categories.findUnique({
-            where: {
-                id: id
-            }
-        })
+        const data = await this.prisma.categories.findUnique({ where: { id: id } })
         if(!data) return null
         return CategoryMap.toDomain(data)
     }
 
     async findByTitle(title: string): Promise<Category | null> {
-        const data = await this.prisma.categories.findFirst({
-            where: {
-                title: title
-            }
-        })
+        const data = await this.prisma.categories.findFirst({ where: { title: title } })
         if(!data) return null
         return CategoryMap.toDomain(data)
     }
 
-    async save(category: Category): Promise<Category | null> {
+    async save(data: Category): Promise<Category | null> {
         try {
-            const data = CategoryMap.toPersistence(category)
+            const dataPer = CategoryMap.toPersistence(data)
             const newUser = await this.prisma.categories.upsert({
-                where: {id: data.id},
+                where: {id: dataPer.id},
                 create: {
-                    id: data.id,
-                    title: data.title,
+                    id: dataPer.id,
+                    title: dataPer.title,
                 },
                 update: {
-                    id: data.id,
-                    title: data.title,
+                    id: dataPer.id,
+                    title: dataPer.title,
                 }
             })
             if(!newUser) return null
@@ -57,23 +49,13 @@ export class PrismaCategoryRepo implements ICategoryRepository {
 
     async delete(id: string): Promise<boolean> {
         try {
-            await this.prisma.categories.delete({
-                where: {
-                    id: id
-                }
-            })
+            await this.prisma.categories.delete({ where: { id: id } })
             return true
         } catch (error: any) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Такая категория не найдена'
             }));
-
         }
     }
-
-
-
-
-
 }

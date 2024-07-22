@@ -1,17 +1,17 @@
-import {products as PersistenceProduct} from "@prisma/client";
-import {Product} from "../domain/products/product";
-import {Sex} from "../domain/products/valueObjects/sex";
-import {Attributes, IAttributes} from "../domain/products/valueObjects/attributes";
+import { products as PersistenceData } from "@prisma/client";
+import { Product } from "../domain/products/product";
+import { Sex } from "../domain/products/valueObjects/sex";
+import { Attributes, IAttributes } from "../domain/products/valueObjects/attributes";
 
 export class ProductMap {
-    public static toDomain(raw: PersistenceProduct): Product | null {
+    public static toDomain(raw: PersistenceData): Product | null {
         const sexOrError = Sex.create(raw.sex)
         const attributes = Attributes.create(raw.attributes as IAttributes);
 
         if(sexOrError instanceof Error) return null
 
 
-        const token = new Product({
+        const result = new Product({
             title: raw.title,
             sex: sexOrError as Sex,
             description: raw.description,
@@ -28,12 +28,11 @@ export class ProductMap {
             materialId: raw.material_id
         }, raw.id)
 
-        if(!token) return null
-
-        return token
+        if(!result) return null
+        return result
     }
 
-    public static toPersistence(product: Product): {
+    public static toPersistence(data: Product): {
         id: string
         title: string
         article: string
@@ -51,21 +50,21 @@ export class ProductMap {
         updatedAt: Date
     } {
         return {
-            id: product.getId(),
-            title: product.getTitle(),
-            article: product.getArticle(),
-            price: product.getPrice(),
-            path_images: product.getPathImages(),
-            sex: product.getSex().getValue(),
-            description: product.getDescription(),
-            details: product.getDetails(),
-            delivery: product.getDelivery(),
-            attributes: product.getAttributes().getAttributes() as JSON,
-            available: product.getAvailable(),
-            categoryId: product.getCategory(),
-            materialId: product.getMaterial(),
-            createdAt: product.getCreatedAt(),
-            updatedAt: product.getUpdatedAt(),
+            id: data.getId(),
+            title: data.getTitle(),
+            article: data.getArticle(),
+            price: data.getPrice(),
+            path_images: data.getPathImages(),
+            sex: data.getSex().getValue(),
+            description: data.getDescription(),
+            details: data.getDetails(),
+            delivery: data.getDelivery(),
+            attributes: data.getAttributes().getAttributes() as JSON,
+            available: data.getAvailable(),
+            categoryId: data.getCategory(),
+            materialId: data.getMaterial(),
+            createdAt: data.getCreatedAt(),
+            updatedAt: data.getUpdatedAt(),
         }
     }
 }

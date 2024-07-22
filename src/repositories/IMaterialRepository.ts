@@ -1,7 +1,7 @@
-import {Material} from "../domain/products/materials";
+import { Material } from "../domain/products/materials";
 
 export interface IMaterialRepository {
-    save(material: Material): Promise<Material| null>;
+    save(material: Material): Promise<Material | null>;
     findAll(): Promise<Material[]>;
     findById(id: string): Promise<Material | null>;
     findByTitle(title: string): Promise<Material | null>;

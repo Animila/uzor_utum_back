@@ -12,37 +12,29 @@ export class PrismaMaterialRepo implements IMaterialRepository {
     }
 
     async findById(id: string): Promise<Material | null> {
-        const data = await this.prisma.materials.findUnique({
-            where: {
-                id: id
-            }
-        })
+        const data = await this.prisma.materials.findUnique({ where: { id: id } })
         if(!data) return null
         return MaterialMap.toDomain(data)
     }
 
     async findByTitle(title: string): Promise<Material | null> {
-        const data = await this.prisma.materials.findFirst({
-            where: {
-                title: title
-            }
-        })
+        const data = await this.prisma.materials.findFirst({ where: { title: title } })
         if(!data) return null
         return MaterialMap.toDomain(data)
     }
 
-    async save(Material: Material): Promise<Material | null> {
+    async save(data: Material): Promise<Material | null> {
         try {
-            const data = MaterialMap.toPersistence(Material)
+            const dataPer = MaterialMap.toPersistence(data)
             const newUser = await this.prisma.materials.upsert({
-                where: {id: data.id},
+                where: {id: dataPer.id},
                 create: {
-                    id: data.id,
-                    title: data.title,
+                    id: dataPer.id,
+                    title: dataPer.title,
                 },
                 update: {
-                    id: data.id,
-                    title: data.title,
+                    id: dataPer.id,
+                    title: dataPer.title,
                 }
             })
             if(!newUser) return null
@@ -57,23 +49,13 @@ export class PrismaMaterialRepo implements IMaterialRepository {
 
     async delete(id: string): Promise<boolean> {
         try {
-            await this.prisma.materials.delete({
-                where: {
-                    id: id
-                }
-            })
+            await this.prisma.materials.delete({ where: { id: id } })
             return true
         } catch (error: any) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Такой материал не найден'
             }));
-
         }
     }
-
-
-
-
-
 }

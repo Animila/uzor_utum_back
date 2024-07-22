@@ -1,8 +1,9 @@
-import {news as PersistenceNews } from "@prisma/client";
-import {News} from "../domain/news/news";
+import { news as PersistenceData } from "@prisma/client";
+import { News } from "../domain/news/news";
+
 export class NewsMap {
-    public static toDomain(raw: PersistenceNews): News | null {
-        const data = new News({
+    public static toDomain(raw: PersistenceData): News | null {
+        const result = new News({
             title: raw.title,
             text: raw.text,
             about: raw.about,
@@ -11,11 +12,11 @@ export class NewsMap {
             previewPath: raw.preview_path,
             createdAt: raw.created_at
         }, raw.id)
-        if(!data) return null
-        return data
+        if(!result) return null
+        return result
     }
 
-    public static toPersistence(domain: News): {
+    public static toPersistence(data: News): {
         id: string,
         title: string
         text: string
@@ -26,14 +27,14 @@ export class NewsMap {
         views:  number
     } {
         return {
-            id: domain.getId(),
-            title: domain.getTitle(),
-            text: domain.getText(),
-            about: domain.getAbout(),
-            journalId: domain.getJournalId(),
-            views: domain.getViews(),
-            previewPath: domain.getPreviewPath(),
-            createdAt: domain.getCreatedAt()
+            id: data.getId(),
+            title: data.getTitle(),
+            text: data.getText(),
+            about: data.getAbout(),
+            journalId: data.getJournalId(),
+            views: data.getViews(),
+            previewPath: data.getPreviewPath(),
+            createdAt: data.getCreatedAt()
         }
     }
 }

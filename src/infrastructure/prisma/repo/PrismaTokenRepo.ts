@@ -19,7 +19,6 @@ export class PrismaTokenRepo implements ITokenRepository {
                 message: 'Нет token'
             }));
         }
-
         const tokenRecord = await this.prisma.tokens.findFirst({
             where: {
                 user_id: userId,
@@ -37,40 +36,36 @@ export class PrismaTokenRepo implements ITokenRepository {
             },
         });
         if (!tokenRecord) return null;
-
         return TokenMap.toDomain(tokenRecord)
     }
 
-    async save(token: Token): Promise<Token| null> {
+    async save(data: Token): Promise<Token| null> {
         try {
-        const data = TokenMap.toPersistence(token)
-        const newToken = await this.prisma.tokens.upsert({
-            where: {id: data.id},
-            create: {
-                id: data.id,
-                token: data.token,
-                user_id: data.user_id,
-                created_at: data.created_at,
-                activated_at: data.activated_at
-            },
-            update: {
-                id: data.id,
-                token: data.token,
-                user_id: data.user_id,
-                created_at: data.created_at,
-                activated_at: data.activated_at
-            }
-        })
-        if(!newToken) return null
-
-        return TokenMap.toDomain(newToken)
-    } catch (error: any) {
-        throw new Error(JSON.stringify({
-            status: 409,
-            message: 'Такой токен уже существует'
-        }));
-
+            const dataPer = TokenMap.toPersistence(data)
+            const newToken = await this.prisma.tokens.upsert({
+                where: {id: dataPer.id},
+                create: {
+                    id: dataPer.id,
+                    token: dataPer.token,
+                    user_id: dataPer.user_id,
+                    created_at: dataPer.created_at,
+                    activated_at: dataPer.activated_at
+                },
+                update: {
+                    id: dataPer.id,
+                    token: dataPer.token,
+                    user_id: dataPer.user_id,
+                    created_at: dataPer.created_at,
+                    activated_at: dataPer.activated_at
+                }
+            })
+            if(!newToken) return null
+            return TokenMap.toDomain(newToken)
+        } catch (error: any) {
+            throw new Error(JSON.stringify({
+                status: 409,
+                message: 'Такой токен уже существует'
+            }));
+        }
     }
-    }
-
 }

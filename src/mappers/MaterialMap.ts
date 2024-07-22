@@ -1,23 +1,21 @@
-import {materials as PersistenceMaterial} from "@prisma/client";
-import {Material} from "../domain/products/materials";
+import { materials as PersistenceData } from "@prisma/client";
+import { Material } from "../domain/products/materials";
 
 
 export class MaterialMap {
-    public static toDomain(raw: PersistenceMaterial): Material | null {
-        const token = new Material({
-            title: raw.title,
-        }, raw.id)
-        if(!token) return null
-        return token
+    public static toDomain(raw: PersistenceData): Material | null {
+        const result = new Material({ title: raw.title }, raw.id)
+        if(!result) return null
+        return result
     }
 
-    public static toPersistence(token: Material): {
+    public static toPersistence(data: Material): {
         id: string,
         title: string
     } {
         return {
-            id: token.getId(),
-            title: token.getTitle()
+            id: data.getId(),
+            title: data.getTitle()
         }
     }
 }

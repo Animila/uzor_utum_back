@@ -1,23 +1,23 @@
-import {categories as PersistenceCategory} from "@prisma/client";
-import {Category} from "../domain/products/categories";
+import { categories as PersistenceData } from "@prisma/client";
+import { Category } from "../domain/products/categories";
 
 
 export class CategoryMap {
-    public static toDomain(raw: PersistenceCategory): Category | null {
-        const token = new Category({
+    public static toDomain(raw: PersistenceData): Category | null {
+        const result = new Category({
             title: raw.title,
         }, raw.id)
-        if(!token) return null
-        return token
+        if(!result) return null
+        return result
     }
 
-    public static toPersistence(token: Category): {
+    public static toPersistence(data: Category): {
         id: string,
         title: string
     } {
         return {
-            id: token.getId(),
-            title: token.getTitle()
+            id: data.getId(),
+            title: data.getTitle()
         }
     }
 }
