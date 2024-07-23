@@ -1,10 +1,6 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
-import {Category} from "./categories";
-import {Material} from "./materials";
 import {Attributes} from "./valueObjects/attributes";
 import {Sex} from "./valueObjects/sex";
-
-
 
 interface IProduct {
     title: string

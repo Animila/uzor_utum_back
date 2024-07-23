@@ -1,6 +1,5 @@
 import {Discount} from "../../domain/discount/discount";
 import {IDiscountRepository} from "../../repositories/IDiscountRepository";
-import {DiscountMap} from "../../mappers/DiscountMap";
 
 interface GetByProductIdDiscountInput {
     product_id: string

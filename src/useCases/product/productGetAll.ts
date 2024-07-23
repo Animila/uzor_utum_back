@@ -1,6 +1,5 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {ProductMap} from "../../mappers/ProductMap";
-import {Discount} from "../../domain/discount/discount";
 
 interface GetAllProductsInput {
     filters?: JSON;

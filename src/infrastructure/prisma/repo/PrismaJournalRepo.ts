@@ -2,7 +2,6 @@ import {PrismaClient} from "@prisma/client";
 import {IJournalRepository} from "../../../repositories/IJournalRepository";
 import {Journal} from "../../../domain/news/journal";
 import {JournalMap} from "../../../mappers/JournalMap";
-import {Discount} from "../../../domain/discount/discount";
 
 export class PrismaJournalRepo implements IJournalRepository {
     private prisma = new PrismaClient();

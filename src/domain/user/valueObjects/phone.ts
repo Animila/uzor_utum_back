@@ -1,5 +1,3 @@
-import {throws} from "node:assert";
-
 interface IPhone {
     phone: string
 }

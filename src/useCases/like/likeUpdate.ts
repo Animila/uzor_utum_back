@@ -35,8 +35,6 @@ export class UpdateLike {
             }))
         }
 
-
-
         const typeOfError = type ? LikeType.create(type) : undefined
 
         if(typeOfError instanceof Error)

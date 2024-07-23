@@ -1,6 +1,4 @@
-import {Discount} from "../../domain/discount/discount";
 import {IDiscountRepository} from "../../repositories/IDiscountRepository";
-import {DiscountMap} from "../../mappers/DiscountMap";
 import {Guard} from "../../domain/guard";
 
 interface DeleteDiscountInput {

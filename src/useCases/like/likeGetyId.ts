@@ -1,8 +1,5 @@
 import {ILikeRepository} from "../../repositories/ILikeRepository";
-import {Like} from "../../domain/like/like";
-import {LikeType} from "../../domain/like/valueObjects/LikeType";
 import {LikeMap} from "../../mappers/LikeMap";
-import {User} from "../../domain/user/user";
 
 interface GetByIdLikeInput {
     id: string,

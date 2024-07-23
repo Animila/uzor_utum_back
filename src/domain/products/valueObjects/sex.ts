@@ -1,5 +1,3 @@
-import {throws} from "node:assert";
-
 export enum SexAll {
     male = 'male',
     female = 'female',

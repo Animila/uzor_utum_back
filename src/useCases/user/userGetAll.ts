@@ -1,7 +1,6 @@
 import {IUserRepository} from "../../repositories/IUserRepository";
 import {UserMap} from "../../mappers/UserMap";
 
-
 export class GetUserAll {
     private userRepository: IUserRepository
 

@@ -1,6 +1,4 @@
 import {ITokenRepository} from "../../repositories/ITokenRepository";
-import {Token} from "../../domain/user/token";
-import {TokenCode} from "../../domain/user/valueObjects/tokenCode";
 
 interface UpdateTokenInput {
     token: number

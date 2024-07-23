@@ -8,8 +8,6 @@ import {
     UpdateCategory
 } from "../../useCases/product/category";
 import {CategoryMap} from "../../mappers/CategoryMap";
-import CreateToken from "../../useCases/token/tokenCreate";
-import {rabbit} from "../../config/SMTPOptions";
 
 const categoryRepo = new PrismaCategoryRepo();
 

@@ -1,5 +1,3 @@
-import {throws} from "node:assert";
-
 export enum Roles {
     user = 'user',
     moderator = 'moderator',
