@@ -33,7 +33,7 @@ export const swaggerOptions = {
 export const swaggerUIOptions = {
     routePrefix: '/documentation',
     uiConfig: {
-        deepLinking: false
+        deepLinking: false,
     },
 
 }

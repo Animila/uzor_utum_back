@@ -25,7 +25,7 @@ export class PrismaDiscountRepo implements IDiscountRepository {
     }
 
     async findByProduct(productId: string): Promise<Discount | null> {
-        const data = await this.prisma.discounts.findFirst({ where: { product_id: productId, activated: true } })
+        const data = await this.prisma.discounts.findFirst({ where: { product_id: productId, activated: true, end_date: {lt: new Date()} } })
         if(!data) return null
         return DiscountMap.toDomain(data)
     }
