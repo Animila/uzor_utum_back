@@ -19,6 +19,7 @@ model users {
 	updated_at  DateTime? @default(now())
 	role        Roles     @default(user)
 	tokens      tokens[]
+	likes 			likes[]
 }
 
 model tokens {
@@ -62,7 +63,7 @@ model products {
 	material_id String
 	material    materials  @relation(fields: [material_id], references: [id])
 
-	discounts discounts[]
+	discounts 	discounts[]
 }
 
 enum Roles {
@@ -78,42 +79,57 @@ enum Sex {
 }
 
 model discounts {
-	id String @id
-	percentage Float
-	start_date DateTime
-	end_date DateTime
-	activated Boolean @default(false)
-	product_id String
-	product products @relation(references: [id], fields: [product_id], onDelete: Cascade)
+	id 					String 		@id
+	percentage 	Float
+	start_date 	DateTime
+	end_date 		DateTime
+	activated 	Boolean 	@default(false)
+	product_id 	String
+	product 		products 	@relation(references: [id], fields: [product_id], onDelete: Cascade)
 }
 
 model journals {
-	id String @id
-	title String @unique
-	news news[]
+	id 					String 		@id
+	title 			String 		@unique
+	news 				news[]
 }
 
 model news {
-	id String @id
-	title String
-	about String
-	text String
-	preview_path String
-	views Int
-	created_at DateTime @default(now())
-	journal_id String
-	journal journals @relation(fields: [journal_id], references: [id], onDelete: Cascade)
+	id 						String 		@id
+	title 				String
+	about 				String
+	text 					String
+	preview_path 	String
+	views 				Int
+	created_at 		DateTime 	@default(now())
+	journal_id 		String
+	journal 			journals 	@relation(fields: [journal_id], references: [id], onDelete: Cascade)
 }
 
-// model promocodes {
-// 	id String @id
-// 	code String @unique
-// 	description String
-// 	discount Float
-// 	valid_from DateTime
-// 	valid_to DateTime
-// 	active Boolean @default(true)
-// }
+model likes {
+	id 						String 		@id
+	entity_type 	String
+	entity_id 		String
+	user_id 			String
+	type 					LikeType  @default(like)
+	user 					users 		@relation(fields: [user_id], references: [id], onDelete: Cascade)
+	created_at 		DateTime  @default(now())
+}
 
+
+model promocodes {
+	id 						String 		@id
+	code 					String 		@unique
+	description 	String
+	discount 			Float
+	valid_from 		DateTime
+	valid_to 			DateTime
+	active 				Boolean 	@default(true)
+}
+
+enum LikeType {
+	like
+	unlike
+}
 
 

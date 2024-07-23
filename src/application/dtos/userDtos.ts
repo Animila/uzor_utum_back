@@ -3,10 +3,10 @@ interface UserRequest {
         user_id: string
     },
     Body: {
-        email?: string,
-        phone?: string,
-        first_name?: string,
-        last_name?: string,
-        role?: string
+        email: string,
+        phone: string,
+        first_name: string,
+        last_name: string,
+        role: string
     }
 }
