@@ -20,6 +20,7 @@ model users {
 	role        Roles     @default(user)
 	tokens      tokens[]
 	likes 			likes[]
+	bonuses			bonuses[]
 }
 
 model tokens {
@@ -32,36 +33,36 @@ model tokens {
 }
 
 model categories {
-	id       String     @id
-	title    String @unique
-	products products[]
+	id       		String     		@id
+	title    		String 				@unique
+	products 		products[]
 }
 
 model materials {
-	id    String @id
-	title String @unique
-	products products[]
+	id    			String 				@id
+	title 			String 				@unique
+	products 		products[]
 }
 
 model products {
-	id          String     @id
+	id          String     		@id
 	title       String
-	article     String     @unique
+	article     String     		@unique
 	price       Int
 	path_images String[]
 	description String
 	details     String
 	delivery    String
-	sex					Sex				 @default(all)
-	attributes  Json       @db.JsonB
-	available   Int        @default(0)
-	created_at 	DateTime 	 @default(now())
-	updated_at  DateTime	 @default(now())
+	sex					Sex				 		@default(all)
+	attributes  Json       		@db.JsonB
+	available   Int        		@default(0)
+	created_at 	DateTime 	 		@default(now())
+	updated_at  DateTime	 		@default(now())
 
 	category_id String
-	category    categories @relation(fields: [category_id], references: [id])
+	category    categories 		@relation(fields: [category_id], references: [id])
 	material_id String
-	material    materials  @relation(fields: [material_id], references: [id])
+	material    materials  		@relation(fields: [material_id], references: [id])
 
 	discounts 	discounts[]
 }
@@ -79,52 +80,52 @@ enum Sex {
 }
 
 model discounts {
-	id 					String 		@id
+	id 					String 				@id
 	percentage 	Float
 	start_date 	DateTime
 	end_date 		DateTime
-	activated 	Boolean 	@default(false)
+	activated 	Boolean 			@default(false)
 	product_id 	String
-	product 		products 	@relation(references: [id], fields: [product_id], onDelete: Cascade)
+	product 		products 			@relation(references: [id], fields: [product_id], onDelete: Cascade)
 }
 
 model journals {
-	id 					String 		@id
-	title 			String 		@unique
+	id 					String 				@id
+	title 			String 				@unique
 	news 				news[]
 }
 
 model news {
-	id 						String 		@id
+	id 						String 			@id
 	title 				String
 	about 				String
 	text 					String
 	preview_path 	String
 	views 				Int
-	created_at 		DateTime 	@default(now())
+	created_at 		DateTime 		@default(now())
 	journal_id 		String
-	journal 			journals 	@relation(fields: [journal_id], references: [id], onDelete: Cascade)
+	journal 			journals 		@relation(fields: [journal_id], references: [id], onDelete: Cascade)
 }
 
 model likes {
-	id 						String 		@id
+	id 						String 			@id
 	entity_type 	String
 	entity_id 		String
 	user_id 			String
-	type 					LikeType  @default(like)
-	user 					users 		@relation(fields: [user_id], references: [id], onDelete: Cascade)
-	created_at 		DateTime  @default(now())
+	type 					LikeType  	@default(like)
+	user 					users 			@relation(fields: [user_id], references: [id], onDelete: Cascade)
+	created_at 		DateTime  	@default(now())
 }
 
 
 model promocodes {
-	id 						String 		@id
-	code 					String 		@unique
+	id 						String 			@id
+	code 					String 			@unique
 	description 	String
 	discount 			Float
 	valid_from 		DateTime
 	valid_to 			DateTime
-	active 				Boolean 	@default(true)
+	active 				Boolean 		@default(true)
 }
 
 enum LikeType {
@@ -132,4 +133,17 @@ enum LikeType {
 	unlike
 }
 
+model bonuses {
+	id 						String 			@id
+	type					BonusesType
+	description		String
+	count					Int
+	created_at		DateTime @default(now())
+	user_id				String
+	user					users				@relation(fields: [user_id], references: [id], onDelete: Cascade)
+}
 
+enum BonusesType {
+	minus
+	plus
+}
