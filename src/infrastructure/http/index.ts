@@ -11,14 +11,19 @@ import {registerLikeRouting} from "./routing/likeRouting";
 import {registerPromoCodeRouting} from "./routing/promocodeRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
-    registerAuthRoutes(fastify);
+    registerAuthRoutes(fastify)
     registerUserRoutes(fastify)
+    registerLikeRouting(fastify)
+
     registerCategoryRouting(fastify)
     registerMaterialRouting(fastify)
     registerProductRouting(fastify)
+
+    registerPromoCodeRouting(fastify)
     registerDiscountRouting(fastify)
+
     registerJournalRouting(fastify)
     registerNewsRouting(fastify)
-    registerLikeRouting(fastify)
-    registerPromoCodeRouting(fastify)
+
+
 }
