@@ -21,6 +21,7 @@ model users {
 	tokens      tokens[]
 	likes 			likes[]
 	bonuses			bonuses[]
+	carts				carts?
 }
 
 model tokens {
@@ -65,6 +66,7 @@ model products {
 	material    materials  		@relation(fields: [material_id], references: [id])
 
 	discounts 	discounts[]
+	cart_items	cart_items[]
 }
 
 enum Roles {
@@ -138,7 +140,7 @@ model bonuses {
 	type					BonusesType
 	description		String
 	count					Int
-	created_at		DateTime @default(now())
+	created_at		DateTime 		@default(now())
 	user_id				String
 	user					users				@relation(fields: [user_id], references: [id], onDelete: Cascade)
 }
@@ -146,4 +148,30 @@ model bonuses {
 enum BonusesType {
 	minus
 	plus
+}
+
+model carts {
+	id 						String 			@id
+	user_id				String?			@unique
+	total_amount	Float				@default(0)
+	updated_at		DateTime		@default(now())
+	created_at		DateTime		@default(now())
+
+	user					users?			@relation(fields: [user_id], references: [id], onDelete: Cascade)
+	token					String			@unique
+
+	cart_items		cart_items[]
+}
+
+model cart_items {
+	id						String 			@id
+	count					Int					@default(1)
+	updated_at		DateTime		@default(now())
+	created_at		DateTime		@default(now())
+
+	cart_id				String
+	cart					carts				@relation(fields: [cart_id], references: [id], onDelete: Cascade)
+
+	product_id		String
+	product				products		@relation(fields: [product_id], references: [id])
 }

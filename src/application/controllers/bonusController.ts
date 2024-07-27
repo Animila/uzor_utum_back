@@ -9,6 +9,7 @@ import {GetByIdBonus} from "../../useCases/bonus/bonusGetId";
 import {DeleteBonus} from "../../useCases/bonus/bonusDelete";
 
 const bonusRepo = new PrismaBonusRepository()
+
 export async function createBonusController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     const data = request.body;
     try {

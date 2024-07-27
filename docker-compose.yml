@@ -60,3 +60,17 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+  client:
+    container_name: client
+    build:
+      context: ../front/
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+    depends_on:
+      - db
+      - rabbitmq
+      - api
+    volumes:
+      - ../front/:/app
+      - /app/node_modules
