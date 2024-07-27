@@ -46,6 +46,7 @@ export class ProductMap {
         available: number
         categoryId: string
         materialId: string
+        discount?: any
         createdAt: Date
         updatedAt: Date
     } {

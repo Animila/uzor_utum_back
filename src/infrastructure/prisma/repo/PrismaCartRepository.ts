@@ -19,40 +19,49 @@ export class PrismaCartRepository implements ICartRepository {
         }
     }
 
-    async find(token: string, userId?: string): Promise<Cart | null> {
+    async find(token: string, userId?: string, id?: string): Promise<Cart | null> {
         let existingData: any
 
-        console.log(userId)
+        const checkId = Guard.againstNullOrUndefined(id, 'id')
 
-        existingData = await this.prisma.carts.findUnique({
-            where: {
-                token: token
-            }
-        })
-
-        if(!existingData) {
-            const newCart = new Cart({
-                token: token,
-                totalAmount: 0,
-                userId: userId,
-                createdAt: new Date(),
-                updatedAt: new Date(),
+        if(checkId.succeeded) {
+            const res = await this.prisma.carts.findUnique({
+                where: { id: id }
             })
-            await this.save(newCart)
-            return newCart
-        }
+            if(!res) return null
+            return CartMap.toDomain(res)
+        } else {
+            existingData = await this.prisma.carts.findUnique({
+                where: {
+                    token: token
+                }
+            })
 
-        const cart = CartMap.toDomain(existingData)
-
-
-        if(cart) {
-            const checkUserId = Guard.againstNullOrUndefined(cart.getUserId(), 'user_id')
-            if(!checkUserId.succeeded) {
-                cart.props.userId = userId
-                await this.save(cart)
+            if(!existingData) {
+                const newCart = new Cart({
+                    token: token,
+                    totalAmount: 0,
+                    userId: userId,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                })
+                await this.save(newCart)
+                return newCart
             }
+
+            const cart = CartMap.toDomain(existingData)
+
+
+            if(cart) {
+                const checkUserId = Guard.againstNullOrUndefined(cart.getUserId(), 'user_id')
+                if(!checkUserId.succeeded) {
+                    cart.props.userId = userId
+                    await this.save(cart)
+                }
+            }
+            return cart
         }
-        return cart
+
     }
 
     async save(data: Cart): Promise<Cart | null> {

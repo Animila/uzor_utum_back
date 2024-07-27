@@ -1,23 +1,22 @@
 import {ICartRepository} from "../../repositories/ICartRepository";
 import {Cart} from "../../domain/cart/cart";
 
-interface CheckCartInput {
-    user_id?: string
-    token: string
+interface GetIdCartInput {
+    id: string
 }
 
-export class CheckCart {
+export class GetByIDCart {
     private repository: ICartRepository;
 
     constructor(repository: ICartRepository) {
         this.repository = repository;
     }
 
-    async execute(input: CheckCartInput): Promise<Cart> {
+    async execute(input: GetIdCartInput): Promise<Cart> {
         try {
-            const { user_id, token } = input;
+            const { id } = input;
 
-            const existingData = await this.repository.find(token, user_id);
+            const existingData = await this.repository.find(undefined, undefined, id);
             if(!existingData)
                 throw new Error(JSON.stringify({
                     status: 404,

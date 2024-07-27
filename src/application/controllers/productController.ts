@@ -105,13 +105,14 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
         const getProduct = new GetByIdProducts(productRepo);
         const product = await getProduct.execute({ id });
         const getDiscount = new GetByProductIdDiscount(discountRepo)
+        const productPer = ProductMap.toPersistence(product)
         try {
-            const result = await getDiscount.execute({product_id: product.id})
-            product.discount = DiscountMap.toPersistence(result)
+            const result = await getDiscount.execute({product_id: product.getId()})
+            productPer.discount = DiscountMap.toPersistence(result)
         } catch (err) {}
         reply.status(200).send({
             success: true,
-            data: product
+            data: productPer
         });
     } catch (error: any) {
         console.log('Error:', error.message);

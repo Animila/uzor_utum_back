@@ -19,6 +19,7 @@ export class CartMap {
         user_id?: string,
         token: string,
         total_amount: number,
+        items?: any,
         created_at: Date,
         updated_at: Date,
     } {

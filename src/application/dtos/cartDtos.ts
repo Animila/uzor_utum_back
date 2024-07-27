@@ -6,3 +6,16 @@ interface CartRequest {
     },
     Body: {}
 }
+
+
+
+interface ItemCartRequest {
+    Query: {
+        id: string
+        token: string
+    },
+    Body: {
+        product_id: string
+        count: number
+    }
+}

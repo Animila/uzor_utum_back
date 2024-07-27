@@ -1,6 +1,10 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
-import {getCartSchema} from "../schemas/cartSchema";
-import {checkCartController} from "../../../application/controllers/cartController";
+import {addItemToCart, changeItemCart, getCartSchema, removeItemCart} from "../schemas/cartSchema";
+import {
+    addItemToCartController,
+    changeItemCartController,
+    checkCartController, deleteItemCartController
+} from "../../../application/controllers/cartController";
 
 export function registerCartRouting(fastify: FastifyInstance) {
     fastify.get('/carts/check', getCartSchema, async (req: FastifyRequest<CartRequest>, res: FastifyReply) => {
@@ -8,8 +12,17 @@ export function registerCartRouting(fastify: FastifyInstance) {
         await checkCartController(req, res)
     });
 
-    // fastify.post('/carts/:token/add', async (req: FastifyRequest, res: FastifyReply) => {
-    //     // добавить по
-    // })
+    fastify.post('/carts/add', addItemToCart, async (req: FastifyRequest<ItemCartRequest>, res: FastifyReply) => {
+        await addItemToCartController(req, res)
+    })
+
+    fastify.put('/carts/update', changeItemCart, async (req: FastifyRequest<ItemCartRequest>, res: FastifyReply) => {
+        await changeItemCartController(req, res)
+    })
+
+    fastify.delete('/carts/remove', removeItemCart,  async (req: FastifyRequest<ItemCartRequest>, res: FastifyReply) => {
+        // убрать товар из корзины
+        await deleteItemCartController(req, res)
+    })
 
 }

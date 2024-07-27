@@ -18,10 +18,25 @@ const getCartSchema = {
                             type: 'object',
                             properties: {
                                 id: {type: 'string'},
-                                entity_type: {type: 'string'},
-                                entity_id: {type: 'string'},
                                 user_id: {type: 'string'},
-                                type: {type: 'string'},
+                                token: {type: 'string'},
+                                total_amount: {type: 'number'},
+                                created_at: {type: 'string'},
+                                updated_at: {type: 'string'},
+                                items: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        properties: {
+                                            id: {type: 'string'},
+                                            product_id: {type: 'string'},
+                                            cart_id: {type: 'string'},
+                                            count: {type: 'number'},
+                                            updated_at: {type: 'string'},
+                                            created_at: {type: 'string'}
+                                        }
+                                    }
+                                }
                             },
                         }
                     }
@@ -39,6 +54,138 @@ const getCartSchema = {
     }
 };
 
+const addItemToCart = {
+    schema: {
+        description: 'Добавить новый товар в корзину',
+        tags: ['Cart'],
+        query: {
+            token: { type: 'string' },
+        },
+        body: {
+            product_id: {type: 'string'},
+            count: {type: 'number'},
+        },
+        response: {
+            200: {
+                description: 'Успешно',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            id: {type: 'string'},
+                            product_id: {type: 'string'},
+                            cart_id: {type: 'string'},
+                            count: {type: 'number'},
+                            updated_at: {type: 'string'},
+                            created_at: {type: 'string'}
+                        },
+                    }
+                }
+            },
+            400: {
+                description: 'Если есть проблемы с данными',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                type: { type: 'string' },
+                                message: { type: 'string' },
+                            }
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const changeItemCart = {
+    schema: {
+        description: 'Изменить товар в корзине',
+        tags: ['Cart'],
+        query: {
+            id: { type: 'string' },
+        },
+        body: {
+            product_id: {type: 'string'},
+            count: {type: 'number'},
+        },
+        response: {
+            200: {
+                description: 'Успешно',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            id: {type: 'string'},
+                            product_id: {type: 'string'},
+                            cart_id: {type: 'string'},
+                            count: {type: 'number'},
+                            updated_at: {type: 'string'},
+                            created_at: {type: 'string'}
+                        },
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const removeItemCart = {
+    schema: {
+        description: 'Удалить товар из корзины',
+        tags: ['Cart'],
+        query: {
+            id: { type: 'string' },
+        },
+        response: {
+            200: {
+                description: 'Успешно',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 export {
-    getCartSchema
+    getCartSchema,
+    addItemToCart,
+    changeItemCart,
+    removeItemCart
+
 }

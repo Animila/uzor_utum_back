@@ -1,5 +1,6 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {ProductMap} from "../../mappers/ProductMap";
+import {Product} from "../../domain/products/product";
 
 interface GetByIdProductsInput {
     id: string;
@@ -12,24 +13,7 @@ export class GetByIdProducts {
         this.productRepository = productRepository;
     }
 
-    async execute(input: GetByIdProductsInput): Promise<{
-        id: string,
-        title: string,
-        article: string,
-        price: number,
-        path_images: string[],
-        sex: string,
-        description: string,
-        details: string,
-        delivery: string,
-        attributes: JSON,
-        available: number,
-        categoryId: string,
-        discount?: any,
-        materialId: string,
-        createdAt: Date,
-        updatedAt: Date
-    }> {
+    async execute(input: GetByIdProductsInput): Promise<Product> {
         const { id } = input;
         const existingData = await this.productRepository.findById(id)
         if(!existingData)
@@ -37,7 +21,7 @@ export class GetByIdProducts {
                 status: 404,
                 message: 'Продукт не найден'
             }))
-        return ProductMap.toPersistence(existingData);
+        return existingData;
 
     }
 }
