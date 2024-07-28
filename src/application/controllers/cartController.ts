@@ -195,7 +195,7 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
         const existingProduct = await getProduct.execute({id: product_id ? product_id : existingItem.getProductId()})
         const existingCart = await getCart.execute({id: existingItem.getCartId()})
 
-        if (existingProduct.getAvailable() < (existingItem.getCount() > count ? existingItem.getCount() - count :  count - existingItem.getCount()))
+        if(existingItem.getCount() < count && (existingProduct.getAvailable() < count - existingItem.getCount()))
             throw new Error(JSON.stringify({
                 status: 400,
                 message: [
