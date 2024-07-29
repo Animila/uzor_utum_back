@@ -24,11 +24,6 @@ export class CreateLike {
             entity_type
         } = input;
 
-        console.log(type,
-            user_id,
-            entity_id,
-            entity_type)
-
         const typeOfError = LikeType.create(type)
 
         if(typeOfError instanceof Error)

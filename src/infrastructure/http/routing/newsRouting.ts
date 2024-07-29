@@ -7,7 +7,7 @@ import {
     getByIdNewsController, updateNewsController
 } from "../../../application/controllers/newsController";
 import {
-    createNewsSchema,
+    createNewsSchema, createViewNewsSchema,
     deleteNewsSchema,
     getAllNewsSchema,
     getByIdNewsSchema,
@@ -16,7 +16,7 @@ import {
 
 
 export function registerNewsRouting(fastify: FastifyInstance) {
-    fastify.get('/news/view/:id', getByIdNewsSchema, async (req: FastifyRequest<NewsRequest>, res: FastifyReply) => {
+    fastify.get('/news/view/:id', createViewNewsSchema, async (req: FastifyRequest<NewsRequest>, res: FastifyReply) => {
         await addViewNewsController(req, res)
     });
     fastify.get('/news', getAllNewsSchema, async (req: FastifyRequest<NewsRequest>, res: FastifyReply) => {

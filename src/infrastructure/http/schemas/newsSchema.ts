@@ -126,6 +126,33 @@ const getByIdNewsSchema = {
     }
 };
 
+const createViewNewsSchema = {
+    schema: {
+        description: 'Добавить просмотр',
+        tags: ['News'],
+        parameters: {
+            id: { type: 'string' },
+        },
+        response: {
+            200: {
+                description: 'Успешно',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+}
+
 const updateNewsSchema = {
     schema: {
         description: 'Обновить новость',
@@ -218,5 +245,6 @@ export {
     getAllNewsSchema,
     getByIdNewsSchema,
     updateNewsSchema,
-    deleteNewsSchema
+    deleteNewsSchema,
+    createViewNewsSchema
 }

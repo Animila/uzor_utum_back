@@ -22,6 +22,8 @@ model users {
 	likes 			likes[]
 	bonuses			bonuses[]
 	carts				carts?
+	orders			orders[]
+	certificates certificates[]
 }
 
 model tokens {
@@ -128,6 +130,7 @@ model promocodes {
 	valid_from 		DateTime
 	valid_to 			DateTime
 	active 				Boolean 		@default(true)
+	orders orders[]
 }
 
 enum LikeType {
@@ -174,4 +177,85 @@ model cart_items {
 
 	product_id		String
 	product				products		@relation(fields: [product_id], references: [id])
+}
+
+model certificate_types {
+	id String @id
+	value Int
+	description String
+	certificates certificates[]
+}
+
+model certificates {
+	id String @id
+
+	phone String?
+	email String?
+	accepted Boolean @default(true)
+	delivery_at DateTime @default(now())
+
+	code String @unique
+	activated Boolean @default(false)
+
+	user_id String?
+	user users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+	certificate_type_id String
+	certificate_type certificate_types @relation(fields: [certificate_type_id], references: [id], onDelete: Cascade)
+
+	orders orders[]
+}
+
+model orders {
+	id String @id
+	user_id String
+	user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
+	status StatusPayment
+	token String
+	payment_id String?
+	items Json @db.JsonB
+	first_name String
+	last_name String
+	certificate_id String?
+	certificate certificates? @relation(fields: [certificate_id], references: [id], onDelete: NoAction)
+	send_type_id String
+	send_type send_types @relation(fields: [send_type_id], references: [id], onDelete: NoAction)
+	address String
+	house String
+	apartament String?
+	postal_code Int
+	cabinet			Int?
+	delivery_at DateTime
+	comment			String
+	receiver_id String
+	receiver receivers @relation(fields: [receiver_id], references: [id], onDelete: NoAction)
+	promocode_id String?
+	promocode promocodes? @relation(fields: [promocode_id], references: [id], onDelete: NoAction)
+	add_bonuses Int
+	use_bonus Int
+	total_amount Float
+	created_at DateTime @default(now())
+	updated_at DateTime @default(now())
+}
+
+enum StatusPayment {
+	PENDING
+	SUCCESSED
+	CANCALLED
+}
+
+model send_types {
+	id String @id
+	title String
+	price Int
+	description String
+	orders orders[]
+}
+
+model receivers {
+	id String @id
+	token String
+	full_name String
+	phone String
+	orders orders[]
 }
