@@ -1,14 +1,17 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
+import {Email} from "./valueObjects/email";
+import {Phone} from "./valueObjects/phone";
 
 interface ICertificate {
-    phone?: string
-    email?: string
+    phone?: Phone
+    email?: Email
     accepted: boolean
     deliveryAt: Date
     userId?: string
     certificateTypeId: string
     code: string
     activated: boolean
+    orderId?: string
 }
 
 export class Certificate {
@@ -22,9 +25,9 @@ export class Certificate {
 
     getId(): string { return this._id }
 
-    getPhone(): string | undefined { return this.props.phone }
+    getPhone(): Phone | undefined { return this.props.phone }
 
-    getEmail(): string | undefined { return this.props.email }
+    getEmail(): Email | undefined { return this.props.email }
 
     getAccepted(): boolean { return this.props.accepted }
 
@@ -37,6 +40,8 @@ export class Certificate {
     getCertificateTypeId(): string { return this.props.certificateTypeId }
 
     getCode(): string { return this.props.code }
+
+    getOrderId(): string | undefined { return this.props.orderId }
 
 }
 

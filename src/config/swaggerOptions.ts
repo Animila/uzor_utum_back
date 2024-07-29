@@ -26,7 +26,7 @@ export const swaggerOptions = {
                 name: 'Authorization',
                 in: 'header'
             }
-        }
+        },
     }
 }
 
@@ -34,6 +34,7 @@ export const swaggerUIOptions = {
     routePrefix: '/documentation',
     uiConfig: {
         deepLinking: false,
+        docExpansion: 'none'
     },
 
 }

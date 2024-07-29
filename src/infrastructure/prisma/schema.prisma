@@ -203,6 +203,8 @@ model certificates {
 	certificate_type_id String
 	certificate_type certificate_types @relation(fields: [certificate_type_id], references: [id], onDelete: Cascade)
 
+	order_id String?
+
 	orders orders[]
 }
 

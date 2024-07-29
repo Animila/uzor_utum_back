@@ -1,3 +1,6 @@
+import {Phone} from "../../../domain/certificate/valueObjects/phone";
+import {Email} from "../../../domain/certificate/valueObjects/email";
+
 const createCertificateSchema = {
     schema: {
         description: 'Создать сертификат',
@@ -22,15 +25,7 @@ const createCertificateSchema = {
                     data: {
                         type: 'object',
                         properties: {
-                            id: {type: 'string'},
-                            phone: { type: 'string' },
-                            email: { type: 'string' },
-                            accepted: { type: 'boolean' },
-                            delivery_at: { type: 'string' },
-                            user_id: { type: 'string' },
-                            code: { type: 'string' },
-                            activated: { type: 'boolean' },
-                            certificate_type_id: { type: 'string' }
+                            url_confirm: { type: 'string' }
                         },
                     }
                 }
@@ -74,7 +69,8 @@ const getAllCertificateSchema = {
                                 user_id: { type: 'string' },
                                 code: { type: 'string' },
                                 activated: { type: 'boolean' },
-                                certificate_type_id: { type: 'string' }
+                                certificate_type_id: { type: 'string' },
+                                orderId: { type: 'string' }
                             },
                         }
                     }
@@ -116,7 +112,8 @@ const getByIdCertificateSchema = {
                             user_id: { type: 'string' },
                             code: { type: 'string' },
                             activated: { type: 'boolean' },
-                            certificate_type_id: { type: 'string' }
+                            certificate_type_id: { type: 'string' },
+                            orderId: { type: 'string' }
                         },
                     }
                 }

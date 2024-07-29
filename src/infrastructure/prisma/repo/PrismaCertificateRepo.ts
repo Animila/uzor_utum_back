@@ -50,7 +50,7 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                     certificate_type_id: dataPer.certificate_type_id,
                     activated: dataPer.activated,
                     code: dataPer.code,
-
+                    order_id: dataPer.order_id
                 },
                 update: {
                     id: dataPer.id,
@@ -62,6 +62,7 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                     certificate_type_id: dataPer.certificate_type_id,
                     activated: dataPer.activated,
                     code: dataPer.code,
+                    order_id: dataPer.order_id
 
                 }
             })
@@ -74,6 +75,16 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                 message: 'Ошибка с базой данных'
             }));
         }
+    }
+
+    async findByCode(code: string): Promise<Certificate | null> {
+        const result = await this.prisma.certificates.findUnique({
+            where: {
+                code: code
+            }
+        })
+        if(!result) return null
+        return CertificateMap.toDomain(result)
     }
 
 }

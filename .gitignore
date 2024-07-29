@@ -4,3 +4,4 @@ node_modules
 rmq
 .idea
 .env
+nginx

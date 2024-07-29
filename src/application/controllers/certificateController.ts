@@ -8,9 +8,13 @@ import {CreateCertificate} from "../../useCases/certificate/certificateCreate";
 import {DeleteCertificate} from "../../useCases/certificate/certificateDelete";
 import {GetByIdCertificateType} from "../../useCases/certificate/certificateTypeGetById";
 import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/PrismaCertificateTypeRepo";
+import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
+import {GetUserById} from "../../useCases/user/userGetById";
+import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
 
 const certRepo = new PrismaCertificateRepo();
 const certTypeRepo = new PrismaCertificateTypeRepo();
+const userRepo = new PrismaUserRepo()
 
 export async function getAllCertificateController(request: FastifyRequest<CertificateRequest>, reply: FastifyReply) {
     try {
@@ -56,7 +60,11 @@ export async function createCertificateController(request: FastifyRequest<Certif
         const data = request.body;
 
         const getCertificateType = new GetByIdCertificateType(certTypeRepo)
-        await getCertificateType.execute({id: data.certificate_type_id})
+        const certType = await getCertificateType.execute({id: data.certificate_type_id})
+
+        let user
+        const getUser = new GetUserById(userRepo)
+        user = data.user_id ? await getUser.execute({user_id: data.user_id}) : undefined
 
         const createService = new CreateCertificate(certRepo)
         const result =  await createService.execute({
@@ -68,10 +76,29 @@ export async function createCertificateController(request: FastifyRequest<Certif
             delivery_at: data.delivery_at
         });
 
+        const resultPay = await initialPayment(
+            `Покупка сертификата на: ${certType.getValue()} рублей`,
+            process.env.WEBSITE || 'http://localhost:3000?entity_type=certificate',
+            certType.getValue().toString())
+
+        if(!resultPay.success) {
+            await certRepo.delete(result.getId())
+            reply.status(500).send({
+                success: false,
+                message: resultPay.message
+            })
+        }
+
+        result.props.orderId = resultPay.data?.payment_id
+
+        console.log(result)
+
+        await certRepo.save(result)
+
         reply.status(200).send({
             success: true,
             data: {
-                id: result.getId(),
+                url_confirm: resultPay.data?.payment_url
             }
         });
     } catch (error: any) {
