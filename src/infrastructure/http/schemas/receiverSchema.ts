@@ -1,22 +1,14 @@
 
-const createShopSchema = {
+const createReceiverSchema = {
     schema: {
-        description: 'Создать магазин',
-        tags: ['Shop'],
-        security: [{ApiToken: []}],
+        description: 'Создать получателя',
+        tags: ['Receiver'],
         body: {
             type: 'object',
             properties: {
-                title: { type: 'string' },
-                address: { type: 'string' },
-                longitude: { type: 'string' },
-                latitude: { type: 'string' },
-                email: { type: 'string' },
-                phones: {
-                    type: 'array',
-                    items: { type: 'string' }
-                },
-                times: { type: 'object', additionalProperties: true },
+                token: { type: 'string' },
+                full_name: { type: 'string' },
+                phone: { type: 'string' },
             },
         },
         response: {
@@ -29,18 +21,10 @@ const createShopSchema = {
                         type: 'object',
                         properties: {
                             id: {type: 'string'},
-                            title: { type: 'string' },
-                            address: { type: 'string' },
-                            longitude: { type: 'string' },
-                            latitude: { type: 'string' },
-                            email: { type: 'string' },
-                            phones: {
-                                type: 'array',
-                                items: { type: 'string' }
-                            },
-                            times: { type: 'object', additionalProperties: true },
+                            token: { type: 'string' },
+                            full_name: { type: 'string' },
+                            phone: { type: 'string' },
                         }
-
                     }
                 }
             },
@@ -56,10 +40,13 @@ const createShopSchema = {
     }
 };
 
-const getAllShopSchema = {
+const getAllReceiverSchema = {
     schema: {
-        description: 'Получить все магазины',
-        tags: ['Shop'],
+        description: 'Получить всех получателей',
+        tags: ['Receiver'],
+        query: {
+            token: { type: 'string' },
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -72,16 +59,9 @@ const getAllShopSchema = {
                             type: 'object',
                             properties: {
                                 id: { type: 'string' },
-                                title: { type: 'string' },
-                                address: { type: 'string' },
-                                longitude: { type: 'string' },
-                                latitude: { type: 'string' },
-                                email: { type: 'string' },
-                                phones: {
-                                    type: 'array',
-                                    items: { type: 'string' }
-                                },
-                                times: { type: 'object', additionalProperties: true },
+                                token: { type: 'string' },
+                                full_name: { type: 'string' },
+                                phone: { type: 'string' },
                             }
                         }
                     }
@@ -99,10 +79,10 @@ const getAllShopSchema = {
     }
 };
 
-const getShopSchema = {
+const getReceiverSchema = {
     schema: {
-        description: 'Получить магазин',
-        tags: ['Shop'],
+        description: 'Получить получателя',
+        tags: ['Receiver'],
         parameters: {
             id: { type: 'string' },
         },
@@ -116,16 +96,9 @@ const getShopSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: { type: 'string' },
-                            address: { type: 'string' },
-                            longitude: { type: 'string' },
-                            latitude: { type: 'string' },
-                            email: { type: 'string' },
-                            phones: {
-                                type: 'array',
-                                items: { type: 'string' }
-                            },
-                            times: { type: 'object', additionalProperties: true },
+                            token: { type: 'string' },
+                            full_name: { type: 'string' },
+                            phone: { type: 'string' },
                         }
                     }
                 }
@@ -142,27 +115,19 @@ const getShopSchema = {
     }
 };
 
-const updateShopSchema = {
+const updateReceiverSchema = {
     schema: {
-        description: 'Обновить магазин',
-        tags: ['Shop'],
-        security: [{ApiToken: []}],
+        description: 'Обновить получателя',
+        tags: ['Receiver'],
         parameters: {
             id: { type: 'string' },
         },
         body: {
             type: 'object',
             properties: {
-                title: { type: 'string' },
-                address: { type: 'string' },
-                longitude: { type: 'string' },
-                latitude: { type: 'string' },
-                email: { type: 'string' },
-                phones: {
-                    type: 'array',
-                    items: { type: 'string' }
-                },
-                times: { type: 'object', additionalProperties: true },
+                token: { type: 'string' },
+                full_name: { type: 'string' },
+                phone: { type: 'string' },
             },
         },
         response: {
@@ -175,16 +140,9 @@ const updateShopSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: { type: 'string' },
-                            address: { type: 'string' },
-                            longitude: { type: 'string' },
-                            latitude: { type: 'string' },
-                            email: { type: 'string' },
-                            phones: {
-                                type: 'array',
-                                items: { type: 'string' }
-                            },
-                            times: { type: 'object', additionalProperties: true },
+                            token: { type: 'string' },
+                            full_name: { type: 'string' },
+                            phone: { type: 'string' },
                         }
                     }
                 }
@@ -201,11 +159,10 @@ const updateShopSchema = {
     }
 };
 
-const deleteShopSchema = {
+const deleteReceiverSchema = {
     schema: {
-        description: 'Удалить магазин',
-        tags: ['Shop'],
-        security: [{ApiToken: []}],
+        description: 'Удалить получателя',
+        tags: ['Receiver'],
         parameters: {
             id: { type: 'string' },
         },
@@ -230,9 +187,9 @@ const deleteShopSchema = {
 };
 
 export {
-    getAllShopSchema,
-    getShopSchema,
-    createShopSchema,
-    updateShopSchema,
-    deleteShopSchema
+    getAllReceiverSchema,
+    getReceiverSchema,
+    createReceiverSchema,
+    updateReceiverSchema,
+    deleteReceiverSchema
 }

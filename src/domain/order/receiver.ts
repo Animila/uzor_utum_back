@@ -1,9 +1,10 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
+import {Phone} from "./valueObjects/phone";
 
 interface IReceiver {
     token: string
-    full_name: string
-    phone: string
+    fullName: string
+    phone: Phone
 }
 
 export class Receiver {
@@ -17,8 +18,8 @@ export class Receiver {
 
     getId(): string { return this._id }
     getToken(): string { return this.props.token }
-    getFullName(): string { return this.props.full_name }
-    getPhone(): string { return this.props.phone }
+    getFullName(): string { return this.props.fullName }
+    getPhone(): Phone { return this.props.phone }
 }
 
 

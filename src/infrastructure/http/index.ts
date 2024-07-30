@@ -16,6 +16,7 @@ import {registerCertificateRouting} from "./routing/certificateRouting";
 import {registerCertificateTypeRouting} from "./routing/certificateTypeRouting";
 import {registerYookassaRouting} from "./routing/yookassaRouting";
 import {registerShopRouting} from "./routing/shopRouting";
+import {registerReceiverRouting} from "./routing/receiverRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
@@ -28,6 +29,9 @@ export default function registerRoutes(fastify: FastifyInstance) {
 
     registerCartRouting(fastify)
 
+    registerOrderRouting(fastify)
+    registerReceiverRouting(fastify)
+
     registerPromoCodeRouting(fastify)
     registerDiscountRouting(fastify)
     registerBonusRouting(fastify)
@@ -37,9 +41,9 @@ export default function registerRoutes(fastify: FastifyInstance) {
     registerJournalRouting(fastify)
     registerNewsRouting(fastify)
 
-    registerOrderRouting(fastify)
-    registerYookassaRouting(fastify)
 
     registerShopRouting(fastify)
 
+    registerYookassaRouting(fastify)
 }
+
