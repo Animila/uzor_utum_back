@@ -210,32 +210,41 @@ model certificates {
 
 model orders {
 	id String @id
-	user_id String
-	user users @relation(fields: [user_id], references: [id], onDelete: Cascade)
-	status StatusPayment
-	token String
-	payment_id String?
-	items Json @db.JsonB
+
 	first_name String
 	last_name String
-	certificate_id String?
-	certificate certificates? @relation(fields: [certificate_id], references: [id], onDelete: NoAction)
+	email String
+	phone String
+
 	send_type_id String
 	send_type send_types @relation(fields: [send_type_id], references: [id], onDelete: NoAction)
-	address String
-	house String
+	address String?
+	house String?
 	apartament String?
-	postal_code Int
-	cabinet			Int?
-	delivery_at DateTime
-	comment			String
+	postal_code Int?
+	cabinet			String?
+	delivery_at DateTime?
+	shop_id			String?
+	shop shops? @relation(fields: [shop_id], references: [id], onDelete: NoAction)
+	comment			String?
 	receiver_id String
 	receiver receivers @relation(fields: [receiver_id], references: [id], onDelete: NoAction)
+
+	payment_id String?
+
+	items Json @db.JsonB
+	certificate_id String?
+	certificate certificates? @relation(fields: [certificate_id], references: [id], onDelete: NoAction)
 	promocode_id String?
 	promocode promocodes? @relation(fields: [promocode_id], references: [id], onDelete: NoAction)
 	add_bonuses Int
 	use_bonus Int
 	total_amount Float
+
+	user_id String?
+	user users? @relation(fields: [user_id], references: [id], onDelete: Cascade)
+	status StatusPayment
+	token String
 	created_at DateTime @default(now())
 	updated_at DateTime @default(now())
 }
@@ -259,5 +268,17 @@ model receivers {
 	token String
 	full_name String
 	phone String
+	orders orders[]
+}
+
+model shops {
+	id String @id
+	title String
+	address String
+	longitude String // долгота
+	latitude String //широта
+	email String
+	time Json @db.JsonB
+	phone String[]
 	orders orders[]
 }

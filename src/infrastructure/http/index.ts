@@ -15,6 +15,7 @@ import {registerOrderRouting} from "./routing/ordersRouting";
 import {registerCertificateRouting} from "./routing/certificateRouting";
 import {registerCertificateTypeRouting} from "./routing/certificateTypeRouting";
 import {registerYookassaRouting} from "./routing/yookassaRouting";
+import {registerShopRouting} from "./routing/shopRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
@@ -38,5 +39,7 @@ export default function registerRoutes(fastify: FastifyInstance) {
 
     registerOrderRouting(fastify)
     registerYookassaRouting(fastify)
+
+    registerShopRouting(fastify)
 
 }
