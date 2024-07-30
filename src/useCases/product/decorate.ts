@@ -67,7 +67,7 @@ export class GetByIdDecorate {
         if(!existingDecorates) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Материал не найден'
+                message: 'Вставка не найдена'
             }))
         }
         return existingDecorates

@@ -21,9 +21,11 @@ export class PrismaProductRepo implements IProductRepository {
         const where: any = {};
         if (categoryId) where.category_id = categoryId;
         if (materialId) where.material_id = materialId;
-        if (probIds) where.prob_ids = probIds;
-        if (decorationIds) where.prob_ids = decorationIds;
-        if (sizeIds) where.prob_ids = sizeIds;
+        if (probIds) where.prob_ids = { hasSome: probIds };
+        if (decorationIds) where.prob_ids = { hasSome: decorationIds};
+        if (sizeIds) where.prob_ids = { hasSome: sizeIds};
+
+        console.log(where)
 
         if (minPrice !== undefined && maxPrice !== undefined) where.price = { gte: minPrice, lte: maxPrice };
         else if (minPrice !== undefined) where.price = { gte: minPrice };

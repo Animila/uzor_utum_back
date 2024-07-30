@@ -67,7 +67,7 @@ export class GetByIdProb {
         if(!existingProbs) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Материал не найден'
+                message: 'Проба не найдена'
             }))
         }
         return existingProbs

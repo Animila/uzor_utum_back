@@ -13,11 +13,20 @@ import {DeleteProduct} from "../../useCases/product/productDelete";
 import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscountRepo";
 import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
 import {DiscountMap} from "../../mappers/DiscountMap";
+import {PrismaProbRepo} from "../../infrastructure/prisma/repo/PrismaProbRepo";
+import {PrismaSizeRepo} from "../../infrastructure/prisma/repo/PrismaSizeRepo";
+import {PrismaDecorateRepo} from "../../infrastructure/prisma/repo/PrismaDecorateRepo";
+import {GetByIdProb} from "../../useCases/product/probs";
+import {GetByIdSize} from "../../useCases/product/size";
+import {GetByIdDecorate} from "../../useCases/product/decorate";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
 const materialRepo = new PrismaMaterialRepo();
 const discountRepo = new PrismaDiscountRepo();
+const probRepo = new PrismaProbRepo()
+const sizeRepo = new PrismaSizeRepo()
+const decorRepo = new PrismaDecorateRepo()
 
 
 export async function createProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
@@ -26,8 +35,23 @@ export async function createProductController(request: FastifyRequest<ProductReq
     try {
         const getCategory = new GetByIdCategory(categoryRepo)
         const getMaterial = new GetByIdMaterial(materialRepo)
+        const getProba = new GetByIdProb(probRepo)
+        const getSize = new GetByIdSize(sizeRepo)
+        const getDecor = new GetByIdDecorate(decorRepo)
+
         await getCategory.execute({id: data.category_id})
         await getMaterial.execute({id: data.material_id})
+
+        for (const item of data.prob_ids) {
+            await getProba.execute({id: item});
+        }
+        for (const item of data.size_ids) {
+            await getSize.execute({id: item});
+        }
+        for (const item of data.decoration_ids) {
+            await getDecor.execute({id: item});
+        }
+
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -40,6 +64,16 @@ export async function createProductController(request: FastifyRequest<ProductReq
 
 
     try {
+        if(data.available <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'available',
+                        message: 'Не должно быть меньше или равно нулю'
+                    }
+                ]
+            }))
         const createProduct = new CreateProduct(productRepo);
         const product = await createProduct.execute(data);
         reply.status(201).send({
@@ -72,9 +106,12 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         } = request.query as ProductRequest['Query'];
         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
+        const decorIdsArray = decorationIds ? decorationIds[0].split(',') : undefined;
+        const sizeIdsArray = sizeIds ? sizeIds[0].split(',') : undefined;
+        const probIdsArray = probIds ? probIds[0].split(',') : undefined;
         const getAllProduct = new GetAllProducts(productRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({categoryId, materialId, sizeIds, decorationIds, probIds, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
+        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
         await Promise.all(
             products.map(async item => {
                 try {
@@ -129,6 +166,18 @@ export async function updateProductController(request: FastifyRequest<ProductReq
     try {
         const { id } = request.params;
         const data = request.body || {};
+
+        if(data.available <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'available',
+                        message: 'Не должно быть меньше или равно нулю'
+                    }
+                ]
+            }))
+
         const updateProduct = new UpdateProduct(productRepo);
         const product = await updateProduct.execute({
             id: id,
@@ -147,6 +196,7 @@ export async function updateProductController(request: FastifyRequest<ProductReq
             probIds: data.prob_ids,
             decorationIds: data.decoration_ids
         });
+
 
         reply.status(200).send({
             success: true,

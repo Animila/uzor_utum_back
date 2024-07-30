@@ -9,7 +9,7 @@ export class Prob {
     public readonly props: IProbs
 
     constructor(props: IProbs, id?: string) {
-        this._id = id || generateUUID('size');
+        this._id = id || generateUUID('prob');
         this.props = props;
     }
 

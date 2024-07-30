@@ -67,7 +67,7 @@ export class GetByIdSize {
         if(!existingSizes) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Материал не найден'
+                message: 'Размер не найден'
             }))
         }
         return existingSizes

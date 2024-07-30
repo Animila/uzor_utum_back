@@ -65,7 +65,18 @@ const getAllProductSchema = {
         querystring: {
             type: 'object',
             properties: {
-                filters: { type: 'string' },
+                probIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                },
+                decorationIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                },
+                sizeIds: {
+                    type: 'array',
+                    items: { type: 'string' },
+                },
                 sortBy: { type: 'string' },
                 order: { type: 'string' },
                 categoryId: { type: 'string' },
