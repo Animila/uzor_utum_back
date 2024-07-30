@@ -31,6 +31,7 @@ export class PrismaCategoryRepo implements ICategoryRepository {
                 create: {
                     id: dataPer.id,
                     title: dataPer.title,
+                    image_path: '/test'
                 },
                 update: {
                     id: dataPer.id,

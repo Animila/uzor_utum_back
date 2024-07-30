@@ -1,11 +1,11 @@
-export interface IAttributes {
+export interface iItems {
     [key: string]: any;
 }
 
-export class Attributes {
-    public readonly props: IAttributes;
+export class Items {
+    public readonly props: iItems;
 
-    constructor(props: IAttributes) {
+    constructor(props: iItems) {
         this.props = props
     }
 
@@ -13,7 +13,7 @@ export class Attributes {
         return this.props[key];
     }
 
-    getAttributes(): IAttributes {
+    getAttributes(): iItems {
         return this.props;
     }
 
@@ -25,9 +25,9 @@ export class Attributes {
         delete this.props[key];
     }
 
-    static create(attributes: IAttributes): Attributes {
+    static create(attributes: iItems): Items {
         // Можно добавить дополнительные проверки атрибутов здесь
-        return new Attributes(attributes);
+        return new Items(attributes);
     }
 
 }

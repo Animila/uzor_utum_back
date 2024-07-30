@@ -2,7 +2,9 @@ import {IProductRepository} from "../../repositories/IProductRepository";
 import {ProductMap} from "../../mappers/ProductMap";
 
 interface GetAllProductsInput {
-    filters?: JSON;
+    probIds?: string[];
+    decorationIds?: string[];
+    sizeIds?: string[];
     sortBy?: string;
     order?: "asc" | "desc";
     categoryId?: string;
@@ -29,16 +31,19 @@ export class GetAllProducts {
         description: string,
         details: string,
         delivery: string,
-        attributes: JSON,
+        prob_ids: string[];
+        decoration_ids: string[];
+        size_ids: string[];
         discount?: any,
         available: number,
-        categoryId: string,
-        materialId: string,
-        createdAt: Date,
-        updatedAt: Date
+        category_id: string,
+        material_id: string,
+        created_at: Date,
+        updated_at: Date
     }[]> {
-        const { filters, sortBy, order, categoryId, materialId, search, minPrice, maxPrice } = input;
-        const existingData = await this.productRepository.findAll(categoryId, materialId, filters, sortBy, order, search, minPrice, maxPrice )
+        const {
+            probIds, decorationIds, sizeIds, sortBy, order, categoryId, materialId, search, minPrice, maxPrice } = input;
+        const existingData = await this.productRepository.findAll(categoryId, materialId, probIds, decorationIds, sizeIds, sortBy, order, search, minPrice, maxPrice )
         const users = existingData.map(item => {
             return ProductMap.toPersistence(item)
         })

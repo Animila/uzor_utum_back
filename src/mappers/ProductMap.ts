@@ -1,12 +1,10 @@
 import { products as PersistenceData } from "@prisma/client";
 import { Product } from "../domain/products/product";
 import { Sex } from "../domain/products/valueObjects/sex";
-import { Attributes, IAttributes } from "../domain/products/valueObjects/attributes";
 
 export class ProductMap {
     public static toDomain(raw: PersistenceData): Product | null {
         const sexOrError = Sex.create(raw.sex)
-        const attributes = Attributes.create(raw.attributes as IAttributes);
 
         if(sexOrError instanceof Error) return null
 
@@ -22,7 +20,9 @@ export class ProductMap {
             pathImages: raw.path_images,
             createdAt: raw.created_at,
             updatedAt: raw.updated_at,
-            attributes: attributes,
+            probIds: raw.prob_ids,
+            sizeIds: raw.size_ids,
+            decorationIds: raw.decoration_ids,
             available: raw.available,
             categoryId: raw.category_id,
             materialId: raw.material_id
@@ -42,13 +42,15 @@ export class ProductMap {
         description: string
         details: string
         delivery: string
-        attributes: JSON;
+        prob_ids: string[]
+        size_ids: string[]
+        decoration_ids: string[]
         available: number
-        categoryId: string
-        materialId: string
+        category_id: string
+        material_id: string
         discount?: any
-        createdAt: Date
-        updatedAt: Date
+        created_at: Date
+        updated_at: Date
     } {
         return {
             id: data.getId(),
@@ -60,12 +62,14 @@ export class ProductMap {
             description: data.getDescription(),
             details: data.getDetails(),
             delivery: data.getDelivery(),
-            attributes: data.getAttributes().getAttributes() as JSON,
+            decoration_ids: data.getDecorationIds(),
+            prob_ids: data.getProbIds(),
+            size_ids: data.getSizesIds(),
             available: data.getAvailable(),
-            categoryId: data.getCategory(),
-            materialId: data.getMaterial(),
-            createdAt: data.getCreatedAt(),
-            updatedAt: data.getUpdatedAt(),
+            category_id: data.getCategory(),
+            material_id: data.getMaterial(),
+            created_at: data.getCreatedAt(),
+            updated_at: data.getUpdatedAt(),
         }
     }
 }

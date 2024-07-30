@@ -1,12 +1,15 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
 import {OrderStatus} from "./valueObjects/OrderStatus";
+import {Phone} from "./valueObjects/phone";
+import {Email} from "./valueObjects/email";
+import {Items} from "./valueObjects/items";
 
 interface IOrder {
     token: string
     first_name: string
     last_name: string
-    email: string
-    phone: string
+    email: Email
+    phone: Phone
     send_type_id: string
     address?: string
     house?: string
@@ -18,7 +21,7 @@ interface IOrder {
     shop_id?: string
     receiver_id: string
     payment_id?: string
-    items: JSON
+    items: Items
     certificate_id?: string
     promocode_id?: string
     add_bonuses: number
@@ -43,8 +46,8 @@ export class Order {
     getToken(): string { return this.props.token }
     getFirstName(): string { return this.props.first_name }
     getLastName(): string { return this.props.last_name }
-    getEmail(): string { return this.props.email }
-    getPhone(): string { return this.props.phone }
+    getEmail(): Email { return this.props.email }
+    getPhone(): Phone { return this.props.phone }
     getSendTypeId(): string { return this.props.send_type_id }
     getAddress(): string | undefined { return this.props.address }
     getHouse(): string | undefined { return this.props.house }
@@ -54,7 +57,7 @@ export class Order {
     getDeliveryAt(): Date | undefined { return this.props.delivery_at }
     getComment(): string | undefined { return this.props.comment }
     getShopId(): string | undefined { return this.props.shop_id }
-    getItems(): JSON { return this.props.items as JSON }
+    getItems(): Items { return this.props.items }
     getAddBonus(): number { return this.props.add_bonuses }
     getUseBonus(): number { return this.props.use_bonus }
     getTotalAmount(): number { return this.props.total_amount }

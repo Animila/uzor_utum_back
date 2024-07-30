@@ -21,9 +21,9 @@ export class NewsMap {
         title: string
         text: string
         about: string
-        journalId: string
-        previewPath: string
-        createdAt: Date
+        journal_id: string
+        preview_path: string
+        created_at: Date
         views:  number
     } {
         return {
@@ -31,10 +31,10 @@ export class NewsMap {
             title: data.getTitle(),
             text: data.getText(),
             about: data.getAbout(),
-            journalId: data.getJournalId(),
+            journal_id: data.getJournalId(),
             views: data.getViews(),
-            previewPath: data.getPreviewPath(),
-            createdAt: data.getCreatedAt()
+            preview_path: data.getPreviewPath(),
+            created_at: data.getCreatedAt()
         }
     }
 }

@@ -61,6 +61,7 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
         const {old, popular, journalId, } = request.query as NewsRequest['Query'];
         const getAllData = new GetAllNews(repo)
         const resultAll = await getAllData.execute({journal_id: journalId, old: old === 'true', popular: popular === 'true'});
+        console.log(resultAll)
         reply.status(200).send({
             success: true,
             data: resultAll

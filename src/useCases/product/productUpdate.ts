@@ -1,7 +1,6 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {Product} from "../../domain/products/product";
 import {Sex} from "../../domain/products/valueObjects/sex";
-import {Attributes} from "../../domain/products/valueObjects/attributes";
 
 interface UpdateProductInput {
     id: string,
@@ -9,14 +8,16 @@ interface UpdateProductInput {
     article?: string,
     price?: number,
     description?: string,
-    path_images?: string[]
+    pathImages?: string[]
     sex?: string
     details?: string
     delivery?: string
-    attributes?: JSON
     available?: number
     categoryId?: string
     materialId?: string
+    probIds: string[]
+    decorationIds: string[]
+    sizeIds: string[]
 }
 
 export class UpdateProduct {
@@ -32,21 +33,23 @@ export class UpdateProduct {
             title,
             article,
             price,
-            path_images,
+            pathImages,
             sex,
             description,
             details,
             delivery,
-            attributes,
             available,
             categoryId,
-            materialId
+            materialId,
+            probIds,
+            decorationIds,
+            sizeIds
         } = input;
         const existingData = await this.productRepository.findById(id)
         if(!existingData) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Категория не найдена'
+                message: 'Продукт не найден'
             }))
         }
 
@@ -59,15 +62,13 @@ export class UpdateProduct {
             }))
         }
 
-        const attribute = attributes ? Attributes.create(attributes) : undefined
-
         const newMaterial = new Product({
             title: title || existingData.getTitle(),
             article: article || existingData.getArticle(),
             description: description || existingData.getDescription(),
             delivery: delivery || existingData.getDelivery(),
             details: details || existingData.getDetails(),
-            pathImages: path_images || existingData.getPathImages(),
+            pathImages: pathImages || existingData.getPathImages(),
             sex: sexOrError as Sex || existingData.getSex(),
             materialId: materialId || existingData.getMaterial(),
             available: available || existingData.getAvailable(),
@@ -75,7 +76,9 @@ export class UpdateProduct {
             createdAt: existingData.getCreatedAt(),
             categoryId: categoryId || existingData.getCategory(),
             price: price || existingData.getPrice(),
-            attributes: attribute || existingData.getAttributes(),
+            decorationIds: decorationIds || existingData.getDecorationIds(),
+            probIds: probIds || existingData.getProbIds(),
+            sizeIds: sizeIds || existingData.getSizesIds()
         }, existingData.getId())
 
         const savedData = await this.productRepository.save(newMaterial)

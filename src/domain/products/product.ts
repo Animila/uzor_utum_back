@@ -1,5 +1,4 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
-import {Attributes} from "./valueObjects/attributes";
 import {Sex} from "./valueObjects/sex";
 
 interface IProduct {
@@ -11,7 +10,9 @@ interface IProduct {
     description: string
     details: string
     delivery: string
-    attributes: Attributes
+    probIds: string[]
+    sizeIds: string[]
+    decorationIds: string[]
     available: number
     categoryId: string
     materialId: string
@@ -56,7 +57,11 @@ export class Product {
 
     getUpdatedAt(): Date { return this.props.updatedAt }
 
-    getAttributes(): Attributes { return this.props.attributes; }
+    getProbIds(): string[] { return this.props.probIds; }
+
+    getSizesIds(): string[] { return this.props.sizeIds; }
+
+    getDecorationIds(): string[] { return this.props.decorationIds; }
 
 }
 

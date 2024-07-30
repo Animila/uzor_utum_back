@@ -9,7 +9,9 @@ export class PrismaProductRepo implements IProductRepository {
     async findAll(
         categoryId?: string,
         materialId?: string,
-        filters?: JSON,
+        probIds?: string[],
+        decorationIds?: string[],
+        sizeIds?: string[],
         sortBy?: string,
         order?: "asc" | "desc",
         search?: string,
@@ -19,13 +21,9 @@ export class PrismaProductRepo implements IProductRepository {
         const where: any = {};
         if (categoryId) where.category_id = categoryId;
         if (materialId) where.material_id = materialId;
-
-        if (filters) {
-            where.OR = Object.entries(filters).map(([key, value]) => {
-                if (Array.isArray(value)) return { attributes: { path: [key],  array_contains: value } };
-                else return { attributes: { path: [key], equals: value } };
-            });
-        }
+        if (probIds) where.prob_ids = probIds;
+        if (decorationIds) where.prob_ids = decorationIds;
+        if (sizeIds) where.prob_ids = sizeIds;
 
         if (minPrice !== undefined && maxPrice !== undefined) where.price = { gte: minPrice, lte: maxPrice };
         else if (minPrice !== undefined) where.price = { gte: minPrice };
@@ -43,6 +41,7 @@ export class PrismaProductRepo implements IProductRepository {
 
         const orderBy = sortBy ? { [sortBy]: order } : undefined;
         const products = await this.prisma.products.findMany({ where, orderBy });
+        this.prisma.$disconnect()
         return products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
     }
 
@@ -50,6 +49,7 @@ export class PrismaProductRepo implements IProductRepository {
     async findById(id: string): Promise<Product | null> {
         const data = await this.prisma.products.findUnique({ where: { id: id } })
         if(!data) return null
+        this.prisma.$disconnect()
         return ProductMap.toDomain(data)
     }
 
@@ -68,9 +68,11 @@ export class PrismaProductRepo implements IProductRepository {
                     created_at: new Date(),
                     updated_at: new Date(),
                     available: dataPer.available,
-                    attributes: dataPer.attributes as any,
-                    category_id: dataPer.categoryId,
-                    material_id: dataPer.materialId,
+                    decoration_ids: dataPer.decoration_ids,
+                    prob_ids: dataPer.prob_ids,
+                    size_ids: dataPer.size_ids,
+                    category_id: dataPer.category_id,
+                    material_id: dataPer.material_id,
                     price: dataPer.price,
                     description: dataPer.description,
                     path_images: dataPer.path_images
@@ -82,12 +84,14 @@ export class PrismaProductRepo implements IProductRepository {
                     article: dataPer.article,
                     delivery: dataPer.delivery,
                     details: dataPer.details,
-                    created_at: dataPer.createdAt,
+                    created_at: dataPer.created_at,
                     updated_at: new Date(),
                     available: dataPer.available,
-                    attributes: dataPer.attributes as any,
-                    category_id: dataPer.categoryId,
-                    material_id: dataPer.materialId,
+                    decoration_ids: dataPer.decoration_ids,
+                    prob_ids: dataPer.prob_ids,
+                    size_ids: dataPer.size_ids,
+                    category_id: dataPer.category_id,
+                    material_id: dataPer.material_id,
                     price: dataPer.price,
                     description: dataPer.description,
                     path_images: dataPer.path_images
@@ -101,6 +105,8 @@ export class PrismaProductRepo implements IProductRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            this.prisma.$disconnect()
         }
     }
 
@@ -111,8 +117,10 @@ export class PrismaProductRepo implements IProductRepository {
         } catch (error: any) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Такой материал не найден'
+                message: 'Такой продукт не найден'
             }));
+        } finally {
+            this.prisma.$disconnect()
         }
     }
 }

@@ -75,7 +75,7 @@ class RabbitMQ {
     public async sendEmail(data: {
         to: string
         subject: string
-        code: number
+        code: string
     }): Promise<void> {
         try {
             await this.assertQueue('sendEmail');

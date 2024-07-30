@@ -19,7 +19,7 @@ export class TokenMap {
     public static toPersistence(data: Token): {
         id: string
         user_id: string
-        token: number
+        token: string
         activated_at: boolean
         created_at: Date
     } {

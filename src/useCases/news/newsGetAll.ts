@@ -19,9 +19,9 @@ export class GetAllNews {
         title: string
         text: string
         about: string
-        journalId: string
-        previewPath: string
-        createdAt: Date
+        journal_id: string
+        preview_path: string
+        created_at: Date
         views:  number
     }[]> {
         const {

@@ -1,7 +1,7 @@
 import {ITokenRepository} from "../../repositories/ITokenRepository";
 
 interface UpdateTokenInput {
-    token: number
+    token: string
 }
 
 export default class UpdateToken {
@@ -14,7 +14,7 @@ export default class UpdateToken {
     async execute(input: UpdateTokenInput): Promise<string> {
         try {
             const {token} = input
-            const existingToken = await this.tokenRepository.findValidToken(token)
+            const existingToken = await this.tokenRepository.findValidToken(token.toString())
             if(!existingToken)
                 throw new Error(JSON.stringify({
                     status: 404,

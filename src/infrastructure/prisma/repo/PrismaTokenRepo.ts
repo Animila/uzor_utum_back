@@ -6,7 +6,7 @@ import {TokenMap} from "../../../mappers/TokenMap";
 export class PrismaTokenRepo implements ITokenRepository {
     private prisma = new PrismaClient();
 
-    async findTokenByUserAndCode(userId: string, token: number): Promise<boolean> {
+    async findTokenByUserAndCode(userId: string, token: string): Promise<boolean> {
         if (!userId) {
             throw new Error(JSON.stringify({
                 status: 400,
@@ -28,15 +28,22 @@ export class PrismaTokenRepo implements ITokenRepository {
         return !!tokenRecord;
     }
 
-    async findValidToken(token: number): Promise<Token | null> {
-        const tokenRecord = await this.prisma.tokens.findFirst({
-            where: {
-                token: token,
-                activated_at: false,
-            },
-        });
-        if (!tokenRecord) return null;
-        return TokenMap.toDomain(tokenRecord)
+    async findValidToken(token: string): Promise<Token | null> {
+        try {
+            console.log(token)
+            const tokenRecord = await this.prisma.tokens.findFirst({
+                where: {
+                    token: token,
+                    activated_at: false,
+                },
+            });
+            console.log(tokenRecord)
+            if (!tokenRecord) return null;
+            return TokenMap.toDomain(tokenRecord)
+        } catch (e) {
+            console.log(e)
+            return null
+        }
     }
 
     async save(data: Token): Promise<Token| null> {

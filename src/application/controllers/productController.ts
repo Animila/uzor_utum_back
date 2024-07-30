@@ -26,8 +26,8 @@ export async function createProductController(request: FastifyRequest<ProductReq
     try {
         const getCategory = new GetByIdCategory(categoryRepo)
         const getMaterial = new GetByIdMaterial(materialRepo)
-        await getCategory.execute({id: data.categoryId})
-        await getMaterial.execute({id: data.materialId})
+        await getCategory.execute({id: data.category_id})
+        await getMaterial.execute({id: data.material_id})
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -59,7 +59,9 @@ export async function createProductController(request: FastifyRequest<ProductReq
 export async function getAllProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
     try {
         const {
-            filters,
+            sizeIds,
+            decorationIds,
+            probIds,
             sortBy,
             order,
             categoryId,
@@ -70,10 +72,9 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         } = request.query as ProductRequest['Query'];
         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
-        const json = filters ? JSON.parse(filters!) : undefined
         const getAllProduct = new GetAllProducts(productRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({categoryId, materialId, filters: json, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
+        const products = await getAllProduct.execute({categoryId, materialId, sizeIds, decorationIds, probIds, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
         await Promise.all(
             products.map(async item => {
                 try {
@@ -134,15 +135,17 @@ export async function updateProductController(request: FastifyRequest<ProductReq
             title: data.title,
             article: data.article,
             price: data.price,
-            path_images: data.path_images,
+            pathImages: data.path_images,
             sex: data.sex,
             description: data.description,
             details: data.details,
             delivery: data.delivery,
-            attributes: data.attributes,
             available: data.available,
-            categoryId: data.categoryId,
-            materialId: data.materialId
+            categoryId: data.category_id,
+            materialId: data.material_id,
+            sizeIds: data.size_ids,
+            probIds: data.prob_ids,
+            decorationIds: data.decoration_ids
         });
 
         reply.status(200).send({

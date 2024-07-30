@@ -2,7 +2,7 @@ import {generateCode} from "../../../infrastructure/crypto/generateCode";
 import {Guard} from "../../guard";
 
 interface ITokenCode {
-    value: number
+    value: string
 }
 
 export class TokenCode {
@@ -12,9 +12,9 @@ export class TokenCode {
         this.props = Object.freeze(props)
     }
 
-    public static create(value?: number): TokenCode {
+    public static create(value?: string): TokenCode {
         const propsResult = Guard.againstNullOrUndefined(value, 'email_code')
-        if (!propsResult.succeeded) value = generateCode()
+        if (!propsResult.succeeded) value = (generateCode()).toString()
 
         return new TokenCode({
             value: value!

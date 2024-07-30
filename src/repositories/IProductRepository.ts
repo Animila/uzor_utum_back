@@ -4,7 +4,9 @@ export interface IProductRepository {
     save(data: Product): Promise<Product | null>;
     findAll(categoryId?: string,
             materialId?: string,
-            filters?: JSON,
+            probIds?: string[],
+            decorationIds?: string[],
+            sizeIds?: string[],
             sortBy?: string,
             order?: "asc" | "desc",
             search?: string,

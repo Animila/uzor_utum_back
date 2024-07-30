@@ -31,6 +31,7 @@ export class PrismaMaterialRepo implements IMaterialRepository {
                 create: {
                     id: dataPer.id,
                     title: dataPer.title,
+                    image_path: 'edfgh'
                 },
                 update: {
                     id: dataPer.id,

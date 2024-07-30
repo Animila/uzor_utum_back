@@ -28,7 +28,7 @@ model users {
 
 model tokens {
 	id           String   @id
-	token        Int      @unique
+	token        String   @unique
 	activated_at Boolean  @default(false)
 	created_at   DateTime @default(now())
 	user_id      String
@@ -38,13 +38,30 @@ model tokens {
 model categories {
 	id       		String     		@id
 	title    		String 				@unique
+	image_path	String
 	products 		products[]
 }
 
 model materials {
-	id    			String 				@id
-	title 			String 				@unique
-	products 		products[]
+	id       String      @id
+	title    String      @unique
+	image_path	String
+	products products[]
+}
+
+model sizes {
+	id       String      @id
+	title    String      @unique
+}
+
+model probs {
+	id       String      @id
+	title    String      @unique
+}
+
+model decorations {
+	id       String      @id
+	title    String      @unique
 }
 
 model products {
@@ -57,7 +74,6 @@ model products {
 	details     String
 	delivery    String
 	sex					Sex				 		@default(all)
-	attributes  Json       		@db.JsonB
 	available   Int        		@default(0)
 	created_at 	DateTime 	 		@default(now())
 	updated_at  DateTime	 		@default(now())
@@ -69,6 +85,10 @@ model products {
 
 	discounts 	discounts[]
 	cart_items	cart_items[]
+
+	prob_ids       String[]
+	size_ids       String[]
+	decoration_ids String[]
 }
 
 enum Roles {

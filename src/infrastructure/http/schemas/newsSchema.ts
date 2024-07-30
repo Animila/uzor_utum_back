@@ -50,6 +50,11 @@ const getAllNewsSchema = {
     schema: {
         description: 'Получить список все новости',
         tags: ['News'],
+        query: {
+            old: {type: 'string'},
+            popular: {type: 'string'},
+            journalId: {type: 'string'},
+        },
         response: {
             200: {
                 description: 'Успешно получены',
@@ -68,7 +73,7 @@ const getAllNewsSchema = {
                                 preview_path: { type: 'string' },
                                 views: { type: 'number' },
                                 journal_id: { type: 'string' },
-                                create_at: { type: 'string' },
+                                created_at: { type: 'string' },
                             }
                         }
                     }
