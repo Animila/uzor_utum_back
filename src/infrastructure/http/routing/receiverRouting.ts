@@ -9,7 +9,7 @@ import {
 import {
     createReceiverController, deleteReceiverController,
     getAllReceiverController,
-    getByIdReceiverController
+    getByIdReceiverController, updateReceiverController
 } from "../../../application/controllers/receiverController";
 
 
@@ -26,7 +26,7 @@ export function registerReceiverRouting(fastify: FastifyInstance) {
         // создать заказ
     });
     fastify.put('/receiver/:id',updateReceiverSchema, async (req: FastifyRequest<ReceiverRequest>, res: FastifyReply) => {
-        await getByIdReceiverController(req, res)
+        await updateReceiverController(req, res)
         // получить заказ по id
     });
     fastify.delete('/receiver/:id', deleteReceiverSchema, async (req: FastifyRequest<ReceiverRequest>, res: FastifyReply) => {
