@@ -71,7 +71,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
 
 export async function addItemToCartController(request: FastifyRequest<ItemCartRequest>, reply: FastifyReply) {
     const { token } = request.query as ItemCartRequest['Query']
-    const { product_id, count } = request.body
+    const { size_id, proba_id, decorate_id, count, product_id } = request.body
 
     try {
 
@@ -134,6 +134,9 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
 
         const newCart = await addItemCart.execute({
             cart_id: existingCart.getId(),
+            size_id: size_id,
+            decorate_id: decorate_id,
+            proba_id: proba_id,
             count: count,
             product_id: existingProduct.getId()
         })
@@ -163,7 +166,7 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
 export async function changeItemCartController(request: FastifyRequest<ItemCartRequest>, reply: FastifyReply) {
     try {
         const {id} = request.query as ItemCartRequest['Query']
-        const {product_id, count} = request.body
+        const {product_id, count, decorate_id, size_id, proba_id} = request.body
         const checkIdResult = Guard.againstNullOrUndefined(id, 'id')
         if (!checkIdResult.succeeded)
             throw new Error(JSON.stringify({
@@ -231,6 +234,9 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
         const newItem = new CartItem({
             cartId: existingItem.getCartId(),
             count: count || existingItem.getCount(),
+            probaId: proba_id || existingItem.getProbaId(),
+            decorateId: decorate_id || existingItem.getDecorateId(),
+            sizeId: size_id || existingItem.getSizeId(),
             productId: existingProduct ? existingProduct.getId() : existingItem.getProductId(),
             updatedAt: new Date(),
             createdAt: existingItem.getCreatedAt()

@@ -52,16 +52,19 @@ model materials {
 model sizes {
 	id       String      @id
 	title    String      @unique
+	cart_items cart_items[]
 }
 
 model probs {
 	id       String      @id
 	title    String      @unique
+	cart_items cart_items[]
 }
 
 model decorations {
 	id       String      @id
 	title    String      @unique
+	cart_items cart_items[]
 }
 
 model products {
@@ -188,6 +191,12 @@ model carts {
 
 model cart_items {
 	id						String 			@id
+	size_id				String?
+	size					sizes?   @relation(fields: [size_id], references: [id], onDelete: NoAction)
+	decorate_id		String?
+	decorate			decorations? @relation(fields: [decorate_id], references: [id], onDelete: NoAction)
+	proba_id			String?
+	proba					probs?  @relation(fields: [proba_id], references: [id], onDelete: NoAction)
 	count					Int					@default(1)
 	updated_at		DateTime		@default(now())
 	created_at		DateTime		@default(now())

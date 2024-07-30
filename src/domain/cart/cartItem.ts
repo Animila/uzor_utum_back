@@ -3,6 +3,9 @@ import {generateUUID} from "../../infrastructure/uuid/generate";
 interface ICartItem {
     productId: string
     cartId: string
+    probaId?: string
+    decorateId?: string
+    sizeId?: string
     count: number
     updatedAt: Date
     createdAt: Date
@@ -28,6 +31,12 @@ export class CartItem {
     getUpdatedAt(): Date { return this.props.updatedAt }
 
     getCreatedAt(): Date { return this.props.createdAt }
+
+    getProbaId(): string | undefined { return this.props.probaId }
+
+    getDecorateId(): string | undefined { return this.props.decorateId }
+
+    getSizeId(): string | undefined { return this.props.sizeId }
 
 }
 

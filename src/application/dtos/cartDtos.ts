@@ -16,6 +16,10 @@ interface ItemCartRequest {
     },
     Body: {
         product_id: string
+        cart_id: string
+        size_id: string,
+        decorate_id: string,
+        proba_id: string,
         count: number
     }
 }
