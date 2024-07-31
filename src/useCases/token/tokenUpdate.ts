@@ -12,22 +12,16 @@ export default class UpdateToken {
     }
 
     async execute(input: UpdateTokenInput): Promise<string> {
-        try {
-            const {token} = input
-            const existingToken = await this.tokenRepository.findValidToken(token.toString())
-            if(!existingToken)
-                throw new Error(JSON.stringify({
-                    status: 404,
-                    message: 'Код не подходит'
-                }))
-            existingToken.activateToken()
-            await this.tokenRepository.save(existingToken)
-            return existingToken.getUserId()
-        } catch (error) {
+
+        const {token} = input
+        const existingToken = await this.tokenRepository.findValidToken(token.toString())
+        if(!existingToken)
             throw new Error(JSON.stringify({
-                status: 500,
-                message: 'Ошибка'
+                status: 404,
+                message: 'Код не подходит'
             }))
-        }
+        existingToken.activateToken()
+        await this.tokenRepository.save(existingToken)
+        return existingToken.getUserId()
     }
 }
