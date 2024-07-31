@@ -7,14 +7,22 @@ export class PrismaSendTypeRepo implements ISendTypeRepository {
     private prisma = new PrismaClient();
 
     async findAll(token?: string): Promise<SendType[]> {
-        const data = await this.prisma.send_types.findMany()
-        return data.map(sendType => SendTypeMap.toDomain(sendType)).filter(sendType => sendType != null)
+        try {
+            const data = await this.prisma.send_types.findMany()
+            return data.map(sendType => SendTypeMap.toDomain(sendType)).filter(sendType => sendType != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<SendType | null> {
-        const data = await this.prisma.send_types.findUnique({ where: { id: id } })
-        if(!data) return null
-        return SendTypeMap.toDomain(data)
+        try {
+            const data = await this.prisma.send_types.findUnique({where: {id: id}})
+            if (!data) return null
+            return SendTypeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: SendType): Promise<SendType | null> {
@@ -42,6 +50,8 @@ export class PrismaSendTypeRepo implements ISendTypeRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -54,6 +64,8 @@ export class PrismaSendTypeRepo implements ISendTypeRepository {
                 status: 404,
                 message: 'Такой тип доставки не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

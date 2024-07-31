@@ -16,64 +16,69 @@ export class PrismaItemCartRepository implements ICartItemRepository {
                 status: 404,
                 message: 'Такой пункт к корзине не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
     async find(cart_id?: string, id?: string): Promise<CartItem[]|CartItem|null> {
+        try {
+            const checkId = Guard.againstNullOrUndefined(id, 'id')
 
-        const checkId = Guard.againstNullOrUndefined(id, 'id')
+            if (checkId.succeeded) {
+                const res = await this.prisma.cart_items.findUnique({
+                    where: {id}
+                })
+                if (!res) return null
+                return ItemCartMap.toDomain(res)
 
-        if(checkId.succeeded) {
-            const res = await this.prisma.cart_items.findUnique({
-                where: { id }
-            })
-            if(!res) return null
-            return ItemCartMap.toDomain(res)
-
-        } else {
-            const data = await this.prisma.cart_items.findMany({
-                where: { cart_id }
-            })
-            console.log(data)
-            return data.map(item => ItemCartMap.toDomain(item)).filter(item => item !== null)
+            } else {
+                const data = await this.prisma.cart_items.findMany({
+                    where: {cart_id}
+                })
+                console.log(data)
+                return data.map(item => ItemCartMap.toDomain(item)).filter(item => item !== null)
+            }
+        } finally {
+            await this.prisma.$disconnect();
         }
-
-
-
     }
 
     async save(data: CartItem): Promise<CartItem | null> {
+        try {
+            const dataPer = ItemCartMap.toPersistence(data)
+            console.log(dataPer)
 
-        const dataPer = ItemCartMap.toPersistence(data)
-        console.log(dataPer)
 
+            const result = await this.prisma.cart_items.upsert({
+                where: {
+                    id: dataPer.id
+                },
+                create: {
+                    id: dataPer.id,
+                    cart_id: dataPer.cart_id,
+                    product_id: dataPer.product_id,
+                    count: dataPer.count,
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                },
+                update: {
+                    id: dataPer.id,
+                    cart_id: dataPer.cart_id,
+                    product_id: dataPer.product_id,
+                    count: dataPer.count,
+                    created_at: dataPer.created_at,
+                    updated_at: new Date(),
+                }
 
-        const result = await this.prisma.cart_items.upsert({
-            where: {
-                id: dataPer.id
-            },
-            create: {
-                id: dataPer.id,
-                cart_id: dataPer.cart_id,
-                product_id: dataPer.product_id,
-                count: dataPer.count,
-                created_at: new Date(),
-                updated_at: new Date(),
-            },
-            update: {
-                id: dataPer.id,
-                cart_id: dataPer.cart_id,
-                product_id: dataPer.product_id,
-                count: dataPer.count,
-                created_at: dataPer.created_at,
-                updated_at: new Date(),
-            }
+            })
 
-        })
+            if (!result) return null
 
-        if (!result) return null
-
-        return ItemCartMap.toDomain(result)
+            return ItemCartMap.toDomain(result)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
 }

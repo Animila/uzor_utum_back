@@ -7,20 +7,32 @@ export class PrismaMaterialRepo implements IMaterialRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Material[]> {
-        const data = await this.prisma.materials.findMany()
-        return data.map(Material => MaterialMap.toDomain(Material)).filter(material => material != null)
+        try {
+            const data = await this.prisma.materials.findMany()
+            return data.map(Material => MaterialMap.toDomain(Material)).filter(material => material != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Material | null> {
-        const data = await this.prisma.materials.findUnique({ where: { id: id } })
-        if(!data) return null
-        return MaterialMap.toDomain(data)
+        try {
+            const data = await this.prisma.materials.findUnique({where: {id: id}})
+            if (!data) return null
+            return MaterialMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByTitle(title: string): Promise<Material | null> {
-        const data = await this.prisma.materials.findFirst({ where: { title: title } })
-        if(!data) return null
-        return MaterialMap.toDomain(data)
+        try {
+            const data = await this.prisma.materials.findFirst({where: {title: title}})
+            if (!data) return null
+            return MaterialMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Material): Promise<Material | null> {
@@ -45,6 +57,8 @@ export class PrismaMaterialRepo implements IMaterialRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -57,6 +71,8 @@ export class PrismaMaterialRepo implements IMaterialRepository {
                 status: 404,
                 message: 'Такой материал не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

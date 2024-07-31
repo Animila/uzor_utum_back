@@ -29,18 +29,12 @@ export async function initialPayment(
                 currency: "RUB",
             },
             description: msg,
-            capture: true,
+            capture: false,
             confirmation: {
                 type: "redirect",
                 return_url: urlRedirect
             },
-            // receipt: {
-            //     customer: {
-            //         full_name: dataUser.full_name,
-            //         email: dataUser.email,
-            //         phone: dataUser.phone,
-            //     }
-            // }
+            save_method_method: false
         }
 
         const response = await axios.post(url, params, { headers });

@@ -4,6 +4,7 @@ import {Product} from "../../../domain/products/product";
 import {ProductMap} from "../../../mappers/ProductMap";
 
 export class PrismaProductRepo implements IProductRepository {
+
     private prisma = new PrismaClient();
 
     async findAll(
@@ -18,41 +19,48 @@ export class PrismaProductRepo implements IProductRepository {
         minPrice?: number,
         maxPrice?: number
     ): Promise<Product[]> {
-        const where: any = {};
-        if (categoryId) where.category_id = categoryId;
-        if (materialId) where.material_id = materialId;
-        if (probIds) where.prob_ids = { hasSome: probIds };
-        if (decorationIds) where.prob_ids = { hasSome: decorationIds};
-        if (sizeIds) where.prob_ids = { hasSome: sizeIds};
+        try {
+            const where: any = {};
+            if (categoryId) where.category_id = categoryId;
+            if (materialId) where.material_id = materialId;
+            if (probIds) where.prob_ids = {hasSome: probIds};
+            if (decorationIds) where.prob_ids = {hasSome: decorationIds};
+            if (sizeIds) where.prob_ids = {hasSome: sizeIds};
 
-        console.log(where)
+            console.log(where)
 
-        if (minPrice !== undefined && maxPrice !== undefined) where.price = { gte: minPrice, lte: maxPrice };
-        else if (minPrice !== undefined) where.price = { gte: minPrice };
-        else if (maxPrice !== undefined) where.price = { lte: maxPrice };
+            if (minPrice !== undefined && maxPrice !== undefined) where.price = {gte: minPrice, lte: maxPrice};
+            else if (minPrice !== undefined) where.price = {gte: minPrice};
+            else if (maxPrice !== undefined) where.price = {lte: maxPrice};
 
-        if (search) {
-            where.OR = [
-                { title: { contains: search, mode: 'insensitive' } },
-                { article: { contains: search, mode: 'insensitive' } },
-                { description: { contains: search, mode: 'insensitive' } },
-                { details: { contains: search, mode: 'insensitive' } },
-                { delivery: { contains: search, mode: 'insensitive' } },
-            ];
+            if (search) {
+                where.OR = [
+                    {title: {contains: search, mode: 'insensitive'}},
+                    {article: {contains: search, mode: 'insensitive'}},
+                    {description: {contains: search, mode: 'insensitive'}},
+                    {details: {contains: search, mode: 'insensitive'}},
+                    {delivery: {contains: search, mode: 'insensitive'}},
+                ];
+            }
+
+            const orderBy = sortBy ? {[sortBy]: order} : undefined;
+            const products = await this.prisma.products.findMany({where, orderBy});
+            return products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
+        } finally {
+            await this.prisma.$disconnect();
         }
-
-        const orderBy = sortBy ? { [sortBy]: order } : undefined;
-        const products = await this.prisma.products.findMany({ where, orderBy });
-        this.prisma.$disconnect()
-        return products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
     }
 
 
     async findById(id: string): Promise<Product | null> {
-        const data = await this.prisma.products.findUnique({ where: { id: id } })
-        if(!data) return null
-        this.prisma.$disconnect()
-        return ProductMap.toDomain(data)
+        try {
+            const data = await this.prisma.products.findUnique({where: {id: id}})
+            if (!data) return null
+            this.prisma.$disconnect()
+            return ProductMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Product): Promise<Product | null> {

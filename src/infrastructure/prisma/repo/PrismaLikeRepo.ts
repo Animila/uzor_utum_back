@@ -7,20 +7,28 @@ export class PrismaLikeRepo implements ILikeRepository {
     private prisma = new PrismaClient();
 
     async findAll(entity_type?: string, entity_id?: string, user_id?: string): Promise<Like[]> {
-        const data = await this.prisma.likes.findMany({
-            where: {
-                entity_type,
-                entity_id,
-                user_id
-            }
-        })
-        return data.map(Like => LikeMap.toDomain(Like)).filter(material => material != null)
+        try {
+            const data = await this.prisma.likes.findMany({
+                where: {
+                    entity_type,
+                    entity_id,
+                    user_id
+                }
+            })
+            return data.map(Like => LikeMap.toDomain(Like)).filter(material => material != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Like | null> {
-        const data = await this.prisma.likes.findUnique({ where: { id: id } })
-        if(!data) return null
-        return LikeMap.toDomain(data)
+        try {
+            const data = await this.prisma.likes.findUnique({where: {id: id}})
+            if (!data) return null
+            return LikeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Like): Promise<Like | null> {
@@ -54,6 +62,8 @@ export class PrismaLikeRepo implements ILikeRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -66,6 +76,8 @@ export class PrismaLikeRepo implements ILikeRepository {
                 status: 404,
                 message: 'Такой материал не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }

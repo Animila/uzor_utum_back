@@ -8,20 +8,32 @@ export class PrismaProbRepo implements IProbRepository {
 
 
     async findAll(): Promise<Prob[]> {
-        const data = await this.prisma.probs.findMany()
-        return data.map(result => ProbMap.toDomain(result)).filter(material => material != null)
+        try {
+            const data = await this.prisma.probs.findMany()
+            return data.map(result => ProbMap.toDomain(result)).filter(material => material != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Prob | null> {
-        const data = await this.prisma.probs.findUnique({ where: { id: id } })
-        if(!data) return null
-        return ProbMap.toDomain(data)
+        try {
+            const data = await this.prisma.probs.findUnique({where: {id: id}})
+            if (!data) return null
+            return ProbMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByTitle(title: string): Promise<Prob | null> {
-        const data = await this.prisma.probs.findFirst({ where: { title: title } })
-        if(!data) return null
-        return ProbMap.toDomain(data)
+        try {
+            const data = await this.prisma.probs.findFirst({where: {title: title}})
+            if (!data) return null
+            return ProbMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Prob): Promise<Prob | null> {
@@ -45,6 +57,8 @@ export class PrismaProbRepo implements IProbRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -57,6 +71,8 @@ export class PrismaProbRepo implements IProbRepository {
                 status: 404,
                 message: 'Такой материал не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

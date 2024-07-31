@@ -13,14 +13,7 @@ export class GetItemsCart {
         this.repository = repository;
     }
 
-    async execute(input: GetItemsCartInput): Promise<{
-        id: string,
-        product_id: string,
-        cart_id: string,
-        count: number,
-        updated_at: Date,
-        created_at: Date
-    }[]> {
+    async execute(input: GetItemsCartInput): Promise<CartItem[]> {
         const {cart_id} = input;
 
         const existingData = await this.repository.find(cart_id) as CartItem[]
@@ -30,7 +23,7 @@ export class GetItemsCart {
                 message: 'Скидка не найдена'
             }))
 
-        return existingData.map(item => ItemCartMap.toPersistence(item));
+        return existingData;
 
     }
 }

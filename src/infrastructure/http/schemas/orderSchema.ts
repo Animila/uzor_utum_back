@@ -158,7 +158,6 @@ const createOrderSchema = {
             shop_id: { type: 'string' },
             comment: { type: 'string' },
             receiver_id: { type: 'string' },
-            payment_id: {type: 'string'},
             certificate_id: { type: 'string' },
             promocode_id: { type: 'string' },
             add_bonus: { type: 'number' },
@@ -183,7 +182,6 @@ const createOrderSchema = {
                     data: {
                         type: 'object',
                         properties: {
-
                             id: {type: 'string'},
                             first_name: { type: 'string' },
                             last_name: { type: 'string' },

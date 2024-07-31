@@ -16,23 +16,32 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                 status: 404,
                 message: 'Такой сертификат не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
     async findAll(certificate_type_id?: string): Promise<Certificate[]> {
-        const result = await this.prisma.certificates.findMany({
-            where: {
-                certificate_type_id: certificate_type_id
-            }
-        })
-        return result.map(item => CertificateMap.toDomain(item)).filter(item => item != null)
-
+        try {
+            const result = await this.prisma.certificates.findMany({
+                where: {
+                    certificate_type_id: certificate_type_id
+                }
+            })
+            return result.map(item => CertificateMap.toDomain(item)).filter(item => item != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Certificate | null> {
-        const data = await this.prisma.certificates.findUnique({ where: { id: id } })
-        if(!data) return null
-        return CertificateMap.toDomain(data)
+        try {
+            const data = await this.prisma.certificates.findUnique({where: {id: id}})
+            if (!data) return null
+            return CertificateMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(certificate: Certificate): Promise<Certificate | null> {
@@ -74,17 +83,23 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
     async findByCode(code: string): Promise<Certificate | null> {
-        const result = await this.prisma.certificates.findUnique({
-            where: {
-                code: code
-            }
-        })
-        if(!result) return null
-        return CertificateMap.toDomain(result)
+        try {
+            const result = await this.prisma.certificates.findUnique({
+                where: {
+                    code: code
+                }
+            })
+            if (!result) return null
+            return CertificateMap.toDomain(result)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
 }

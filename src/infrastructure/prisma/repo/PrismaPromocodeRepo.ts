@@ -7,21 +7,39 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<PromoCode[]> {
-        const data = await this.prisma.promocodes.findMany()
-        return data.map(itemNull => PromoCodeMap.toDomain(itemNull)).filter(item => item != null)
+        try {
+            const data = await this.prisma.promocodes.findMany()
+            return data.map(itemNull => PromoCodeMap.toDomain(itemNull)).filter(item => item != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByCode(code: string): Promise<PromoCode | null> {
-        const data = await this.prisma.promocodes.findUnique({where: {code: code, valid_to: {gte: new Date()}, active: true}})
-        if (!data) return null;
-        return PromoCodeMap.toDomain(data)
+        try {
+            const data = await this.prisma.promocodes.findUnique({
+                where: {
+                    code: code,
+                    valid_to: {gte: new Date()},
+                    active: true
+                }
+            })
+            if (!data) return null;
+            return PromoCodeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<PromoCode | null> {
-        console.log(new Date())
-        const data = await this.prisma.promocodes.findUnique({ where: { id: id } })
-        if(!data) return null;
-        return PromoCodeMap.toDomain(data)
+        try {
+            console.log(new Date())
+            const data = await this.prisma.promocodes.findUnique({where: {id: id}})
+            if (!data) return null;
+            return PromoCodeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async delete(id: string): Promise<boolean> {
@@ -33,6 +51,8 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
                 status: 404,
                 message: 'Такой промокод не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -69,6 +89,8 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 

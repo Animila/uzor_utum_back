@@ -7,20 +7,32 @@ export class PrismaUserRepo implements IUserRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<User[]> {
-        const users_data = await this.prisma.users.findMany();
-        return users_data.map(item => UserMap.toDomain(item)).filter((user): user is User => user !== null);
+        try {
+            const users_data = await this.prisma.users.findMany();
+            return users_data.map(item => UserMap.toDomain(item)).filter((user): user is User => user !== null);
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        const user = await this.prisma.users.findUnique({ where: { email: email } })
-        if(!user) return null
-        return UserMap.toDomain(user)
+        try {
+            const user = await this.prisma.users.findUnique({where: {email: email}})
+            if (!user) return null
+            return UserMap.toDomain(user)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(uuid: string): Promise<User | null> {
-        const user = await this.prisma.users.findUnique({ where: { id: uuid } })
-        if(!user) return null
-        return UserMap.toDomain(user)
+        try {
+            const user = await this.prisma.users.findUnique({where: {id: uuid}})
+            if (!user) return null
+            return UserMap.toDomain(user)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByPhone(phone: string): Promise<User | null> {
@@ -33,6 +45,8 @@ export class PrismaUserRepo implements IUserRepository {
                 status: 500,
                 message: 'Проблемы с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -72,6 +86,8 @@ export class PrismaUserRepo implements IUserRepository {
                 status: 409,
                 message: 'Такой пользователь уже существует'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -84,6 +100,8 @@ export class PrismaUserRepo implements IUserRepository {
                 status: 404,
                 message: 'Такой пользователь не найден'
             }))
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

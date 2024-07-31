@@ -7,20 +7,32 @@ export class PrismaDecorateRepo implements IDecorateRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Decorate[]> {
-        const data = await this.prisma.decorations.findMany()
-        return data.map(result => DecorateMap.toDomain(result)).filter(material => material != null)
+        try {
+            const data = await this.prisma.decorations.findMany()
+            return data.map(result => DecorateMap.toDomain(result)).filter(material => material != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Decorate | null> {
-        const data = await this.prisma.decorations.findUnique({ where: { id: id } })
-        if(!data) return null
-        return DecorateMap.toDomain(data)
+        try {
+            const data = await this.prisma.decorations.findUnique({where: {id: id}})
+            if (!data) return null
+            return DecorateMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByTitle(title: string): Promise<Decorate | null> {
-        const data = await this.prisma.decorations.findFirst({ where: { title: title } })
-        if(!data) return null
-        return DecorateMap.toDomain(data)
+        try {
+            const data = await this.prisma.decorations.findFirst({where: {title: title}})
+            if (!data) return null
+            return DecorateMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Decorate): Promise<Decorate | null> {
@@ -44,6 +56,8 @@ export class PrismaDecorateRepo implements IDecorateRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -56,6 +70,8 @@ export class PrismaDecorateRepo implements IDecorateRepository {
                 status: 404,
                 message: 'Такой материал не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }

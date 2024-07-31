@@ -7,14 +7,22 @@ export class PrismaJournalRepo implements IJournalRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Journal[]> {
-        const data = await this.prisma.journals.findMany()
-        return data.map(journal => JournalMap.toDomain(journal)).filter(item => item != null)
+        try {
+            const data = await this.prisma.journals.findMany()
+            return data.map(journal => JournalMap.toDomain(journal)).filter(item => item != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Journal | null> {
-        const data = await this.prisma.journals.findUnique({ where: { id: id } })
-        if(!data) return null
-        return JournalMap.toDomain(data)
+        try {
+            const data = await this.prisma.journals.findUnique({where: {id: id}})
+            if (!data) return null
+            return JournalMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Journal): Promise<Journal | null> {
@@ -38,6 +46,8 @@ export class PrismaJournalRepo implements IJournalRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -50,6 +60,8 @@ export class PrismaJournalRepo implements IJournalRepository {
                 status: 404,
                 message: 'Такой журнал не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }

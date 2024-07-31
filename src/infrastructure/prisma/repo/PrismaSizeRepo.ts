@@ -7,20 +7,32 @@ export class PrismaSizeRepo implements ISizeRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Size[]> {
-        const data = await this.prisma.sizes.findMany()
-        return data.map(result => SizeMap.toDomain(result)).filter(material => material != null)
+        try {
+            const data = await this.prisma.sizes.findMany()
+            return data.map(result => SizeMap.toDomain(result)).filter(material => material != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Size | null> {
-        const data = await this.prisma.sizes.findUnique({ where: { id: id } })
-        if(!data) return null
-        return SizeMap.toDomain(data)
+        try {
+            const data = await this.prisma.sizes.findUnique({where: {id: id}})
+            if (!data) return null
+            return SizeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByTitle(title: string): Promise<Size | null> {
-        const data = await this.prisma.sizes.findFirst({ where: { title: title } })
-        if(!data) return null
-        return SizeMap.toDomain(data)
+        try {
+            const data = await this.prisma.sizes.findFirst({where: {title: title}})
+            if (!data) return null
+            return SizeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Size): Promise<Size | null> {
@@ -44,6 +56,8 @@ export class PrismaSizeRepo implements ISizeRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -56,6 +70,8 @@ export class PrismaSizeRepo implements ISizeRepository {
                 status: 404,
                 message: 'Такой материал не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

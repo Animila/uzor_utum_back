@@ -78,7 +78,7 @@ export async function createCertificateController(request: FastifyRequest<Certif
 
         const resultPay = await initialPayment(
             `Покупка сертификата на: ${certType.getValue()} рублей`,
-            process.env.WEBSITE || 'http://localhost:3000?entity_type=certificate',
+            process.env.WEBSITE || 'https://45b62676-f78d-4370-a8a3-9fe5aac2ffad.tunnel4.com/documentation',
             certType.getValue().toString())
 
         if(!resultPay.success) {

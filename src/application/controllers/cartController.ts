@@ -52,8 +52,28 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const cartRep = CartMap.toPersistence(result)
 
         const getItems = new GetItemsCart(itemCartRepo)
-        cartRep.items = await getItems.execute({cart_id: result.getId()})
+        const data = await getItems.execute({cart_id: result.getId()})
 
+
+        const getProduct = new GetByIdProducts(productRepo)
+        const getDiscount = new GetByProductIdDiscount(discountRepo)
+
+        result.props.totalAmount = 0
+        for (const item of data) {
+            let existingProduct, discountProduct
+            try {
+                existingProduct = await getProduct.execute({id: item.getProductId()})
+                discountProduct = await getDiscount.execute({ product_id: existingProduct.getId() })
+            } catch (e) {
+                console.log(e)
+            }
+            const priceWithDiscount = existingProduct ? existingProduct.getPrice() * (discountProduct ? (100 - discountProduct.getPercentage()) / 100 : 1) : 0
+
+            result.props.totalAmount += Math.floor(priceWithDiscount * item.getCount())
+        }
+        await cartRepo.save(result)
+        cartRep.items = data.map(item => ItemCartMap.toPersistence(item))
+        cartRep.total_amount = result.props.totalAmount
 
         reply.status(201).send({
             success: true,
@@ -141,7 +161,9 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
             product_id: existingProduct.getId()
         })
 
-        existingCart.props.totalAmount += ((existingProduct.getPrice() * count) - (((existingProduct.getPrice() * count)/100) * (discountProduct ? discountProduct.getPercentage() : 0)))
+        const priceWithDiscount = existingProduct.getPrice() * (discountProduct ? (100 - discountProduct.getPercentage()) / 100 : 1)
+
+        existingCart.props.totalAmount += priceWithDiscount * count
         existingProduct.props.available -= count
         await productRepo.save(existingProduct)
         await cartRepo.save(existingCart)
@@ -216,17 +238,26 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
             console.log(error)
         }
 
-        // определяем как менять цену
-        const oldAmount = ((existingItem.getCount() * existingProduct.getPrice()) / 100) * (discountProduct ? discountProduct.getPercentage() : 100)
+        // товар со скидкой
+        const priceWithDiscount = existingProduct.getPrice() * (discountProduct ? (100 - discountProduct.getPercentage()) / 100 : 1)
+        const oldAmount = existingItem.getCount() * priceWithDiscount
+
+        console.log(priceWithDiscount)
+        console.log(oldAmount)
+
         const checkEquals = existingItem.getCount() === count
         if (!checkEquals)
             if (existingItem.getCount() > count) {
                 // количество меньше текущего - убираю
-                existingCart.props.totalAmount = existingCart.getTotalAmount() - (oldAmount - (((count * existingProduct.getPrice()) / 100) * (discountProduct ? discountProduct.getPercentage() : 100)))
+                const newAmount = count * priceWithDiscount
+                console.log(newAmount)
+                existingCart.props.totalAmount = Math.floor(existingCart.getTotalAmount() - (oldAmount - newAmount))
                 existingProduct.props.available += (existingItem.getCount() - count)
             } else {
                 // количество больше текущего - убираю
-                existingCart.props.totalAmount = existingCart.getTotalAmount() + ((((count * existingProduct.getPrice()) / 100) * (discountProduct ? discountProduct.getPercentage() : 100)) - oldAmount)
+                const newAmount = count * priceWithDiscount
+                console.log(newAmount)
+                existingCart.props.totalAmount = Math.floor(existingCart.getTotalAmount() + (newAmount - oldAmount))
                 existingProduct.props.available -= (count - existingItem.getCount())
             }
         await productRepo.save(existingProduct)
@@ -276,7 +307,7 @@ export async function deleteItemCartController(request: FastifyRequest<ItemCartR
             console.log(error)
         }
 
-        existingCart.props.totalAmount -= ((existingProduct.getPrice() * data.getCount()) - (((existingProduct.getPrice() * data.getCount()) / 100) * (discountProduct ? discountProduct.getPercentage() : 0)))
+        existingCart.props.totalAmount -= ((existingProduct.getPrice() * data.getCount()) - (((existingProduct.getPrice() * data.getCount()) / 100) * (discountProduct ? (100 - discountProduct.getPercentage()) : 0)))
         existingProduct.props.available += data.getCount()
 
         await cartRepo.save(existingCart)

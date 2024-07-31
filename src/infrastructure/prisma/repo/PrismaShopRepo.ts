@@ -7,14 +7,22 @@ export class PrismaShopRepo implements IShopRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Shop[]> {
-        const data = await this.prisma.shops.findMany()
-        return data.map(shop => ShopMap.toDomain(shop)).filter(shop => shop != null)
+        try {
+            const data = await this.prisma.shops.findMany()
+            return data.map(shop => ShopMap.toDomain(shop)).filter(shop => shop != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Shop | null> {
-        const data = await this.prisma.shops.findUnique({ where: { id: id } })
-        if(!data) return null
-        return ShopMap.toDomain(data)
+        try {
+            const data = await this.prisma.shops.findUnique({where: {id: id}})
+            if (!data) return null
+            return ShopMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Shop): Promise<Shop | null> {
@@ -50,6 +58,8 @@ export class PrismaShopRepo implements IShopRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -62,6 +72,8 @@ export class PrismaShopRepo implements IShopRepository {
                 status: 404,
                 message: 'Такой магазин не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

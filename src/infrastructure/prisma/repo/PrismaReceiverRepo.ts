@@ -7,18 +7,26 @@ export class PrismaReceiverRepo implements IReceiverRepository {
     private prisma = new PrismaClient();
 
     async findAll(token?: string): Promise<Receiver[]> {
-        const data = await this.prisma.receivers.findMany({
-            where: {
-                token
-            }
-        })
-        return data.map(receiver => ReceiverMap.toDomain(receiver)).filter(receiver => receiver != null)
+        try {
+            const data = await this.prisma.receivers.findMany({
+                where: {
+                    token
+                }
+            })
+            return data.map(receiver => ReceiverMap.toDomain(receiver)).filter(receiver => receiver != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Receiver | null> {
-        const data = await this.prisma.receivers.findUnique({ where: { id: id } })
-        if(!data) return null
-        return ReceiverMap.toDomain(data)
+        try {
+            const data = await this.prisma.receivers.findUnique({where: {id: id}})
+            if (!data) return null
+            return ReceiverMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Receiver): Promise<Receiver | null> {
@@ -46,6 +54,8 @@ export class PrismaReceiverRepo implements IReceiverRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -58,6 +68,8 @@ export class PrismaReceiverRepo implements IReceiverRepository {
                 status: 404,
                 message: 'Такой получатель не найден'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

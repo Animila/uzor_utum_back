@@ -7,20 +7,32 @@ export class PrismaCategoryRepo implements ICategoryRepository {
     private prisma = new PrismaClient();
 
     async findAll(): Promise<Category[]> {
-        const data = await this.prisma.categories.findMany()
-        return data.map(category => CategoryMap.toDomain(category)).filter(category => category != null)
+        try {
+            const data = await this.prisma.categories.findMany()
+            return data.map(category => CategoryMap.toDomain(category)).filter(category => category != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<Category | null> {
-        const data = await this.prisma.categories.findUnique({ where: { id: id } })
-        if(!data) return null
-        return CategoryMap.toDomain(data)
+        try {
+            const data = await this.prisma.categories.findUnique({where: {id: id}})
+            if (!data) return null
+            return CategoryMap.toDomain(data)
+        }finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByTitle(title: string): Promise<Category | null> {
-        const data = await this.prisma.categories.findFirst({ where: { title: title } })
-        if(!data) return null
-        return CategoryMap.toDomain(data)
+        try {
+            const data = await this.prisma.categories.findFirst({where: {title: title}})
+            if (!data) return null
+            return CategoryMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Category): Promise<Category | null> {
@@ -45,6 +57,8 @@ export class PrismaCategoryRepo implements ICategoryRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -57,6 +71,8 @@ export class PrismaCategoryRepo implements ICategoryRepository {
                 status: 404,
                 message: 'Такая категория не найдена'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }

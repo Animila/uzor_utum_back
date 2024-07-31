@@ -15,19 +15,35 @@ export class PrismaDiscountRepo implements IDiscountRepository {
                 status: 404,
                 message: 'Такая категория не найдена'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
     async findById(id: string): Promise<Discount | null> {
-        const data = await this.prisma.discounts.findUnique({ where: { id: id } })
-        if(!data) return null
-        return DiscountMap.toDomain(data)
+        try {
+            const data = await this.prisma.discounts.findUnique({where: {id: id}})
+            if (!data) return null
+            return DiscountMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findByProduct(productId: string): Promise<Discount | null> {
-        const data = await this.prisma.discounts.findFirst({ where: { product_id: productId, activated: true, end_date: {lt: new Date()} } })
-        if(!data) return null
-        return DiscountMap.toDomain(data)
+        try {
+            const data = await this.prisma.discounts.findFirst({
+                where: {
+                    product_id: productId,
+                    activated: true,
+                    end_date: {lt: new Date()}
+                }
+            })
+            if (!data) return null
+            return DiscountMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: Discount): Promise<Discount | null> {
@@ -59,6 +75,8 @@ export class PrismaDiscountRepo implements IDiscountRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }

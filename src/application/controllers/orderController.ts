@@ -9,29 +9,58 @@ import {GetByIdCertificate} from "../../useCases/certificate/certificateGetById"
 import {PrismaCertificateRepo} from "../../infrastructure/prisma/repo/PrismaCertificateRepo";
 import {GetByIdPromoCode} from "../../useCases/promocode/promocodeGetId";
 import {PrismaPromoCodeRepo} from "../../infrastructure/prisma/repo/PrismaPromocodeRepo";
+import {GetByIdProducts} from "../../useCases/product/productGetById";
+import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
+import {ProductMap} from "../../mappers/ProductMap";
+import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscountRepo";
+import {GetByIdDiscount} from "../../useCases/discount/discountGetById";
+import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
+import {DiscountMap} from "../../mappers/DiscountMap";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
 const receiverRepo = new PrismaReceiverRepo()
 const certRepo = new PrismaCertificateRepo()
 const promoRepo = new PrismaPromoCodeRepo()
+const productRepo = new PrismaProductRepo()
+const discountRepo = new PrismaDiscountRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
 
-    let sendTypeOrError, shopOrError, receiverOrError, certificateOrError, promoOrError = undefined
+    let sendTypeOrError, shopOrError, receiverOrError, certificateOrError, promoOrError, productsOfError = undefined
     try {
         const getSendType = new GetByIdSendType(sendTypeRepo)
         const getShop = new GetByIdShop(shopRepo)
         const getReceiver = new GetByIdReceiver(receiverRepo)
         const getCertificate = new GetByIdCertificate(certRepo)
         const getPromocode = new GetByIdPromoCode(promoRepo)
+        const getProduct = new GetByIdProducts(productRepo)
+        const getDiscount = new GetByProductIdDiscount(discountRepo)
+
+
+        //@ts-ignore
+        const productsOrError = await Promise.all(data.items.map(async item => {
+            const data = await getProduct.execute({id: item.product_id})
+            const dataPer = ProductMap.toPersistence(data)
+            try {
+                dataPer.discount = DiscountMap.toPersistence(await getDiscount.execute({product_id: data.getId()}))
+            } catch (e) {
+                console.log(e)
+            }
+            return dataPer
+        }))
+        console.log(productsOrError)
 
         sendTypeOrError = await getSendType.execute({id: data.send_type_id})
-        receiverOrError = await getReceiver.execute({id: data.send_type_id})
-        shopOrError = data.shop_id ? await getShop.execute({id: data.send_type_id}) : undefined
-        certificateOrError = data.certificate_id ? await getSendType.execute({id: data.send_type_id}) : undefined
-        promoOrError = data.promocode_id ? await getSendType.execute({id: data.send_type_id}) : undefined
+        receiverOrError = await getReceiver.execute({id: data.receiver_id})
+        shopOrError = data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
+        certificateOrError = data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
+        promoOrError = data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
+
+        console.log('норм')
+
+
 
 
     } catch (error: any) {

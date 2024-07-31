@@ -7,22 +7,30 @@ export class PrismaNewsRepo implements INewsRepository {
     private prisma = new PrismaClient();
 
     async findAll(journalId?: string, old?: boolean, popular?: boolean): Promise<News[]> {
-        const where: any = {};
-        if (journalId) where.journal_id = journalId;
+        try {
+            const where: any = {};
+            if (journalId) where.journal_id = journalId;
 
-        const orderBy: any = [];
-        if (old) orderBy.push({ created_at: 'asc' });
-        else if (popular) orderBy.push({ views: 'desc' });
-        else orderBy.push({ created_at: 'desc' });
+            const orderBy: any = [];
+            if (old) orderBy.push({created_at: 'asc'});
+            else if (popular) orderBy.push({views: 'desc'});
+            else orderBy.push({created_at: 'desc'});
 
-        const data = await this.prisma.news.findMany({ where: where, orderBy: orderBy })
-        return data.map(journal => NewsMap.toDomain(journal)).filter(item => item != null)
+            const data = await this.prisma.news.findMany({where: where, orderBy: orderBy})
+            return data.map(journal => NewsMap.toDomain(journal)).filter(item => item != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<News | null> {
-        const data = await this.prisma.news.findUnique({ where: { id: id } })
-        if(!data) return null
-        return NewsMap.toDomain(data)
+        try {
+            const data = await this.prisma.news.findUnique({where: {id: id}})
+            if (!data) return null
+            return NewsMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: News): Promise<News | null> {
@@ -58,6 +66,8 @@ export class PrismaNewsRepo implements INewsRepository {
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -70,6 +80,8 @@ export class PrismaNewsRepo implements INewsRepository {
                 status: 404,
                 message: 'Такая новость не найдена'
             }));
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

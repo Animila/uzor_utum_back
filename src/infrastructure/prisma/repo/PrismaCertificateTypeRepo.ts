@@ -16,19 +16,28 @@ export class PrismaCertificateTypeRepo implements ICertificateTypeRepository{
                 status: 404,
                 message: 'Такой номинал сертификата не найден'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 
     async findAll(): Promise<CertificateType[]> {
-        const result = await this.prisma.certificate_types.findMany()
-        return result.map(item => CertificateTypeMap.toDomain(item)).filter(item => item != null)
-
+        try {
+            const result = await this.prisma.certificate_types.findMany()
+            return result.map(item => CertificateTypeMap.toDomain(item)).filter(item => item != null)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async findById(id: string): Promise<CertificateType | null> {
-        const data = await this.prisma.certificate_types.findUnique({ where: { id: id } })
-        if(!data) return null
-        return CertificateTypeMap.toDomain(data)
+        try {
+            const data = await this.prisma.certificate_types.findUnique({where: {id: id}})
+            if (!data) return null
+            return CertificateTypeMap.toDomain(data)
+        } finally {
+            await this.prisma.$disconnect();
+        }
     }
 
     async save(data: CertificateType): Promise<CertificateType | null> {
@@ -56,6 +65,8 @@ export class PrismaCertificateTypeRepo implements ICertificateTypeRepository{
                 status: 500,
                 message: 'Ошибка с базой данных'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 

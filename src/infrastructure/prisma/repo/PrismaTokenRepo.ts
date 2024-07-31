@@ -7,25 +7,29 @@ export class PrismaTokenRepo implements ITokenRepository {
     private prisma = new PrismaClient();
 
     async findTokenByUserAndCode(userId: string, token: string): Promise<boolean> {
-        if (!userId) {
-            throw new Error(JSON.stringify({
-                status: 400,
-                message: 'Нет user_id'
-            }));
+        try {
+            if (!userId) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: 'Нет user_id'
+                }));
+            }
+            if (!token) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: 'Нет token'
+                }));
+            }
+            const tokenRecord = await this.prisma.tokens.findFirst({
+                where: {
+                    user_id: userId,
+                    token,
+                },
+            });
+            return !!tokenRecord;
+        } finally {
+            await this.prisma.$disconnect();
         }
-        if (!token) {
-            throw new Error(JSON.stringify({
-                status: 400,
-                message: 'Нет token'
-            }));
-        }
-        const tokenRecord = await this.prisma.tokens.findFirst({
-            where: {
-                user_id: userId,
-                token,
-            },
-        });
-        return !!tokenRecord;
     }
 
     async findValidToken(token: string): Promise<Token | null> {
@@ -43,6 +47,8 @@ export class PrismaTokenRepo implements ITokenRepository {
         } catch (e) {
             console.log(e)
             return null
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 
@@ -73,6 +79,8 @@ export class PrismaTokenRepo implements ITokenRepository {
                 status: 409,
                 message: 'Такой токен уже существует'
             }));
+        }finally {
+            await this.prisma.$disconnect();
         }
     }
 }
