@@ -16,6 +16,9 @@ import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscoun
 import {GetByIdDiscount} from "../../useCases/discount/discountGetById";
 import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
 import {DiscountMap} from "../../mappers/DiscountMap";
+import {CreateOrder} from "../../useCases/order/orderCreate";
+import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
+import {OrderMap} from "../../mappers/OrderMap";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -24,6 +27,7 @@ const certRepo = new PrismaCertificateRepo()
 const promoRepo = new PrismaPromoCodeRepo()
 const productRepo = new PrismaProductRepo()
 const discountRepo = new PrismaDiscountRepo()
+const orderRepo = new PrismaOrderRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
@@ -75,11 +79,12 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
 
     try {
-        // const createOrder = new CreateOrder(productRepo);
-        // const product = await createOrder.execute(data);
+        const createOrder = new CreateOrder(orderRepo);
+        console.log(data)
+        const product = await createOrder.execute(data);
         reply.status(201).send({
             success: true,
-            // data: OrderMap.toPersistence(product)
+            data: OrderMap.toPersistence(product)
         });
     } catch (error: any) {
         console.log('Error:', error.message);

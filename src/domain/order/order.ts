@@ -6,31 +6,31 @@ import {Items} from "./valueObjects/items";
 
 interface IOrder {
     token: string
-    first_name: string
-    last_name: string
+    firstName: string
+    lastName: string
     email: Email
     phone: Phone
-    send_type_id: string
+    sendTypeId: string
     address?: string
     house?: string
     apartament?: string
-    postal_code?: number
-    cabinet?: number
-    delivery_at?: Date
+    postalCode?: number
+    cabinet?: string
+    deliveryAt?: Date
     comment?: string
-    shop_id?: string
-    receiver_id: string
-    payment_id?: string
+    shopId?: string
+    receiverId: string
+    paymentId?: string
     items: Items
-    certificate_id?: string
-    promocode_id?: string
-    add_bonuses: number
-    use_bonus: number
-    total_amount: number
-    user_id?: string
+    certificateId?: string
+    promocodeId?: string
+    addBonus: number
+    useBonus: number
+    totalAmount: number
+    userId?: string
     status: OrderStatus
-    created_at: Date
-    updated_at: Date
+    createdAt: Date
+    updatedAt: Date
 }
 
 export class Order {
@@ -44,31 +44,31 @@ export class Order {
 
     getId(): string { return this._id }
     getToken(): string { return this.props.token }
-    getFirstName(): string { return this.props.first_name }
-    getLastName(): string { return this.props.last_name }
+    getFirstName(): string { return this.props.firstName }
+    getLastName(): string { return this.props.lastName }
     getEmail(): Email { return this.props.email }
     getPhone(): Phone { return this.props.phone }
-    getSendTypeId(): string { return this.props.send_type_id }
+    getSendTypeId(): string { return this.props.sendTypeId }
     getAddress(): string | undefined { return this.props.address }
     getHouse(): string | undefined { return this.props.house }
     getApartment(): string | undefined { return this.props.apartament }
-    getPostalCode(): number | undefined { return this.props.postal_code }
-    getOffice(): number | undefined { return this.props.cabinet; }
-    getDeliveryAt(): Date | undefined { return this.props.delivery_at }
+    getPostalCode(): number | undefined { return this.props.postalCode }
+    getOffice(): string | undefined { return this.props.cabinet; }
+    getDeliveryAt(): Date | undefined { return this.props.deliveryAt }
     getComment(): string | undefined { return this.props.comment }
-    getShopId(): string | undefined { return this.props.shop_id }
+    getShopId(): string | undefined { return this.props.shopId }
     getItems(): Items { return this.props.items }
-    getAddBonus(): number { return this.props.add_bonuses }
-    getUseBonus(): number { return this.props.use_bonus }
-    getTotalAmount(): number { return this.props.total_amount }
-    getUserId(): string | undefined { return this.props.user_id }
+    getAddBonus(): number { return this.props.addBonus }
+    getUseBonus(): number { return this.props.useBonus }
+    getTotalAmount(): number { return this.props.totalAmount }
+    getUserId(): string | undefined { return this.props.userId }
     getStatus(): OrderStatus { return this.props.status }
-    getPaymentId(): string | undefined { return this.props.payment_id }
-    getReceiverId(): string { return this.props.receiver_id }
-    getCreatedAt(): Date { return this.props.created_at }
-    getUpdatedAt(): Date { return this.props.updated_at }
-    getCertificateId(): string | undefined { return this.props.certificate_id }
-    getPromoCode(): string | undefined { return this.props.promocode_id }
+    getPaymentId(): string | undefined { return this.props.paymentId }
+    getReceiverId(): string { return this.props.receiverId }
+    getCreatedAt(): Date { return this.props.createdAt }
+    getUpdatedAt(): Date { return this.props.updatedAt }
+    getCertificateId(): string | undefined { return this.props.certificateId }
+    getPromoCode(): string | undefined { return this.props.promocodeId }
 }
 
 

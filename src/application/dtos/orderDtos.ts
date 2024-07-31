@@ -18,23 +18,23 @@ interface OrderRequest {
         email: string
         phone: string
         send_type_id: string
-        address?: string
-        house?: string
-        apartament?: string
-        postal_code?: number
-        cabinet?: number
-        delivery_at?: Date
-        comment?: string
-        shop_id?: string
+        address: string
+        house: string
+        apartament: string
+        postal_code: number
+        cabinet: number
+        delivery_at: Date
+        comment: string
+        shop_id: string
         receiver_id: string
-        payment_id?: string
+        payment_id: string
         items: JSON
-        certificate_id?: string
-        promocode_id?: string
-        add_bonuses: number
+        certificate_id: string
+        promocode_id: string
+        add_bonus: number
         use_bonus: number
         total_amount: number
-        user_id?: string
+        user_id: string
         created_at: Date
     }
 }
