@@ -20,7 +20,7 @@ export class DeleteItemCart {
         if(!existingData)
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Пользователь не найден'
+                message: 'Позиция в корзине не найдена'
             }))
         return existingData;
     }

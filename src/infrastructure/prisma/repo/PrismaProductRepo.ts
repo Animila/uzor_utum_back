@@ -21,11 +21,12 @@ export class PrismaProductRepo implements IProductRepository {
     ): Promise<Product[]> {
         try {
             const where: any = {};
+            console.log(probIds)
             if (categoryId) where.category_id = categoryId;
             if (materialId) where.material_id = materialId;
             if (probIds) where.prob_ids = {hasSome: probIds};
-            if (decorationIds) where.prob_ids = {hasSome: decorationIds};
-            if (sizeIds) where.prob_ids = {hasSome: sizeIds};
+            if (decorationIds) where.decoration_ids = {hasSome: decorationIds};
+            if (sizeIds) where.size_ids = {hasSome: sizeIds};
 
             console.log(where)
 

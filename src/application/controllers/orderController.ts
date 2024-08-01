@@ -13,12 +13,18 @@ import {GetByIdProducts} from "../../useCases/product/productGetById";
 import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
 import {ProductMap} from "../../mappers/ProductMap";
 import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscountRepo";
-import {GetByIdDiscount} from "../../useCases/discount/discountGetById";
 import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
 import {DiscountMap} from "../../mappers/DiscountMap";
 import {CreateOrder} from "../../useCases/order/orderCreate";
 import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
+import {PrismaItemCartRepository} from "../../infrastructure/prisma/repo/PrismaItemCartRepository";
+import {DeleteItemCart} from "../../useCases/cart/deleteItemCart";
+import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
+import {totalmem} from "node:os";
+import {GetAllOrder} from "../../useCases/order/orderGetAll";
 import {OrderMap} from "../../mappers/OrderMap";
+import {GetByIdOrder} from "../../useCases/order/orderGetById";
+import {DeleteOrder} from "../../useCases/order/orderDelete";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -27,6 +33,7 @@ const certRepo = new PrismaCertificateRepo()
 const promoRepo = new PrismaPromoCodeRepo()
 const productRepo = new PrismaProductRepo()
 const discountRepo = new PrismaDiscountRepo()
+const cartRepo = new PrismaItemCartRepository()
 const orderRepo = new PrismaOrderRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
@@ -62,11 +69,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         certificateOrError = data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
         promoOrError = data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
 
-        console.log('норм')
-
-
-
-
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -79,10 +81,91 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
 
     try {
-        const createOrder = new CreateOrder(orderRepo);
         console.log(data)
-        const product = await createOrder.execute(data);
-        reply.status(201).send({
+        const createOrder = new CreateOrder(orderRepo);
+        const order = await createOrder.execute(data);
+
+        if(order) {
+            const deleteCart = new DeleteItemCart(cartRepo)
+            //@ts-ignore
+            const results = await Promise.all(data.items.map(async item => {
+                const res = await deleteCart.execute({id: item.id})
+
+                console.log('3 ',res)
+            }))
+        }
+        // создать платеж
+
+        const resultPay = await initialPayment(
+            `Оплата заказа №${order.getId()}`,
+            process.env.WEBSITE || 'https://45b62676-f78d-4370-a8a3-9fe5aac2ffad.tunnel4.com/documentation',
+            data.total_amount.toString())
+
+        if(!resultPay.success) {
+            await orderRepo.delete(order.getId())
+            reply.status(500).send({
+                success: false,
+                message: resultPay.message
+            })
+        }
+
+        order.props.paymentId = resultPay.data?.payment_id
+
+        await orderRepo.save(order)
+
+        reply.status(200).send({
+            success: true,
+            data: {
+                url_confirm: resultPay.data?.payment_url
+            }
+        });
+    } catch (error: any) {
+        console.log('Error:', error.message);
+        const errors = JSON.parse(error.message);
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        });
+    }
+}
+
+export async function getAllOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
+    try {
+        const {
+            phone,
+            email,
+            user_id,
+            token,
+            last_name,
+            total_amount,
+            first_name
+        } = request.query as OrderRequest['Query'];
+
+        const getAllOrder = new GetAllOrder(orderRepo);
+        const products = await getAllOrder.execute({user_id: user_id, token: token});
+
+        console.log(products)
+        reply.status(200).send({
+            success: true,
+            data: products.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
+        });
+    } catch (error: any) {
+        console.log('Error:', error.message);
+        const errors = JSON.parse(error.message);
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        });
+    }
+}
+//
+export async function getByIdOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
+    try {
+        const { id } = request.params;
+        const getOrder = new GetByIdOrder(orderRepo);
+        const product = await getOrder.execute({ id });
+
+        reply.status(200).send({
             success: true,
             data: OrderMap.toPersistence(product)
         });
@@ -96,127 +179,24 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
     }
 }
 
-// export async function getAllOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
-//     try {
-//         const {
-//             filters,
-//             sortBy,
-//             order,
-//             categoryId,
-//             materialId,
-//             q ,
-//             minPrice,
-//             maxPrice
-//         } = request.query as OrderRequest['Query'];
-//         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
-//         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
-//         const json = filters ? JSON.parse(filters!) : undefined
-//         const getAllOrder = new GetAllOrders(productRepo);
-//         const getDiscount = new GetByOrderIdDiscount(discountRepo)
-//         const products = await getAllOrder.execute({categoryId, materialId, filters: json, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
-//         await Promise.all(
-//             products.map(async item => {
-//                 try {
-//                     const result = await getDiscount.execute({ product_id: item.id });
-//                     item.discount = DiscountMap.toPersistence(result);
-//                 } catch (error) {
-//
-//                 }
-//             })
-//         )
-//         console.log(products)
-//         reply.status(200).send({
-//             success: true,
-//             data: products
-//         });
-//     } catch (error: any) {
-//         console.log('Error:', error.message);
-//         const errors = JSON.parse(error.message);
-//         reply.status(errors.status).send({
-//             success: false,
-//             message: errors.message
-//         });
-//     }
-// }
-//
-// export async function getByIdOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
-//     try {
-//         const { id } = request.params;
-//         const getOrder = new GetByIdOrders(productRepo);
-//         const product = await getOrder.execute({ id });
-//         const getDiscount = new GetByOrderIdDiscount(discountRepo)
-//         const productPer = OrderMap.toPersistence(product)
-//         try {
-//             const result = await getDiscount.execute({product_id: product.getId()})
-//             productPer.discount = DiscountMap.toPersistence(result)
-//         } catch (err) {}
-//         reply.status(200).send({
-//             success: true,
-//             data: productPer
-//         });
-//     } catch (error: any) {
-//         console.log('Error:', error.message);
-//         const errors = JSON.parse(error.message);
-//         reply.status(errors.status).send({
-//             success: false,
-//             message: errors.message
-//         });
-//     }
-// }
-//
-// export async function updateOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
-//     try {
-//         const { id } = request.params;
-//         const data = request.body || {};
-//         const updateOrder = new UpdateOrder(productRepo);
-//         const product = await updateOrder.execute({
-//             id: id,
-//             title: data.title,
-//             article: data.article,
-//             price: data.price,
-//             path_images: data.path_images,
-//             sex: data.sex,
-//             description: data.description,
-//             details: data.details,
-//             delivery: data.delivery,
-//             attributes: data.attributes,
-//             available: data.available,
-//             categoryId: data.categoryId,
-//             materialId: data.materialId
-//         });
-//
-//         reply.status(200).send({
-//             success: true,
-//             data: OrderMap.toPersistence(product)
-//         });
-//     } catch (error: any) {
-//         console.log('Error:', error.message);
-//         const errors = JSON.parse(error.message);
-//         reply.status(errors.status).send({
-//             success: false,
-//             message: errors.message
-//         });
-//     }
-// }
-//
-// export async function deleteOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
-//     try {
-//         const { id } = request.params;
-//         const delOrder = new DeleteOrder(productRepo);
-//         const data = await delOrder.execute({ id });
-//
-//         reply.status(200).send({
-//             success: true,
-//             data: {
-//                 success: data
-//             }
-//         });
-//     } catch (error: any) {
-//         console.log('Error:', error.message);
-//         const errors = JSON.parse(error.message);
-//         reply.status(errors.status).send({
-//             success: false,
-//             message: errors.message
-//         });
-//     }
-// }
+export async function deleteOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
+    try {
+        const { id } = request.params;
+        const delOrder = new DeleteOrder(orderRepo);
+        const data = await delOrder.execute({ id });
+
+        reply.status(200).send({
+            success: true,
+            data: {
+                success: data
+            }
+        });
+    } catch (error: any) {
+        console.log('Error:', error.message);
+        const errors = JSON.parse(error.message);
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        });
+    }
+}

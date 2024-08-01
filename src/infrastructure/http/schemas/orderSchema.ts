@@ -85,45 +85,42 @@ const getOrderSchema = {
                 properties: {
                     success: { type: 'boolean' },
                     data: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-
-                                id: {type: 'string'},
-                                first_name: { type: 'string' },
-                                last_name: { type: 'string' },
-                                phone: { type: 'string' },
-                                email: { type: 'string' },
-                                send_type_id: { type: 'string' },
-                                address: { type: 'string' },
-                                house: {type: 'string'},
-                                apartment: { type: 'string' },
-                                postal_code: { type: 'number' },
-                                office: { type: 'string' },
-                                delivery_at: { type: 'string' },
-                                shop_id: { type: 'string' },
-                                comment: { type: 'string' },
-                                receiver_id: { type: 'string' },
-                                payment_id: {type: 'string'},
-                                certificate_id: { type: 'string' },
-                                promocode_id: { type: 'string' },
-                                add_bonus: { type: 'number' },
-                                use_bonus: { type: 'number' },
-                                total_amount: {type: 'number'},
+                        type: 'object',
+                        properties: {
+                            id: {type: 'string'},
+                            first_name: { type: 'string' },
+                            last_name: { type: 'string' },
+                            phone: { type: 'string' },
+                            email: { type: 'string' },
+                            send_type_id: { type: 'string' },
+                            address: { type: 'string' },
+                            house: {type: 'string'},
+                            apartment: { type: 'string' },
+                            postal_code: { type: 'number' },
+                            office: { type: 'string' },
+                            delivery_at: { type: 'string' },
+                            shop_id: { type: 'string' },
+                            comment: { type: 'string' },
+                            receiver_id: { type: 'string' },
+                            payment_id: {type: 'string'},
+                            certificate_id: { type: 'string' },
+                            promocode_id: { type: 'string' },
+                            add_bonus: { type: 'number' },
+                            use_bonus: { type: 'number' },
+                            total_amount: {type: 'number'},
+                            items: {
+                                type: 'array',
                                 items: {
-                                    type: 'array',
-                                    items: {
-                                        type: 'object',
-                                        additionalProperties: true
-                                    }
-                                },
-                                user_id: {type: 'string'},
-                                token: {type: 'string'},
-                                created_at: {type: 'string'},
-                                updated_at: {type: 'string'},
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
                             },
-                        }
+                            user_id: {type: 'string'},
+                            token: {type: 'string'},
+                            created_at: {type: 'string'},
+                            updated_at: {type: 'string'},
+                        },
+
                     }
                 }
             },
@@ -182,38 +179,7 @@ const createOrderSchema = {
                     data: {
                         type: 'object',
                         properties: {
-                            id: {type: 'string'},
-                            first_name: { type: 'string' },
-                            last_name: { type: 'string' },
-                            phone: { type: 'string' },
-                            email: { type: 'string' },
-                            send_type_id: { type: 'string' },
-                            address: { type: 'string' },
-                            house: {type: 'string'},
-                            apartment: { type: 'string' },
-                            postal_code: { type: 'number' },
-                            office: { type: 'string' },
-                            delivery_at: { type: 'string' },
-                            shop_id: { type: 'string' },
-                            comment: { type: 'string' },
-                            receiver_id: { type: 'string' },
-                            payment_id: {type: 'string'},
-                            certificate_id: { type: 'string' },
-                            promocode_id: { type: 'string' },
-                            add_bonus: { type: 'number' },
-                            use_bonus: { type: 'number' },
-                            total_amount: {type: 'number'},
-                            items: {
-                                type: 'array',
-                                items: {
-                                    type: 'object',
-                                    additionalProperties: true
-                                }
-                            },
-                            user_id: {type: 'string'},
-                            token: {type: 'string'},
-                            created_at: {type: 'string'},
-                            updated_at: {type: 'string'},
+                            url_confirm: { type: 'string' }
                         },
                     }
                 }
@@ -251,7 +217,7 @@ const deleteOrderSchema = {
     schema: {
         description: 'Удалить заказ',
         tags: ['Order'],
-        query: {
+        params: {
             id: { type: 'string' },
         },
         response: {

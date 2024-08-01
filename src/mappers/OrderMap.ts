@@ -3,13 +3,15 @@ import { Order } from "../domain/order/order";
 import { Items, iItems } from "../domain/order/valueObjects/items";
 import {Phone} from "../domain/order/valueObjects/phone";
 import {Email} from "../domain/order/valueObjects/email";
+import {OrderStatus} from "../domain/order/valueObjects/OrderStatus";
 
 export class OrderMap {
     public static toDomain(raw: PersistenceData): Order | null {
         const items = Items.create(raw.items as iItems);
+        const statusOrError = OrderStatus.create(raw.status)
         const phoneOrError = Phone.create(raw.phone)
         const emailOrError = Email.create(raw.email)
-        if(phoneOrError instanceof Error || emailOrError instanceof Error) return null
+        if(statusOrError instanceof Error || phoneOrError instanceof Error || emailOrError instanceof Error) return null
 
         const result = new Order({
             firstName: raw.first_name,
@@ -38,7 +40,7 @@ export class OrderMap {
             token: raw.token,
             paymentId: raw.payment_id || undefined,
             items: items,
-            status: raw.status as any,
+            status: statusOrError,
             createdAt: raw.created_at,
             updatedAt: new Date()
         }, raw.id)
@@ -78,7 +80,7 @@ export class OrderMap {
         created_at: Date,
         updated_at: Date
     } {
-        console.log('ROOOOOOOOOOOOOOOR ', data.getItems())
+        console.log('ROOOOOOOOOOOOOOOR ', data)
         return {
             id: data.getId(),
             first_name: data.getFirstName(),
