@@ -36,7 +36,7 @@ export class PrismaDiscountRepo implements IDiscountRepository {
                 where: {
                     product_id: productId,
                     activated: true,
-                    end_date: {lt: new Date()}
+                    end_date: {gt: new Date()}
                 }
             })
             if (!data) return null
