@@ -1,6 +1,6 @@
 const createPromoCodeSchema = {
     schema: {
-        description: 'Создать промокод',
+        description: 'Создать промокод. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
         body: {
@@ -48,7 +48,7 @@ const createPromoCodeSchema = {
 
 const getPromoCodesSchema = {
     schema: {
-        description: 'Получить список всех промокодов',
+        description: 'Получить список всех промокодов. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
         response: {
@@ -88,7 +88,7 @@ const getPromoCodesSchema = {
 
 const getByIdPromoCodeSchema = {
     schema: {
-        description: 'Получить промокод',
+        description: 'Получить промокод. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
         parameters: {
@@ -175,7 +175,7 @@ const checkPromoCodeSchema = {
 
 const updatePromoCodeSchema = {
     schema: {
-        description: 'Обновить промокод',
+        description: 'Обновить промокод. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
         parameters: {
@@ -226,7 +226,7 @@ const updatePromoCodeSchema = {
 
 const deletePromoCodeSchema = {
     schema: {
-        description: 'Удалить промокод',
+        description: 'Удалить промокод. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
         parameters: {

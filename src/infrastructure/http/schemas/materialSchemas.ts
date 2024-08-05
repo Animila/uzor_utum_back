@@ -1,7 +1,7 @@
 
 const createMaterialSchema = {
     schema: {
-        description: 'Создать материал',
+        description: 'Создать материал. Доступно для модераторов и админов',
         tags: ['Material'],
         security: [{ApiToken: []}],
         body: {
@@ -108,7 +108,7 @@ const getMaterialSchema = {
 
 const updateMaterialSchema = {
     schema: {
-        description: 'Обновить материал',
+        description: 'Обновить материал. Доступно для модераторов и админов',
         tags: ['Material'],
         security: [{ApiToken: []}],
         parameters: {
@@ -149,7 +149,7 @@ const updateMaterialSchema = {
 
 const deleteMaterialSchema = {
     schema: {
-        description: 'Удалить материал',
+        description: 'Удалить материал. Доступно для модераторов и админов',
         tags: ['Material'],
         security: [{ApiToken: []}],
         parameters: {

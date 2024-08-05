@@ -1,6 +1,6 @@
 const getAllSchema = {
     schema: {
-        description: 'Получить всех пользователей',
+        description: 'Получить всех пользователей. Доступно для модераторов и админов',
         tags: ['User'],
         security: [{ApiToken: []}],
         response: {
@@ -43,7 +43,7 @@ const getAllSchema = {
 
 const getUserSchema = {
     schema: {
-        description: 'Получить пользователя',
+        description: 'Получить пользователя. Доступно для авторизованных',
         tags: ['User'],
         security: [{ApiToken: []}],
         parameters: {
@@ -72,6 +72,14 @@ const getUserSchema = {
                     }
                 }
             },
+            404: {
+                description: 'Если такого пользователя нет',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            },
             500: {
                 description: 'Если все взорвалось',
                 type: 'object',
@@ -86,7 +94,7 @@ const getUserSchema = {
 
 const updateUserSchema = {
     schema: {
-        description: 'Обвноить пользователя',
+        description: 'Обновить пользователя. Доступно для авторизованных',
         tags: ['User'],
         security: [{ApiToken: []}],
         parameters: {
@@ -120,8 +128,7 @@ const updateUserSchema = {
                             accepted_at: { type: 'boolean' },
                             created_at: { type: 'string', format: 'date-time' },
                             updated_at: { type: 'string', format: 'date-time', nullable: true }
-                        },
-                        required: ['id', 'phone', 'email', 'first_name', 'last_name', 'role', 'accepted_at', 'created_at']
+                        }
                     }
                 }
             },
@@ -142,6 +149,14 @@ const updateUserSchema = {
                     }
                 }
             },
+            404: {
+                description: 'Если такого пользователя нет',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            },
             500: {
                 description: 'Если все взорвалось',
                 type: 'object',
@@ -156,7 +171,7 @@ const updateUserSchema = {
 
 const deleteUserSchema = {
     schema: {
-        description: 'Удалить пользователя',
+        description: 'Удалить пользователя. Доступно для модераторов и админов',
         tags: ['User'],
         security: [{ApiToken: []}],
         parameters: {
@@ -168,6 +183,14 @@ const deleteUserSchema = {
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
+                }
+            },
+            404: {
+                description: 'Если такого пользователя нет',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
                 }
             },
             500: {

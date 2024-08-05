@@ -21,11 +21,13 @@ import {registerSendTypeRouting} from "./routing/sendTypeRouting";
 import {registerDecorateRouting} from "./routing/decorateRouting";
 import {registerProbRouting} from "./routing/prodRouting";
 import {registerSizeRouting} from "./routing/sizeRouting";
+import {registerFileRouting} from "./routing/fileRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
     registerUserRoutes(fastify)
     registerLikeRouting(fastify)
+    registerFileRouting(fastify)
 
     registerCategoryRouting(fastify)
     registerMaterialRouting(fastify)

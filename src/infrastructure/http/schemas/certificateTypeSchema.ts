@@ -1,6 +1,6 @@
 const createCertificateTypeSchema = {
     schema: {
-        description: 'Создать номинал сертификата',
+        description: 'Создать номинал сертификата. Доступно для модераторов и админов',
         tags: ['CertificateType'],
         security: [{ApiToken: []}],
         body: {
@@ -110,7 +110,7 @@ const getByIdCertificateTypeSchema = {
 
 const updateCertificateTypeSchema = {
     schema: {
-        description: 'Ообновить номинал сертификата',
+        description: 'Ообновить номинал сертификата. Доступно для модераторов и админов',
         tags: ['CertificateType'],
         security: [{ApiToken: []}],
         parameters: {
@@ -150,7 +150,7 @@ const updateCertificateTypeSchema = {
 
 const deleteCertificateTypeSchema = {
     schema: {
-        description: 'Удалить номинал',
+        description: 'Удалить номинал. Доступно для модераторов и админов',
         tags: ['CertificateType'],
         security: [{ApiToken: []}],
         parameters: {

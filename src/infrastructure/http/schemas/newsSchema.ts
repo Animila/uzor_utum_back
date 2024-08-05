@@ -1,6 +1,6 @@
 const createNewsSchema = {
     schema: {
-        description: 'Создать новость',
+        description: 'Создать новость. Доступно для модераторов и админов',
         tags: ['News'],
         security: [{ApiToken: []}],
         body: {
@@ -160,7 +160,7 @@ const createViewNewsSchema = {
 
 const updateNewsSchema = {
     schema: {
-        description: 'Обновить новость',
+        description: 'Обновить новость. Доступно для модераторов и админов',
         tags: ['News'],
         security: [{ApiToken: []}],
         parameters: {
@@ -212,7 +212,7 @@ const updateNewsSchema = {
 
 const deleteNewsSchema = {
     schema: {
-        description: 'Удалить новость',
+        description: 'Удалить новость. Доступно для модераторов и админов',
         tags: ['News'],
         security: [{ApiToken: []}],
         parameters: {

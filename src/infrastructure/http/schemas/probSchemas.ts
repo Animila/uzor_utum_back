@@ -1,7 +1,7 @@
 
 const createProbSchema = {
     schema: {
-        description: 'Создать материал',
+        description: 'Создать пробу. Доступно для модераторов и админов',
         tags: ['Prob'],
         security: [{ApiToken: []}],
         body: {
@@ -39,7 +39,7 @@ const createProbSchema = {
 
 const getAllProbSchema = {
     schema: {
-        description: 'Получить все материалы',
+        description: 'Получить все пробуы',
         tags: ['Prob'],
         response: {
             200: {
@@ -74,7 +74,7 @@ const getAllProbSchema = {
 
 const getProbSchema = {
     schema: {
-        description: 'Получить материал',
+        description: 'Получить пробу',
         tags: ['Prob'],
         parameters: {
             id: { type: 'string' },
@@ -108,7 +108,7 @@ const getProbSchema = {
 
 const updateProbSchema = {
     schema: {
-        description: 'Обновить материал',
+        description: 'Обновить пробу. Доступно для модераторов и админов',
         tags: ['Prob'],
         security: [{ApiToken: []}],
         parameters: {
@@ -149,7 +149,7 @@ const updateProbSchema = {
 
 const deleteProbSchema = {
     schema: {
-        description: 'Удалить материал',
+        description: 'Удалить пробу. Доступно для модераторов и админов',
         tags: ['Prob'],
         security: [{ApiToken: []}],
         parameters: {

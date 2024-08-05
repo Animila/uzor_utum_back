@@ -1,6 +1,6 @@
 const createDiscountSchema = {
     schema: {
-        description: 'Создать скидки',
+        description: 'Создать скидки. Доступно для модераторов и админов',
         tags: ['Discount'],
         security: [{ApiToken: []}],
         body: {
@@ -122,7 +122,7 @@ const getByIdDiscountSchema = {
 
 const updateDiscountSchema = {
     schema: {
-        description: 'Обновить скидки',
+        description: 'Обновить скидки. Доступно для модераторов и админов',
         tags: ['Discount'],
         security: [{ApiToken: []}],
         parameters: {
@@ -171,7 +171,7 @@ const updateDiscountSchema = {
 
 const deleteDiscountSchema = {
     schema: {
-        description: 'Удалить скидк',
+        description: 'Удалить скидку. Доступно для модераторов и админов',
         tags: ['Discount'],
         security: [{ApiToken: []}],
         parameters: {

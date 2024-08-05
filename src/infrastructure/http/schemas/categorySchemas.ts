@@ -1,7 +1,7 @@
 
 const createCategorySchema = {
     schema: {
-        description: 'Создать категорию',
+        description: 'Создать категорию. Доступно для модераторов и админов',
         tags: ['Category'],
         security: [{ApiToken: []}],
         body: {
@@ -107,7 +107,7 @@ const getCategorySchema = {
 
 const updateCategorySchema = {
     schema: {
-        description: 'Обновить категорию',
+        description: 'Обновить категорию. Доступно для модераторов и админов',
         tags: ['Category'],
         security: [{ApiToken: []}],
         parameters: {
@@ -148,7 +148,7 @@ const updateCategorySchema = {
 
 const deleteCategorySchema = {
     schema: {
-        description: 'Удалить категорию',
+        description: 'Удалить категорию. Доступно для модераторов и админов',
         tags: ['Category'],
         security: [{ApiToken: []}],
         parameters: {

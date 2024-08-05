@@ -1,6 +1,6 @@
 const createProductSchema = {
     schema: {
-        description: 'Создать продукт',
+        description: 'Создать продукт. Доступно для модераторов и админов',
         tags: ['Product'],
         security: [{ApiToken: []}],
         body: {
@@ -195,7 +195,7 @@ const getByIdProductSchema = {
 
 const updateProductSchema = {
     schema: {
-        description: 'Обновить продукт',
+        description: 'Обновить продукт. Доступно для модераторов и админов',
         tags: ['Product'],
         security: [{ApiToken: []}],
         body: {
@@ -255,7 +255,7 @@ const updateProductSchema = {
 
 const deleteProductSchema = {
     schema: {
-        description: 'Удалить продукт',
+        description: 'Удалить продукт. Доступно для модераторов и админов',
         tags: ['Product'],
         security: [{ApiToken: []}],
         response: {

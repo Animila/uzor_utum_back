@@ -2,6 +2,8 @@ import Fastify, {FastifyServerOptions} from "fastify";
 import registerRoutes from "./infrastructure/http";
 import {swaggerOptions, swaggerUIOptions} from "./config/swaggerOptions";
 import {rabbit } from "./config/SMTPOptions";
+import fileUpload from 'fastify-file-upload'
+import path from "path";
 export type AppOptions = Partial<FastifyServerOptions>
 
 declare module 'fastify' {
@@ -10,10 +12,10 @@ declare module 'fastify' {
         jwt: import('@fastify/jwt').FastifyJWT;
     }
 }
-
 async function buildApp(options: AppOptions = {}) {
     await rabbit.connectQueue()
     const fastify = Fastify(options)
+    await fastify.register(fileUpload)
     await fastify.register(require("@fastify/swagger"), swaggerOptions)
     await fastify.register(require("@fastify/swagger-ui"), swaggerUIOptions)
     await fastify.register(require('fastify-graceful-shutdown'))
@@ -22,6 +24,10 @@ async function buildApp(options: AppOptions = {}) {
         sign: {
             expiresIn: process.env.JWT_SIGN_EXPIRES_IN || '30d',
         },
+    })
+    fastify.register(require('@fastify/static'), {
+        root: path.join(__dirname, '../storage'),
+        prefix: '/public/',
     })
     await fastify.register(require('@fastify/cors'), {
         origin: [process.env.LOCALHOST || '', process.env.WEBSITE || ''], // разрешить запросы с localhost:4000

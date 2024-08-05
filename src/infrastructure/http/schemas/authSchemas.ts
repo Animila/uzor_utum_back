@@ -1,6 +1,6 @@
 const registerSchema = {
     schema: {
-        description: 'Регистрация пользователей',
+        description: 'Регистрация пользователя (после чего сразу же будет выслан код подтверждения)',
         tags: ['Auth'],
         body: {
             type: 'object',
@@ -13,7 +13,7 @@ const registerSchema = {
         },
         response: {
             200: {
-                description: 'Успешно создано',
+                description: 'Пользователь успешно был создан',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
@@ -64,7 +64,7 @@ const registerSchema = {
 
 const loginSchema = {
     schema: {
-        description: 'Авторизация по номеру',
+        description: 'Аутентификация по номеру телефона. После ввода будет выслан код',
         tags: ['Auth'],
         body: {
             type: 'object',
@@ -78,6 +78,23 @@ const loginSchema = {
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
+                }
+            },
+            400: {
+                description: 'Если есть проблемы с данными',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                type: { type: 'string' },
+                                message: { type: 'string' },
+                            }
+                        }
+                    }
                 }
             },
             404: {
@@ -102,7 +119,7 @@ const loginSchema = {
 
 const checkAuth = {
     schema: {
-        description: 'Проверка авторизации',
+        description: 'Авторизация, получение идентификатора и роли',
         tags: ['Auth'],
         security: [{ApiToken: []}],
         response: {
@@ -112,13 +129,20 @@ const checkAuth = {
                 properties: {
                     success: {type: 'boolean'},
                     data: {
-                        user_id: {type: 'number'},
-                        role: {type: 'string'},
+                        type: 'object',
+                        properties: {
+                            user_id: {type: 'string'},
+                            role: {type: 'string'},
+                        }
                     },
                 }
             },
             401: {
                 description: 'Не авторизован',
+                type: 'object',
+            },
+            403: {
+                description: 'Не имеешь право доступа',
                 type: 'object',
             },
         }
@@ -127,12 +151,12 @@ const checkAuth = {
 
 const verifySchema = {
     schema: {
-        description: 'Потверждение кода',
+        description: 'Подтверждение одноразового кода. После этого вернется токен доступа',
         tags: ['Auth'],
         body: {
             type: 'object',
             properties: {
-                code: { type: 'number' },
+                code: { type: 'string' },
             },
         },
         response: {
@@ -142,7 +166,10 @@ const verifySchema = {
                 properties: {
                     success: { type: 'boolean' },
                     data: {
-                        code: { type: 'number' },
+                        type: 'object',
+                        properties: {
+                            token: {type: 'string'},
+                        }
                     },
                 }
             },

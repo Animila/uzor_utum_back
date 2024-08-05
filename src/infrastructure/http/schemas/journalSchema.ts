@@ -1,6 +1,6 @@
 const createJournalSchema = {
     schema: {
-        description: 'Создать журнал',
+        description: 'Создать журнал. Доступно для модераторов и админов',
         tags: ['Journal'],
         security: [{ApiToken: []}],
         body: {
@@ -106,7 +106,7 @@ const getByIdJournalSchema = {
 
 const updateJournalSchema = {
     schema: {
-        description: 'Обновить журнал',
+        description: 'Обновить журнал. Доступно для модераторов и админов',
         tags: ['Journal'],
         security: [{ApiToken: []}],
         body: {
@@ -144,7 +144,7 @@ const updateJournalSchema = {
 
 const deleteJournalSchema = {
     schema: {
-        description: 'Удалить журнал',
+        description: 'Удалить журнал. Доступно для модераторов и админов',
         tags: ['Journal'],
         security: [{ApiToken: []}],
         response: {

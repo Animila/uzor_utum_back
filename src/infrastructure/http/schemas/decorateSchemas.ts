@@ -1,7 +1,7 @@
 
 const createDecorateSchema = {
     schema: {
-        description: 'Создать материал',
+        description: 'Создать материал. Доступно для модераторов и админов',
         tags: ['Decorate'],
         security: [{ApiToken: []}],
         body: {
@@ -108,7 +108,7 @@ const getDecorateSchema = {
 
 const updateDecorateSchema = {
     schema: {
-        description: 'Обновить материал',
+        description: 'Обновить материал. Доступно для модераторов и админов',
         tags: ['Decorate'],
         security: [{ApiToken: []}],
         parameters: {
@@ -149,7 +149,7 @@ const updateDecorateSchema = {
 
 const deleteDecorateSchema = {
     schema: {
-        description: 'Удалить материал',
+        description: 'Удалить материал. Доступно для модераторов и админов',
         tags: ['Decorate'],
         security: [{ApiToken: []}],
         parameters: {

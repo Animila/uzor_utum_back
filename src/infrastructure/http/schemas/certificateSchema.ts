@@ -44,7 +44,7 @@ const createCertificateSchema = {
 
 const getAllCertificateSchema = {
     schema: {
-        description: 'Получить список всех сертификатов',
+        description: 'Получить список всех сертификатов. Доступно для модераторов и админов',
         tags: ['Certificate'],
         security: [{ApiToken: []}],
         query: {
@@ -132,7 +132,7 @@ const getByIdCertificateSchema = {
 
 const deleteCertificateSchema = {
     schema: {
-        description: 'Удалить сертификат',
+        description: 'Удалить сертификат. Доступно для модераторов и админов',
         tags: ['Certificate'],
         security: [{ApiToken: []}],
         parameters: {

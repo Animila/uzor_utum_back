@@ -311,3 +311,12 @@ model shops {
 	phone String[]
 	orders orders[]
 }
+
+model files {
+	id 					String 			@id
+	name        String
+	path        String
+	entity_type String
+	entity_id   String
+	typefile    String
+}

@@ -4,6 +4,7 @@ import {
     registerController, verifyController
 } from "../../../application/controllers/authController";
 import {checkAuth, loginSchema, registerSchema, verifySchema} from "../schemas/authSchemas";
+import {success} from "concurrently/dist/src/defaults";
 
 export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/register', registerSchema, registerController);
@@ -16,10 +17,8 @@ export function registerAuthRoutes(fastify: FastifyInstance) {
         const data = request.user
         reply.send({
             success: true,
-            data: {
-                // @ts-ignore
-                user_id: data.data
-            }
+            // @ts-ignore
+            data: data.data
         })
     });
 }

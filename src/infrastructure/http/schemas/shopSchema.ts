@@ -1,7 +1,7 @@
 
 const createShopSchema = {
     schema: {
-        description: 'Создать магазин',
+        description: 'Создать магазин. Доступно для модераторов и админов',
         tags: ['Shop'],
         security: [{ApiToken: []}],
         body: {
@@ -144,7 +144,7 @@ const getShopSchema = {
 
 const updateShopSchema = {
     schema: {
-        description: 'Обновить магазин',
+        description: 'Обновить магазин. Доступно для модераторов и админов',
         tags: ['Shop'],
         security: [{ApiToken: []}],
         parameters: {
@@ -203,7 +203,7 @@ const updateShopSchema = {
 
 const deleteShopSchema = {
     schema: {
-        description: 'Удалить магазин',
+        description: 'Удалить магазин. Доступно для модераторов и админов',
         tags: ['Shop'],
         security: [{ApiToken: []}],
         parameters: {

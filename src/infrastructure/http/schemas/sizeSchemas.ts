@@ -1,7 +1,7 @@
 
 const createSizeSchema = {
     schema: {
-        description: 'Создать материал',
+        description: 'Создать размер. Доступно для модераторов и админов',
         tags: ['Size'],
         security: [{ApiToken: []}],
         body: {
@@ -12,7 +12,7 @@ const createSizeSchema = {
         },
         response: {
             200: {
-                description: 'Успешно создан',
+                description: 'Успешно создано',
                 type: 'object',
                 properties: {
                     success: { type: 'boolean' },
@@ -39,7 +39,7 @@ const createSizeSchema = {
 
 const getAllSizeSchema = {
     schema: {
-        description: 'Получить все материалы',
+        description: 'Получить все размеры',
         tags: ['Size'],
         response: {
             200: {
@@ -74,7 +74,7 @@ const getAllSizeSchema = {
 
 const getSizeSchema = {
     schema: {
-        description: 'Получить материал',
+        description: 'Получить размер',
         tags: ['Size'],
         parameters: {
             id: { type: 'string' },
@@ -108,7 +108,7 @@ const getSizeSchema = {
 
 const updateSizeSchema = {
     schema: {
-        description: 'Обновить материал',
+        description: 'Обновить размер. Доступно для модераторов и админов',
         tags: ['Size'],
         security: [{ApiToken: []}],
         parameters: {
@@ -149,7 +149,7 @@ const updateSizeSchema = {
 
 const deleteSizeSchema = {
     schema: {
-        description: 'Удалить материал',
+        description: 'Удалить размер. Доступно для модераторов и админов',
         tags: ['Size'],
         security: [{ApiToken: []}],
         parameters: {
