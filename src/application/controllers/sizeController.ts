@@ -8,17 +8,24 @@ import {
     UpdateSize
 } from "../../useCases/product/size";
 import {SizeMap} from "../../mappers/SizeMap";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
 
 const materialRepo = new PrismaSizeRepo();
+const fileRepo = new PrismaFileRepo();
 
 export async function getAllSizeController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllSize = new GetAllSize(materialRepo)
-        const results =  await getAllSize.execute();
+        const sizes =  await getAllSize.execute();
+        const getFiles = new GetAllFile(fileRepo)
+        for(const size of sizes) {
+            size.images = await getFiles.execute({entity_id: size.id, entity_type: 'size'})
+        }
         reply.status(200).send({
             success: true,
-            data: results
+            data: sizes
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -34,11 +41,14 @@ export async function getByIdSizeController(request: FastifyRequest<SizeRequest>
     try {
         const {id} = request.params
         const getSize = new GetByIdSize(materialRepo)
-        const material =  await getSize.execute({id: id});
+        const size =  await getSize.execute({id: id});
+        const sizePer = SizeMap.toPersistence(size)
+        const getFiles = new GetAllFile(fileRepo)
+        sizePer.images = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
 
         reply.status(200).send({
             success: true,
-            data: SizeMap.toPersistence(material)
+            data: sizePer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -78,14 +88,17 @@ export async function updateSizeController(request: FastifyRequest<SizeRequest>,
         const {id} = request.params
         const data = request.body || {};
         const updateSize = new UpdateSize(materialRepo)
-        const material = await updateSize.execute({
+        const size = await updateSize.execute({
             id: id,
             title: data.title
         });
+        const sizePer = SizeMap.toPersistence(size)
+        const getFiles = new GetAllFile(fileRepo)
+        sizePer.images = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
 
         reply.status(200).send({
             success: true,
-            data: SizeMap.toPersistence(material)
+            data: sizePer
         });
     } catch (error: any) {
         console.log('345678', error.message)

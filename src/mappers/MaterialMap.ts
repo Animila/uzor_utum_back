@@ -11,7 +11,8 @@ export class MaterialMap {
 
     public static toPersistence(data: Material): {
         id: string,
-        title: string
+        title: string,
+        images?: any
     } {
         return {
             id: data.getId(),

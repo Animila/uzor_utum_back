@@ -5,14 +5,22 @@ import {GetUserById} from "../../useCases/user/userGetById";
 import {UserMap} from "../../mappers/UserMap";
 import {UpdateUser} from "../../useCases/user/userUpdate";
 import {DeleteUserById} from "../../useCases/user/userDeleteById";
+import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
+import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
 
 const userRepo = new PrismaUserRepo();
+const bonusRepo = new PrismaBonusRepository();
 
 export async function getAllController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllUser = new GetUserAll(userRepo)
         const users =  await getAllUser.execute();
+        const getBonus = new GetBySumUserBonus(bonusRepo)
+
+        for (const user of users) {
+            user.bonus = await getBonus.execute({user_id: user.id});
+        }
         reply.status(200).send({
             success: true,
             data: users
@@ -32,10 +40,14 @@ export async function getByIdController(request: FastifyRequest<UserRequest>, re
         const {user_id} = request.params
         const getUser = new GetUserById(userRepo)
         const user =  await getUser.execute({user_id: user_id});
+        const userPer = UserMap.toPersistence(user)
+
+        const getBonus = new GetBySumUserBonus(bonusRepo)
+        userPer.bonus = await getBonus.execute({user_id: user_id});
 
         reply.status(200).send({
             success: true,
-            data: UserMap.toPersistence(user)
+            data: userPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -61,9 +73,14 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
             role: data.role
         });
 
+        const userPer = UserMap.toPersistence(user)
+
+        const getBonus = new GetBySumUserBonus(bonusRepo)
+        userPer.bonus = await getBonus.execute({user_id: user_id});
+
         reply.status(200).send({
             success: true,
-            data: UserMap.toPersistence(user)
+            data: userPer
         });
     } catch (error: any) {
         console.log('345678', error.message)

@@ -8,17 +8,24 @@ import {
     UpdateProb
 } from "../../useCases/product/probs";
 import {ProbMap} from "../../mappers/ProbMap";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
 
 const materialRepo = new PrismaProbRepo();
+const fileRepo = new PrismaFileRepo();
 
 export async function getAllProbController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllProb = new GetAllProb(materialRepo)
-        const results =  await getAllProb.execute();
+        const probs =  await getAllProb.execute();
+        const getFiles = new GetAllFile(fileRepo)
+        for(const proba of probs) {
+            proba.images = await getFiles.execute({entity_id: proba.id, entity_type: 'proba'})
+        }
         reply.status(200).send({
             success: true,
-            data: results
+            data: probs
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -34,11 +41,14 @@ export async function getByIdProbController(request: FastifyRequest<ProbRequest>
     try {
         const {id} = request.params
         const getProb = new GetByIdProb(materialRepo)
-        const material =  await getProb.execute({id: id});
+        const prob =  await getProb.execute({id: id});
+        const probPer = ProbMap.toPersistence(prob)
+        const getFiles = new GetAllFile(fileRepo)
+        probPer.images = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
 
         reply.status(200).send({
             success: true,
-            data: ProbMap.toPersistence(material)
+            data: probPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -78,14 +88,17 @@ export async function updateProbController(request: FastifyRequest<ProbRequest>,
         const {id} = request.params
         const data = request.body || {};
         const updateProb = new UpdateProb(materialRepo)
-        const material = await updateProb.execute({
+        const prob = await updateProb.execute({
             id: id,
             title: data.title
         });
+        const probPer = ProbMap.toPersistence(prob)
+        const getFiles = new GetAllFile(fileRepo)
+        probPer.images = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
 
         reply.status(200).send({
             success: true,
-            data: ProbMap.toPersistence(material)
+            data: probPer
         });
     } catch (error: any) {
         console.log('345678', error.message)

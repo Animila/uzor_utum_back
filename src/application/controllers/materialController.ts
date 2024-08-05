@@ -8,17 +8,25 @@ import {
     UpdateMaterial
 } from "../../useCases/product/material";
 import {MaterialMap} from "../../mappers/MaterialMap";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 
 const materialRepo = new PrismaMaterialRepo();
+const fileRepo = new PrismaFileRepo();
 
 export async function getAllMaterialController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllMaterial = new GetAllMaterial(materialRepo)
-        const results =  await getAllMaterial.execute();
+        const materials =  await getAllMaterial.execute();
+        const getFiles = new GetAllFile(fileRepo)
+
+        for(const material of materials) {
+            material.images = await getFiles.execute({entity_type: 'material', entity_id: material.id});
+        }
         reply.status(200).send({
             success: true,
-            data: results
+            data: materials
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -35,10 +43,13 @@ export async function getByIdMaterialController(request: FastifyRequest<Material
         const {id} = request.params
         const getMaterial = new GetByIdMaterial(materialRepo)
         const material =  await getMaterial.execute({id: id});
+        const matPer = MaterialMap.toPersistence(material)
+        const getFiles = new GetAllFile(fileRepo)
+        matPer.images = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
 
         reply.status(200).send({
             success: true,
-            data: MaterialMap.toPersistence(material)
+            data: matPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -82,10 +93,13 @@ export async function updateMaterialController(request: FastifyRequest<MaterialR
             id: id,
             title: data.title
         });
+        const matPer = MaterialMap.toPersistence(material)
+        const getFiles = new GetAllFile(fileRepo)
+        matPer.images = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
 
         reply.status(200).send({
             success: true,
-            data: MaterialMap.toPersistence(material)
+            data: matPer
         });
     } catch (error: any) {
         console.log('345678', error.message)

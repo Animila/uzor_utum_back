@@ -20,7 +20,14 @@ const createCategorySchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: { 
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         }
                     }
                 }
@@ -54,6 +61,13 @@ const getAllCategorySchema = {
                             properties: {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
+                                images: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        additionalProperties: true
+                                    }
+                                }
                             }
                         }
                     }
@@ -89,6 +103,13 @@ const getCategorySchema = {
                         properties: {
                             id: { type: 'string' },
                             title: { type: 'string' },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         }
                     }
                 }
@@ -129,7 +150,14 @@ const updateCategorySchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         }
                     }
                 }

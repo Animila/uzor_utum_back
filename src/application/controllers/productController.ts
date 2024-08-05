@@ -19,6 +19,8 @@ import {PrismaDecorateRepo} from "../../infrastructure/prisma/repo/PrismaDecorat
 import {GetByIdProb} from "../../useCases/product/probs";
 import {GetByIdSize} from "../../useCases/product/size";
 import {GetByIdDecorate} from "../../useCases/product/decorate";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
@@ -27,6 +29,7 @@ const discountRepo = new PrismaDiscountRepo();
 const probRepo = new PrismaProbRepo()
 const sizeRepo = new PrismaSizeRepo()
 const decorRepo = new PrismaDecorateRepo()
+const fileRepo = new PrismaFileRepo()
 
 
 export async function createProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
@@ -112,16 +115,18 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const getAllProduct = new GetAllProducts(productRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
-        await Promise.all(
-            products.map(async item => {
-                try {
-                    const result = await getDiscount.execute({ product_id: item.id });
-                    item.discount = DiscountMap.toPersistence(result);
-                } catch (error) {
 
-                }
-            })
-        )
+        const getFiles = new GetAllFile(fileRepo)
+        for(const product of products) {
+            try {
+                const result = await getDiscount.execute({ product_id: product.id });
+                product.discount = DiscountMap.toPersistence(result);
+            } catch (error) {
+
+            }
+            product.images = await getFiles.execute({entity_type: 'product', entity_id: product.id})
+        }
+
         console.log(products)
         reply.status(200).send({
             success: true,
@@ -144,10 +149,12 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
         const product = await getProduct.execute({ id });
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const productPer = ProductMap.toPersistence(product)
+        const getFiles = new GetAllFile(fileRepo)
         try {
             const result = await getDiscount.execute({product_id: product.getId()})
             productPer.discount = DiscountMap.toPersistence(result)
         } catch (err) {}
+        productPer.images = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
         reply.status(200).send({
             success: true,
             data: productPer
@@ -197,10 +204,13 @@ export async function updateProductController(request: FastifyRequest<ProductReq
             decorationIds: data.decoration_ids
         });
 
+        const productPer = ProductMap.toPersistence(product)
+        const getFiles = new GetAllFile(fileRepo)
+        productPer.images = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
 
         reply.status(200).send({
             success: true,
-            data: ProductMap.toPersistence(product)
+            data: productPer
         });
     } catch (error: any) {
         console.log('Error:', error.message);

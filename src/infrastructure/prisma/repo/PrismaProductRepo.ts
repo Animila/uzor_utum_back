@@ -85,8 +85,7 @@ export class PrismaProductRepo implements IProductRepository {
                     category_id: dataPer.category_id,
                     material_id: dataPer.material_id,
                     price: dataPer.price,
-                    description: dataPer.description,
-                    path_images: dataPer.path_images
+                    description: dataPer.description
                 },
                 update: {
                     id: dataPer.id,
@@ -104,8 +103,7 @@ export class PrismaProductRepo implements IProductRepository {
                     category_id: dataPer.category_id,
                     material_id: dataPer.material_id,
                     price: dataPer.price,
-                    description: dataPer.description,
-                    path_images: dataPer.path_images
+                    description: dataPer.description
                 }
             })
             if(!newUser) return null

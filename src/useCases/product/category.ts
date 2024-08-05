@@ -34,7 +34,8 @@ export class GetAllCategory {
 
     async execute(): Promise<{
         id: string,
-        title: string
+        title: string,
+        images?: any
     }[]> {
         const existingCategories = await this.categoryRepository.findAll()
         const categories = existingCategories.map(item => {

@@ -11,7 +11,8 @@ export class ProbMap {
 
     public static toPersistence(data: Prob): {
         id: string,
-        title: string
+        title: string,
+        images?: any
     } {
         return {
             id: data.getId(),

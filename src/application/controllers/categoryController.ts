@@ -8,14 +8,21 @@ import {
     UpdateCategory
 } from "../../useCases/product/category";
 import {CategoryMap} from "../../mappers/CategoryMap";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
 
 const categoryRepo = new PrismaCategoryRepo();
+const fileRepo = new PrismaFileRepo();
 
 export async function getAllCategoryController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllCategory = new GetAllCategory(categoryRepo)
         const categories =  await getAllCategory.execute();
+        const getFiles = new GetAllFile(fileRepo)
+        for (const category of categories) {
+            category.images = await getFiles.execute({entity_id: category.id, entity_type: 'category'})
+        }
         reply.status(200).send({
             success: true,
             data: categories
@@ -35,10 +42,12 @@ export async function getByIdCategoryController(request: FastifyRequest<Category
         const {id} = request.params
         const getCategory = new GetByIdCategory(categoryRepo)
         const category =  await getCategory.execute({id: id});
-
+        const categoryPer = CategoryMap.toPersistence(category)
+        const getFiles = new GetAllFile(fileRepo)
+        categoryPer.images = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
         reply.status(200).send({
             success: true,
-            data: CategoryMap.toPersistence(category)
+            data: categoryPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -83,10 +92,12 @@ export async function updateCategoryController(request: FastifyRequest<CategoryR
             id: id,
             title: data.title
         });
-
+        const categoryPer = CategoryMap.toPersistence(category)
+        const getFiles = new GetAllFile(fileRepo)
+        categoryPer.images = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
         reply.status(200).send({
             success: true,
-            data: CategoryMap.toPersistence(category)
+            data: categoryPer
         });
     } catch (error: any) {
         console.log('345678', error.message)

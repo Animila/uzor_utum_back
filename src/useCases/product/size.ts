@@ -34,7 +34,8 @@ export class GetAllSize {
 
     async execute(): Promise<{
         id: string,
-        title: string
+        title: string,
+        images?: any
     }[]> {
         const existingSizes = await this.materialRepository.findAll()
         const result = existingSizes.map(item => {

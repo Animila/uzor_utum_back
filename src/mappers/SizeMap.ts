@@ -11,7 +11,8 @@ export class SizeMap {
 
     public static toPersistence(data: Size): {
         id: string,
-        title: string
+        title: string,
+        images?: any
     } {
         return {
             id: data.getId(),

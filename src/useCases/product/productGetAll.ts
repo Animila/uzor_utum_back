@@ -26,7 +26,7 @@ export class GetAllProducts {
         title: string,
         article: string,
         price: number,
-        path_images: string[],
+        images?: any
         sex: string,
         description: string,
         details: string,

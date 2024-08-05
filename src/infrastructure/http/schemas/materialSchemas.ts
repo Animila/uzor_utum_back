@@ -20,7 +20,14 @@ const createMaterialSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }
@@ -54,8 +61,14 @@ const getAllMaterialSchema = {
                             properties: {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
-                            },
-                            required: ['id', 'title']
+                                images: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        additionalProperties: true
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -90,6 +103,13 @@ const getMaterialSchema = {
                         properties: {
                             id: { type: 'string' },
                             title: { type: 'string' },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }
@@ -130,7 +150,14 @@ const updateMaterialSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }

@@ -20,7 +20,14 @@ const createProbSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }
@@ -54,6 +61,13 @@ const getAllProbSchema = {
                             properties: {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
+                                images: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        additionalProperties: true
+                                    }
+                                }
                             },
                             required: ['id', 'title']
                         }
@@ -90,6 +104,13 @@ const getProbSchema = {
                         properties: {
                             id: { type: 'string' },
                             title: { type: 'string' },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }
@@ -130,7 +151,14 @@ const updateProbSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: {type: 'string'},
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }

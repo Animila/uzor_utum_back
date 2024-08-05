@@ -34,7 +34,8 @@ export class GetAllDecorate {
 
     async execute(): Promise<{
         id: string,
-        title: string
+        title: string,
+        images?: any
     }[]> {
         const existingDecorates = await this.decorateRepository.findAll()
         const result = existingDecorates.map(item => {

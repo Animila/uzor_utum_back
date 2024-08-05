@@ -40,8 +40,7 @@ const createProductSchema = {
                     data: {
                         type: 'object',
                         properties: {
-                            id: { type: 'string' },
-                            title: {type: 'string'}
+                            id: { type: 'string' }
                         },
                     }
                 }
@@ -122,6 +121,13 @@ const getAllProductSchema = {
                                 category_id: { type: 'string' },
                                 material_id: { type: 'string' },
                                 discount: { type: 'object', additionalProperties: true },
+                                images: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        additionalProperties: true
+                                    }
+                                }
                             },
                             required: ['id', 'title']
                         }
@@ -177,6 +183,13 @@ const getByIdProductSchema = {
                             category_id: { type: 'string' },
                             material_id: { type: 'string' },
                             discount: { type: 'object', additionalProperties: true },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }
@@ -235,8 +248,36 @@ const updateProductSchema = {
                     data: {
                         type: 'object',
                         properties: {
-                            id: { type: 'string' },
-                            title: {type: 'string'}
+                            title: { type: 'string' },
+                            article: { type: 'string' },
+                            price: { type: 'number' },
+                            path_images: { type: 'array', items: { type: 'string' } },
+                            sex: { type: 'string' },
+                            description: { type: 'string' },
+                            details: { type: 'string' },
+                            delivery: { type: 'string' },
+                            available: { type: 'number' },
+                            category_id: { type: 'string' },
+                            material_id: { type: 'string' },
+                            prob_ids: {
+                                type: 'array',
+                                items: { type: 'string' },
+                            },
+                            decoration_ids: {
+                                type: 'array',
+                                items: { type: 'string' },
+                            },
+                            size_ids: {
+                                type: 'array',
+                                items: { type: 'string' },
+                            },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            }
                         },
                     }
                 }

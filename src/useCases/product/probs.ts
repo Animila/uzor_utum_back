@@ -34,7 +34,8 @@ export class GetAllProb {
 
     async execute(): Promise<{
         id: string,
-        title: string
+        title: string,
+        images?: any
     }[]> {
         const existingProbs = await this.decorateRepository.findAll()
         const result = existingProbs.map(item => {

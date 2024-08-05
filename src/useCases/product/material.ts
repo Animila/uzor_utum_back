@@ -34,7 +34,8 @@ export class GetAllMaterial {
 
     async execute(): Promise<{
         id: string,
-        title: string
+        title: string,
+        images?: any
     }[]> {
         const existingMaterials = await this.materialRepository.findAll()
         const result = existingMaterials.map(item => {

@@ -11,7 +11,8 @@ export class DecorateMap {
 
     public static toPersistence(data: Decorate): {
         id: string,
-        title: string
+        title: string,
+        images?: any
     } {
         return {
             id: data.getId(),

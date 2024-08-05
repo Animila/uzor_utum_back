@@ -20,6 +20,7 @@ const getAllSchema = {
                                 first_name: { type: 'string' },
                                 last_name: { type: 'string' },
                                 role: { type: 'string' },
+                                bonus: {type: 'number'},
                                 accepted_at: { type: 'boolean' },
                                 created_at: { type: 'string', format: 'date-time' },
                                 updated_at: { type: 'string', format: 'date-time', nullable: true }
@@ -65,6 +66,7 @@ const getUserSchema = {
                             last_name: { type: 'string' },
                             role: { type: 'string' },
                             accepted_at: { type: 'boolean' },
+                            bonus: {type: 'number'},
                             created_at: { type: 'string', format: 'date-time' },
                             updated_at: { type: 'string', format: 'date-time', nullable: true }
                         },
@@ -126,6 +128,7 @@ const updateUserSchema = {
                             last_name: { type: 'string' },
                             role: { type: 'string' },
                             accepted_at: { type: 'boolean' },
+                            bonus: {type: 'number'},
                             created_at: { type: 'string', format: 'date-time' },
                             updated_at: { type: 'string', format: 'date-time', nullable: true }
                         }

@@ -16,6 +16,7 @@ export class GetUserAll {
         last_name: string,
         role: string,
         accepted_at: boolean,
+        bonus?: number
         created_at: Date,
         updated_at?: Date
     }[]> {

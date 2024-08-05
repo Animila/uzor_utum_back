@@ -37,7 +37,6 @@ export class ProductMap {
         title: string
         article: string
         price: number
-        path_images: string[]
         sex: string
         description: string
         details: string
@@ -49,6 +48,7 @@ export class ProductMap {
         category_id: string
         material_id: string
         discount?: any
+        images?: any
         created_at: Date
         updated_at: Date
     } {
@@ -57,7 +57,7 @@ export class ProductMap {
             title: data.getTitle(),
             article: data.getArticle(),
             price: data.getPrice(),
-            path_images: data.getPathImages(),
+            // path_images: data.getPathImages(),
             sex: data.getSex().getValue(),
             description: data.getDescription(),
             details: data.getDetails(),

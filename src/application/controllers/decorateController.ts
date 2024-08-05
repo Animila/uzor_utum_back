@@ -8,17 +8,24 @@ import {
     UpdateDecorate
 } from "../../useCases/product/decorate";
 import {DecorateMap} from "../../mappers/DecorateMap";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
 
 const materialRepo = new PrismaDecorateRepo();
+const fileRepo = new PrismaFileRepo();
 
 export async function getAllDecorateController(request: FastifyRequest, reply: FastifyReply) {
     try {
 
         const getAllDecorate = new GetAllDecorate(materialRepo)
-        const results =  await getAllDecorate.execute();
+        const decors =  await getAllDecorate.execute();
+        const getFiles = new GetAllFile(fileRepo)
+        for(const decor of decors) {
+            decor.images = await getFiles.execute({entity_id: decor.id, entity_type: 'decorate'})
+        }
         reply.status(200).send({
             success: true,
-            data: results
+            data: decors
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -34,11 +41,13 @@ export async function getByIdDecorateController(request: FastifyRequest<Decorate
     try {
         const {id} = request.params
         const getDecorate = new GetByIdDecorate(materialRepo)
-        const material =  await getDecorate.execute({id: id});
-
+        const decor =  await getDecorate.execute({id: id});
+        const decorPer = DecorateMap.toPersistence(decor)
+        const getFiles = new GetAllFile(fileRepo)
+        decorPer.images = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
         reply.status(200).send({
             success: true,
-            data: DecorateMap.toPersistence(material)
+            data: decorPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -78,14 +87,16 @@ export async function updateDecorateController(request: FastifyRequest<DecorateR
         const {id} = request.params
         const data = request.body || {};
         const updateDecorate = new UpdateDecorate(materialRepo)
-        const material = await updateDecorate.execute({
+        const decor = await updateDecorate.execute({
             id: id,
             title: data.title
         });
-
+        const decorPer = DecorateMap.toPersistence(decor)
+        const getFiles = new GetAllFile(fileRepo)
+        decorPer.images = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
         reply.status(200).send({
             success: true,
-            data: DecorateMap.toPersistence(material)
+            data: decorPer
         });
     } catch (error: any) {
         console.log('345678', error.message)

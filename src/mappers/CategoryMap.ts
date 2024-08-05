@@ -13,7 +13,8 @@ export class CategoryMap {
 
     public static toPersistence(data: Category): {
         id: string,
-        title: string
+        title: string,
+        images?: any
     } {
         return {
             id: data.getId(),
