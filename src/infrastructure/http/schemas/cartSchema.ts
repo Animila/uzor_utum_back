@@ -30,6 +30,9 @@ const getCartSchema = {
                                         properties: {
                                             id: {type: 'string'},
                                             product_id: {type: 'string'},
+                                            size_id: {type: 'string'},
+                                            decorate_id: {type: 'string'},
+                                            proba_id: {type: 'string'},
                                             cart_id: {type: 'string'},
                                             count: {type: 'number'},
                                             updated_at: {type: 'string'},
@@ -143,9 +146,9 @@ const changeItemCart = {
                         properties: {
                             id: {type: 'string'},
                             product_id: {type: 'string'},
-                            proba_id: {type: 'string'},
-                            decorate_id: {type: 'string'},
                             size_id: {type: 'string'},
+                            decorate_id: {type: 'string'},
+                            proba_id: {type: 'string'},
                             cart_id: {type: 'string'},
                             count: {type: 'number'},
                             updated_at: {type: 'string'},
