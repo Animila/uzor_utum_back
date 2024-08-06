@@ -27,6 +27,7 @@ import {DeleteOrder} from "../../useCases/order/orderDelete";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
 import {CreateBonus} from "../../useCases/bonus/bonusCreate";
+import {Guard} from "../../domain/guard";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -130,14 +131,17 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
         await orderRepo.save(order)
 
-        if(order.getUserId()) {
+        const resultCheck = Guard.againstNullOrUndefined(order.getUserId(), "user_id")
+        if(resultCheck.succeeded) {
             const addBonus = new CreateBonus(bonusRepo)
-            // addBonus.execute({
-            //     user_id: data.user_id,
-            //     created_at: new Date(),
-            //     count: data.add_bonus,
-            //     description: 'Покупка заказа '
-            // })
+            await addBonus.execute({
+                user_id: order.getUserId()!,
+                created_at: new Date(),
+                count: data.add_bonus,
+                description: 'Покупка заказа',
+                type: 'plus'
+            })
+
         }
 
         reply.status(200).send({
