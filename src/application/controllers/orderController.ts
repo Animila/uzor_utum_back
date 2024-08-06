@@ -25,6 +25,8 @@ import {OrderMap} from "../../mappers/OrderMap";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {DeleteOrder} from "../../useCases/order/orderDelete";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
+import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
+import {CreateBonus} from "../../useCases/bonus/bonusCreate";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -40,7 +42,7 @@ const bonusRepo = new PrismaBonusRepository()
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
 
-    let sendTypeOrError, shopOrError, receiverOrError, certificateOrError, promoOrError, productsOfError = undefined
+
     try {
         const getSendType = new GetByIdSendType(sendTypeRepo)
         const getShop = new GetByIdShop(shopRepo)
@@ -49,8 +51,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         const getPromocode = new GetByIdPromoCode(promoRepo)
         const getProduct = new GetByIdProducts(productRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        // const getBonus = new Get
-
+        const getCountBonus = new GetBySumUserBonus(bonusRepo)
 
         //@ts-ignore
         const productsOrError = await Promise.all(data.items.map(async item => {
@@ -65,11 +66,26 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         }))
         console.log(productsOrError)
 
-        sendTypeOrError = await getSendType.execute({id: data.send_type_id})
-        receiverOrError = await getReceiver.execute({id: data.receiver_id})
-        shopOrError = data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
-        certificateOrError = data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
-        promoOrError = data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
+        await getSendType.execute({id: data.send_type_id})
+        await getReceiver.execute({id: data.receiver_id})
+        data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
+        data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
+        data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
+
+        if(data.user_id) {
+            const bonuses = await getCountBonus.execute({user_id: data.user_id})
+            if(data.use_bonus > bonuses) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: [
+                        {
+                            type: 'use_bonus',
+                            message: 'У пользователя нет столько бонусов'
+                        }
+                    ]
+                }));
+            }
+        }
 
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -80,7 +96,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         });
         return
     }
-
 
     try {
         console.log(data)
@@ -114,6 +129,16 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         order.props.paymentId = resultPay.data?.payment_id
 
         await orderRepo.save(order)
+
+        if(order.getUserId()) {
+            const addBonus = new CreateBonus(bonusRepo)
+            // addBonus.execute({
+            //     user_id: data.user_id,
+            //     created_at: new Date(),
+            //     count: data.add_bonus,
+            //     description: 'Покупка заказа '
+            // })
+        }
 
         reply.status(200).send({
             success: true,

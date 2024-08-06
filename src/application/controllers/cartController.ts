@@ -26,20 +26,20 @@ const discountRepo = new PrismaDiscountRepo()
 export async function checkCartController(request: FastifyRequest<CartRequest>, reply: FastifyReply) {
     try {
         const {user_id, token} = request.query as CartRequest['Query']
-        const checkResult = Guard.againstNullOrUndefined(token, 'token')
+        // const checkResult = Guard.againstNullOrUndefined(token, 'token')
         const checkUser = Guard.againstNullOrUndefined(user_id, 'user_id')
 
 
-        if(!checkResult.succeeded)
-            throw new Error(JSON.stringify({
-                status: 400,
-                message: [
-                    {
-                        type: 'token',
-                        message: 'Обязательно должен быть'
-                    }
-                ]
-            }))
+        // if(!checkResult.succeeded)
+        //     throw new Error(JSON.stringify({
+        //         status: 400,
+        //         message: [
+        //             {
+        //                 type: 'token',
+        //                 message: 'Обязательно должен быть'
+        //             }
+        //         ]
+        //     }))
 
 
         if(checkUser.succeeded) {

@@ -3,7 +3,7 @@ import {Cart} from "../../domain/cart/cart";
 
 interface CheckCartInput {
     user_id?: string
-    token: string
+    token?: string
 }
 
 export class CheckCart {

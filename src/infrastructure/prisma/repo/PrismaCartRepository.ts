@@ -35,9 +35,12 @@ export class PrismaCartRepository implements ICartRepository {
                 if (!res) return null
                 return CartMap.toDomain(res)
             } else {
-                existingData = await this.prisma.carts.findUnique({
+                existingData = await this.prisma.carts.findFirst({
                     where: {
-                        token: token
+                        OR: [
+                            {token: token},
+                            {user_id: userId}
+                        ]
                     }
                 })
 
