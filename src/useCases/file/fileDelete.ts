@@ -1,5 +1,6 @@
 import {IFileRepo} from "../../repositories/IFileRepository";
 import {Guard} from "../../domain/guard";
+import {PathSharp} from "../../infrastructure/local/PathSharp";
 
 interface DeleteFileInput {
     id: string
@@ -7,9 +8,11 @@ interface DeleteFileInput {
 
 export class DeleteFile {
     private repository: IFileRepo;
+    private localFile
 
     constructor(repository: IFileRepo) {
         this.repository = repository;
+        this.localFile = new PathSharp(this.repository)
     }
 
     async execute(input: DeleteFileInput): Promise<boolean> {
@@ -26,8 +29,15 @@ export class DeleteFile {
                     }
                 ]
             }))
-
-        return await this.repository.delete(id)
+        const existingFile = await this.repository.getById(id)
+        if(!existingFile) {
+            throw new Error(JSON.stringify({
+                status: 404,
+                message: 'Файл не найден'
+            }))
+        }
+        await this.localFile.delete(existingFile.getPath())
+        return await this.repository.delete(existingFile.getId())
 
     }
 }

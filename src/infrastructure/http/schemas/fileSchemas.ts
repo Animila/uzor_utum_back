@@ -83,6 +83,7 @@ const getFilesSchema = {
 const deleteFileSchema = {
     schema: {
         description: 'Получить файлы. Открывать по /public/...',
+        security: [{ApiToken: []}],
         tags: ['File'],
         params: {
             id: { type: 'string' },
