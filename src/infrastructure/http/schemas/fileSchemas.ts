@@ -80,7 +80,49 @@ const getFilesSchema = {
     }
 };
 
+const deleteFileSchema = {
+    schema: {
+        description: 'Получить файлы. Открывать по /public/...',
+        tags: ['File'],
+        params: {
+            id: { type: 'string' },
+        },
+        response: {
+            200: {
+                description: 'Успешно получено',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                id: { type: 'string' },
+                                entity_type: { type: 'string' },
+                                entity_id: { type: 'string' },
+                                name: { type: 'string' },
+                                type_file: { type: 'string' },
+                                path: { type: 'string' }
+                            }
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 export {
     loadFileSchema,
-    getFilesSchema
+    getFilesSchema,
+    deleteFileSchema
 }
