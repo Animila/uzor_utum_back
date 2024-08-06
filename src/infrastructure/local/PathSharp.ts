@@ -19,7 +19,7 @@ export class PathSharp {
         const currentDate = new Date()
         const formattedDate = format(currentDate, 'yyyy-MM-dd_HH-mm-ss')
         const uniqueCode = uuidv4()
-        const fileName = `${formattedDate}_${uniqueCode}.jpg`
+        const fileName = `${formattedDate}_${uniqueCode}.png`
         const storageDirectory = path.join(__dirname, '../../../storage', type)
         if (!fs.existsSync(storageDirectory)) {
             fs.mkdirSync(storageDirectory, { recursive: true })
@@ -42,7 +42,8 @@ export class PathSharp {
                 fit: sharp.fit.inside,
                 withoutEnlargement: true,
             })
-            .jpeg({quality: 80})
+            .withMetadata()
+            .png({ quality: 95, compressionLevel: 6, adaptiveFiltering: true, force: true })
             .toFile(pathDirectory, (err, info) => {
                 if (err) {
                     console.error('Ошибка преобразования ' + err);
