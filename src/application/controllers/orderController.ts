@@ -28,6 +28,8 @@ import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonu
 import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
 import {CreateBonus} from "../../useCases/bonus/bonusCreate";
 import {Guard} from "../../domain/guard";
+import {GetUserById} from "../../useCases/user/userGetById";
+import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -39,9 +41,11 @@ const discountRepo = new PrismaDiscountRepo()
 const cartRepo = new PrismaItemCartRepository()
 const orderRepo = new PrismaOrderRepo()
 const bonusRepo = new PrismaBonusRepository()
+const userRep = new PrismaUserRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
+    const addBonus = new CreateBonus(bonusRepo)
 
 
     try {
@@ -53,6 +57,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         const getProduct = new GetByIdProducts(productRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const getCountBonus = new GetBySumUserBonus(bonusRepo)
+        const getUser = new GetUserById(userRep)
 
         //@ts-ignore
         const productsOrError = await Promise.all(data.items.map(async item => {
@@ -73,7 +78,8 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
         data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
 
-        if(data.user_id) {
+        if(data.user_id && data.use_bonus !== 0 && data.use_bonus !== undefined) {
+            await getUser.execute({user_id: data.user_id})
             const bonuses = await getCountBonus.execute({user_id: data.user_id})
             if(data.use_bonus > bonuses) {
                 throw new Error(JSON.stringify({
@@ -86,6 +92,14 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
                     ]
                 }));
             }
+            data.total_amount = data.total_amount - data.use_bonus
+            await addBonus.execute({
+                user_id: data.user_id,
+                created_at: new Date(),
+                count: data.use_bonus,
+                description: `Оплата заказа`,
+                type: 'minus'
+            })
         }
 
     } catch (error: any) {
@@ -116,7 +130,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
         const resultPay = await initialPayment(
             `Оплата заказа №${order.getId()}`,
-            process.env.WEBSITE || 'https://45b62676-f78d-4370-a8a3-9fe5aac2ffad.tunnel4.com/documentation',
+            process.env.WEBSITE || process.env.LOCALHOST || 'https://uzorutum.ru',
             data.total_amount.toString())
 
         if(!resultPay.success) {
@@ -133,12 +147,11 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
         const resultCheck = Guard.againstNullOrUndefined(order.getUserId(), "user_id")
         if(resultCheck.succeeded) {
-            const addBonus = new CreateBonus(bonusRepo)
             await addBonus.execute({
                 user_id: order.getUserId()!,
                 created_at: new Date(),
                 count: data.add_bonus,
-                description: 'Покупка заказа',
+                description: `Пополнение за заказ`,
                 type: 'plus'
             })
 

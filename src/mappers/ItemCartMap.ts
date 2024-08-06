@@ -20,10 +20,15 @@ export class ItemCartMap {
     public static toPersistence(data: CartItem): {
         id: string,
         product_id: string,
+        product?: any,
         size_id?: string,
+        size?: any,
         decorate_id?: string,
+        decorate?: any,
         proba_id?: string,
+        proba?: any,
         cart_id: string,
+        cart?: any,
         count: number,
         created_at: Date,
         updated_at: Date

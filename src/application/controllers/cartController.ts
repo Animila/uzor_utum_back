@@ -17,30 +17,33 @@ import {CartItem} from "../../domain/cart/cartItem";
 import {GetByIDCart} from "../../useCases/cart/getByIdCart";
 import {PrismaDiscountRepo} from "../../infrastructure/prisma/repo/PrismaDiscountRepo";
 import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
+import {ProductMap} from "../../mappers/ProductMap";
+import {GetByIdMaterial} from "../../useCases/product/material";
+import {PrismaMaterialRepo} from "../../infrastructure/prisma/repo/PrismaMaterialRepo";
+import {PrismaSizeRepo} from "../../infrastructure/prisma/repo/PrismaSizeRepo";
+import {PrismaDecorateRepo} from "../../infrastructure/prisma/repo/PrismaDecorateRepo";
+import {PrismaProbRepo} from "../../infrastructure/prisma/repo/PrismaProbRepo";
+import {GetByIdSize} from "../../useCases/product/size";
+import {GetByIdProb} from "../../useCases/product/probs";
+import {GetByIdDecorate} from "../../useCases/product/decorate";
+import {SizeMap} from "../../mappers/SizeMap";
+import {DecorateMap} from "../../mappers/DecorateMap";
+import {ProbMap} from "../../mappers/ProbMap";
 
 const cartRepo = new PrismaCartRepository()
 const userRepo = new PrismaUserRepo()
 const itemCartRepo = new PrismaItemCartRepository()
 const productRepo = new PrismaProductRepo()
 const discountRepo = new PrismaDiscountRepo()
+const materRepo = new PrismaMaterialRepo()
+const sizeRepo = new PrismaSizeRepo()
+const decorateRepo = new PrismaDecorateRepo()
+const probRepo = new PrismaProbRepo()
+
 export async function checkCartController(request: FastifyRequest<CartRequest>, reply: FastifyReply) {
     try {
         const {user_id, token} = request.query as CartRequest['Query']
-        // const checkResult = Guard.againstNullOrUndefined(token, 'token')
         const checkUser = Guard.againstNullOrUndefined(user_id, 'user_id')
-
-
-        // if(!checkResult.succeeded)
-        //     throw new Error(JSON.stringify({
-        //         status: 400,
-        //         message: [
-        //             {
-        //                 type: 'token',
-        //                 message: 'Обязательно должен быть'
-        //             }
-        //         ]
-        //     }))
-
 
         if(checkUser.succeeded) {
             var getUser = new GetUserById(userRepo)
@@ -58,7 +61,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
         result.props.totalAmount = 0
-        for (const item of data) {
+        cartRep.items = await Promise.all(data.map(async (item, index) => {
             let existingProduct, discountProduct
             try {
                 existingProduct = await getProduct.execute({id: item.getProductId()})
@@ -69,9 +72,27 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
             const priceWithDiscount = existingProduct ? existingProduct.getPrice() * (discountProduct ? (100 - discountProduct.getPercentage()) / 100 : 1) : 0
 
             result.props.totalAmount += Math.floor(priceWithDiscount * item.getCount())
-        }
+
+
+            const itemPer = ItemCartMap.toPersistence(item)
+            itemPer.product = existingProduct ? ProductMap.toPersistence(existingProduct) : undefined
+
+            try {
+                const getSize = new GetByIdSize(sizeRepo)
+                const getProb = new GetByIdProb(probRepo)
+                const getDecor = new GetByIdDecorate(decorateRepo)
+
+                itemPer.size = itemPer.size_id ? SizeMap.toPersistence(await getSize.execute({id: itemPer.size_id})) : undefined
+                itemPer.decorate = itemPer.decorate_id ? DecorateMap.toPersistence(await getDecor.execute({id: itemPer.decorate_id})) : undefined
+                itemPer.proba = itemPer.proba_id ? ProbMap.toPersistence(await getProb.execute({id: itemPer.proba_id})) : undefined
+            } catch (e) {
+                console.log(e)
+            }
+
+            return itemPer
+        }))
+        console.log('3: ', cartRep.items)
         await cartRepo.save(result)
-        cartRep.items = data.map(item => ItemCartMap.toPersistence(item))
         cartRep.total_amount = result.props.totalAmount
 
         reply.status(201).send({
