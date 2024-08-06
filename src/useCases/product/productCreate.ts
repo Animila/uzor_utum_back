@@ -1,12 +1,13 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {Product} from "../../domain/products/product";
 import {Sex} from "../../domain/products/valueObjects/sex";
+import {IFileRepo} from "../../repositories/IFileRepository";
 
 interface CreateProductInput {
     title: string;
     article: string;
     price: number;
-    path_images: string[];
+    images?: any;
     sex: string;
     description: string;
     details: string;
@@ -21,9 +22,11 @@ interface CreateProductInput {
 
 export class CreateProduct {
     private productRepository: IProductRepository;
+    private fileRepo: IFileRepo
 
-    constructor(productRepository: IProductRepository) {
+    constructor(productRepository: IProductRepository, fileRepo: IFileRepo) {
         this.productRepository = productRepository;
+        this.fileRepo = fileRepo;
     }
 
     async execute(input: CreateProductInput): Promise<Product> {
@@ -31,7 +34,7 @@ export class CreateProduct {
             title,
             article,
             price,
-            path_images,
+            images,
             sex,
             description,
             details,
@@ -57,7 +60,7 @@ export class CreateProduct {
             title: title,
             article: article,
             price: price,
-            pathImages: path_images,
+            images: images,
             sex: sexOrError as Sex,
             description: description,
             details: details,

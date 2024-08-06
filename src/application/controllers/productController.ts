@@ -77,7 +77,7 @@ export async function createProductController(request: FastifyRequest<ProductReq
                     }
                 ]
             }))
-        const createProduct = new CreateProduct(productRepo);
+        const createProduct = new CreateProduct(productRepo, fileRepo);
         const product = await createProduct.execute(data);
         reply.status(201).send({
             success: true,
@@ -112,11 +112,10 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const decorIdsArray = decorationIds ? decorationIds[0].split(',') : undefined;
         const sizeIdsArray = sizeIds ? sizeIds[0].split(',') : undefined;
         const probIdsArray = probIds ? probIds[0].split(',') : undefined;
-        const getAllProduct = new GetAllProducts(productRepo);
+        const getAllProduct = new GetAllProducts(productRepo, fileRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
 
-        const getFiles = new GetAllFile(fileRepo)
         for(const product of products) {
             try {
                 const result = await getDiscount.execute({ product_id: product.id });
@@ -124,7 +123,6 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             } catch (error) {
 
             }
-            product.images = await getFiles.execute({entity_type: 'product', entity_id: product.id})
         }
 
         console.log(products)
@@ -145,7 +143,7 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
 export async function getByIdProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getProduct = new GetByIdProducts(productRepo);
+        const getProduct = new GetByIdProducts(productRepo, fileRepo);
         const product = await getProduct.execute({ id });
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const productPer = ProductMap.toPersistence(product)
@@ -185,13 +183,12 @@ export async function updateProductController(request: FastifyRequest<ProductReq
                 ]
             }))
 
-        const updateProduct = new UpdateProduct(productRepo);
+        const updateProduct = new UpdateProduct(productRepo, fileRepo);
         const product = await updateProduct.execute({
             id: id,
             title: data.title,
             article: data.article,
             price: data.price,
-            pathImages: data.path_images,
             sex: data.sex,
             description: data.description,
             details: data.details,

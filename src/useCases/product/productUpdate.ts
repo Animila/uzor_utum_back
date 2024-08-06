@@ -1,6 +1,7 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {Product} from "../../domain/products/product";
 import {Sex} from "../../domain/products/valueObjects/sex";
+import {IFileRepo} from "../../repositories/IFileRepository";
 
 interface UpdateProductInput {
     id: string,
@@ -8,7 +9,7 @@ interface UpdateProductInput {
     article?: string,
     price?: number,
     description?: string,
-    pathImages?: string[]
+    images?: any
     sex?: string
     details?: string
     delivery?: string
@@ -22,9 +23,11 @@ interface UpdateProductInput {
 
 export class UpdateProduct {
     private productRepository: IProductRepository;
+    private fileRepo: IFileRepo
 
-    constructor(productRepository: IProductRepository) {
+    constructor(productRepository: IProductRepository, fileRepo: IFileRepo) {
         this.productRepository = productRepository;
+        this.fileRepo = fileRepo;
     }
 
     async execute(input: UpdateProductInput): Promise<Product> {
@@ -33,7 +36,7 @@ export class UpdateProduct {
             title,
             article,
             price,
-            pathImages,
+            images,
             sex,
             description,
             details,
@@ -68,7 +71,7 @@ export class UpdateProduct {
             description: description || existingData.getDescription(),
             delivery: delivery || existingData.getDelivery(),
             details: details || existingData.getDetails(),
-            pathImages: pathImages || existingData.getPathImages(),
+            images: images || existingData.getImages(),
             sex: sexOrError as Sex || existingData.getSex(),
             materialId: materialId || existingData.getMaterial(),
             available: available || existingData.getAvailable(),

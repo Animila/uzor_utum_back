@@ -29,6 +29,7 @@ import {GetByIdDecorate} from "../../useCases/product/decorate";
 import {SizeMap} from "../../mappers/SizeMap";
 import {DecorateMap} from "../../mappers/DecorateMap";
 import {ProbMap} from "../../mappers/ProbMap";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 
 const cartRepo = new PrismaCartRepository()
 const userRepo = new PrismaUserRepo()
@@ -39,6 +40,7 @@ const materRepo = new PrismaMaterialRepo()
 const sizeRepo = new PrismaSizeRepo()
 const decorateRepo = new PrismaDecorateRepo()
 const probRepo = new PrismaProbRepo()
+const fileRepo = new PrismaFileRepo()
 
 export async function checkCartController(request: FastifyRequest<CartRequest>, reply: FastifyReply) {
     try {
@@ -57,7 +59,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const getItems = new GetItemsCart(itemCartRepo)
         const data = await getItems.execute({cart_id: result.getId()})
 
-        const getProduct = new GetByIdProducts(productRepo)
+        const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
         result.props.totalAmount = 0
@@ -150,7 +152,7 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
         const existingCart = await getCart.execute({token: token})
         const addItemCart = new AddItemToCart(itemCartRepo)
 
-        const getProduct = new GetByIdProducts(productRepo)
+        const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const existingProduct = await getProduct.execute({id: product_id})
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
@@ -232,7 +234,7 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
             }))
 
         const getData = new GetByIdItemCart(itemCartRepo)
-        const getProduct = new GetByIdProducts(productRepo)
+        const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const getCart = new GetByIDCart(cartRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
@@ -312,7 +314,7 @@ export async function deleteItemCartController(request: FastifyRequest<ItemCartR
     try {
         const { id } = request.query as ItemCartRequest['Query'];
         const delData = new DeleteItemCart(itemCartRepo);
-        const getProduct = new GetByIdProducts(productRepo)
+        const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const getCart = new GetByIDCart(cartRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 

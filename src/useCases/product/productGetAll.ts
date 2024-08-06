@@ -1,5 +1,7 @@
 import {IProductRepository} from "../../repositories/IProductRepository";
 import {ProductMap} from "../../mappers/ProductMap";
+import {GetAllFile} from "../file/fileGetAll";
+import {IFileRepo} from "../../repositories/IFileRepository";
 
 interface GetAllProductsInput {
     probIds?: string[];
@@ -16,9 +18,11 @@ interface GetAllProductsInput {
 
 export class GetAllProducts {
     private productRepository: IProductRepository;
+    private fileRepo: IFileRepo
 
-    constructor(productRepository: IProductRepository) {
+    constructor(productRepository: IProductRepository, fileRepo: IFileRepo) {
         this.productRepository = productRepository;
+        this.fileRepo = fileRepo;
     }
 
     async execute(input: GetAllProductsInput): Promise<{
@@ -52,6 +56,11 @@ export class GetAllProducts {
                 status: 404,
                 message: 'Продукт не найден'
             }))
+        const getFiles = new GetAllFile(this.fileRepo)
+        users.map(async (item) => {
+            item.images = await getFiles.execute({entity_id: item.id, entity_type: 'product'})
+        })
+        console.log(users)
         return users;
 
     }

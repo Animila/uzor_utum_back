@@ -8,15 +8,17 @@ import {DeleteDiscount} from "../../useCases/discount/discountDelete";
 import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProductId";
 import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
 import {GetByIdProducts} from "../../useCases/product/productGetById";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 
 const repository = new PrismaDiscountRepo()
 const prodRepo = new PrismaProductRepo()
+const fileRepo = new PrismaFileRepo()
 
 export async function createDiscountController(request: FastifyRequest<DiscountRequest>, reply: FastifyReply) {
     const data = request.body;
 
     try {
-        const getData = new GetByIdProducts(prodRepo)
+        const getData = new GetByIdProducts(prodRepo, fileRepo)
         await getData.execute({id: data.product_id})
     } catch (error: any) {
         console.log('Error:', error.message);

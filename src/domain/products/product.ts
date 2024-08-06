@@ -5,7 +5,7 @@ interface IProduct {
     title: string
     article: string
     price: number
-    pathImages: string[]
+    images?: any
     sex: Sex
     description: string
     details: string
@@ -37,7 +37,7 @@ export class Product {
 
     getPrice(): number { return this.props.price }
 
-    getPathImages(): string[] { return this.props.pathImages }
+    getImages(): any { return this.props.images }
 
     getSex(): Sex { return this.props.sex }
 

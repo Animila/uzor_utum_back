@@ -30,6 +30,7 @@ import {CreateBonus} from "../../useCases/bonus/bonusCreate";
 import {Guard} from "../../domain/guard";
 import {GetUserById} from "../../useCases/user/userGetById";
 import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -42,6 +43,7 @@ const cartRepo = new PrismaItemCartRepository()
 const orderRepo = new PrismaOrderRepo()
 const bonusRepo = new PrismaBonusRepository()
 const userRep = new PrismaUserRepo()
+const fileRepo = new PrismaFileRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
@@ -54,7 +56,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         const getReceiver = new GetByIdReceiver(receiverRepo)
         const getCertificate = new GetByIdCertificate(certRepo)
         const getPromocode = new GetByIdPromoCode(promoRepo)
-        const getProduct = new GetByIdProducts(productRepo)
+        const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const getCountBonus = new GetBySumUserBonus(bonusRepo)
         const getUser = new GetUserById(userRep)
