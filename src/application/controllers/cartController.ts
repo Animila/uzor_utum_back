@@ -54,7 +54,6 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const getItems = new GetItemsCart(itemCartRepo)
         const data = await getItems.execute({cart_id: result.getId()})
 
-
         const getProduct = new GetByIdProducts(productRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 

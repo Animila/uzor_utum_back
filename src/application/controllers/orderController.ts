@@ -20,11 +20,11 @@ import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo"
 import {PrismaItemCartRepository} from "../../infrastructure/prisma/repo/PrismaItemCartRepository";
 import {DeleteItemCart} from "../../useCases/cart/deleteItemCart";
 import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
-import {totalmem} from "node:os";
 import {GetAllOrder} from "../../useCases/order/orderGetAll";
 import {OrderMap} from "../../mappers/OrderMap";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {DeleteOrder} from "../../useCases/order/orderDelete";
+import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -35,6 +35,7 @@ const productRepo = new PrismaProductRepo()
 const discountRepo = new PrismaDiscountRepo()
 const cartRepo = new PrismaItemCartRepository()
 const orderRepo = new PrismaOrderRepo()
+const bonusRepo = new PrismaBonusRepository()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
@@ -48,6 +49,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         const getPromocode = new GetByIdPromoCode(promoRepo)
         const getProduct = new GetByIdProducts(productRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
+        // const getBonus = new Get
 
 
         //@ts-ignore

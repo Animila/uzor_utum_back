@@ -47,8 +47,6 @@ export class PrismaItemCartRepository implements ICartItemRepository {
     async save(data: CartItem): Promise<CartItem | null> {
         try {
             const dataPer = ItemCartMap.toPersistence(data)
-            console.log(dataPer)
-
 
             const result = await this.prisma.cart_items.upsert({
                 where: {
@@ -58,6 +56,9 @@ export class PrismaItemCartRepository implements ICartItemRepository {
                     id: dataPer.id,
                     cart_id: dataPer.cart_id,
                     product_id: dataPer.product_id,
+                    size_id: dataPer.size_id,
+                    proba_id: dataPer.proba_id,
+                    decorate_id: dataPer.decorate_id,
                     count: dataPer.count,
                     created_at: new Date(),
                     updated_at: new Date(),
@@ -66,6 +67,9 @@ export class PrismaItemCartRepository implements ICartItemRepository {
                     id: dataPer.id,
                     cart_id: dataPer.cart_id,
                     product_id: dataPer.product_id,
+                    size_id: dataPer.size_id,
+                    proba_id: dataPer.proba_id,
+                    decorate_id: dataPer.decorate_id,
                     count: dataPer.count,
                     created_at: dataPer.created_at,
                     updated_at: new Date(),
