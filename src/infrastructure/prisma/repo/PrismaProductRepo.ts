@@ -17,13 +17,15 @@ export class PrismaProductRepo implements IProductRepository {
         order?: "asc" | "desc",
         search?: string,
         minPrice?: number,
-        maxPrice?: number
+        maxPrice?: number,
+        sex?: string
     ): Promise<Product[]> {
         try {
             const where: any = {};
             console.log(probIds)
             if (categoryId) where.category_id = categoryId;
             if (materialId) where.material_id = materialId;
+            if (sex) where.sex = sex;
             if (probIds) where.prob_ids = {hasSome: probIds};
             if (decorationIds) where.decoration_ids = {hasSome: decorationIds};
             if (sizeIds) where.size_ids = {hasSome: sizeIds};

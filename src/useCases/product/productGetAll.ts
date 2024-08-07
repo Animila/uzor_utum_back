@@ -13,7 +13,8 @@ interface GetAllProductsInput {
     materialId?: string;
     search?: string,
     minPrice?: number,
-    maxPrice?: number
+    maxPrice?: number,
+    sex?: string
 }
 
 export class GetAllProducts {
@@ -46,8 +47,8 @@ export class GetAllProducts {
         updated_at: Date
     }[]> {
         const {
-            probIds, decorationIds, sizeIds, sortBy, order, categoryId, materialId, search, minPrice, maxPrice } = input;
-        const existingData = await this.productRepository.findAll(categoryId, materialId, probIds, decorationIds, sizeIds, sortBy, order, search, minPrice, maxPrice )
+            probIds, decorationIds, sizeIds, sortBy, order, categoryId, materialId, search, minPrice, maxPrice, sex } = input;
+        const existingData = await this.productRepository.findAll(categoryId, materialId, probIds, decorationIds, sizeIds, sortBy, order, search, minPrice, maxPrice, sex )
         const users = existingData.map(item => {
             return ProductMap.toPersistence(item)
         })

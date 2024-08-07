@@ -83,6 +83,7 @@ const getAllProductSchema = {
                 q: {type: 'string'},
                 minPrice: {type: 'string'},
                 maxPrice: {type: 'string'},
+                sex: { type: 'string' }
             },
         },
         response: {

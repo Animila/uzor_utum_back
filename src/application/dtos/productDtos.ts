@@ -47,7 +47,8 @@ interface ProductRequest {
         probIds?: string[];
         decorationIds?: string[];
         sizeIds?: string[];
-        sortBy?: string
+        sortBy?: string;
+        sex?: string;
         order?: "asc" | "desc";
         categoryId?: string;
         materialId?: string;

@@ -105,6 +105,7 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             materialId,
             q ,
             minPrice,
+            sex,
             maxPrice
         } = request.query as ProductRequest['Query'];
         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
@@ -114,7 +115,7 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const probIdsArray = probIds ? probIds[0].split(',') : undefined;
         const getAllProduct = new GetAllProducts(productRepo, fileRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt});
+        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt, sex: sex});
 
         for(const product of products) {
             try {
