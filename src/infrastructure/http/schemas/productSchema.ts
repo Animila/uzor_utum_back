@@ -76,9 +76,9 @@ const getAllProductSchema = {
                     type: 'array',
                     items: { type: 'string' },
                 },
-                    
+
                 sortBy: { type: 'string' },
-                    order: { type: 'stri  g' },
+                order: { type: 'string' },
                 categoryId: { type: 'string' },
                 materialId: { type: 'string' },
                 q: {type: 'string'},
