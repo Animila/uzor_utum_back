@@ -106,7 +106,9 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             q ,
             minPrice,
             sex,
-            maxPrice
+            maxPrice,
+            limit = "10",
+            offset = "0"
         } = request.query as ProductRequest['Query'];
         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
@@ -115,7 +117,7 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const probIdsArray = probIds ? probIds[0].split(',') : undefined;
         const getAllProduct = new GetAllProducts(productRepo, fileRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt, sex: sex});
+        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt, sex: sex, limit: parseInt(limit), offset: parseInt(offset)});
 
         for(const product of products) {
             try {
@@ -126,10 +128,19 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             }
         }
 
+        const totalPages = Math.ceil(products.length / parseInt(limit));
+
         console.log(products)
         reply.status(200).send({
             success: true,
-            data: products
+            data: products,
+            pagination: {
+                totalItems: products.length,
+                totalPages: totalPages,
+                currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1,
+                limit: parseInt(limit)
+            }
+
         });
     } catch (error: any) {
         console.log('Error:', error.message);

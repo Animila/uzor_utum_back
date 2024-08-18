@@ -18,7 +18,9 @@ export class PrismaProductRepo implements IProductRepository {
         search?: string,
         minPrice?: number,
         maxPrice?: number,
-        sex?: string
+        sex?: string,
+        limit?: number,
+        offset?: number
     ): Promise<Product[]> {
         try {
             const where: any = {};
@@ -47,7 +49,12 @@ export class PrismaProductRepo implements IProductRepository {
             }
 
             const orderBy = sortBy ? {[sortBy]: order} : undefined;
-            const products = await this.prisma.products.findMany({where, orderBy});
+            const products = await this.prisma.products.findMany({
+                where,
+                orderBy,
+                take: limit, // Ограничение на количество элементов
+                skip: offset
+            });
             return products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
         } finally {
             await this.prisma.$disconnect();

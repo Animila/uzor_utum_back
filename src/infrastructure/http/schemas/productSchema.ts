@@ -84,7 +84,9 @@ const getAllProductSchema = {
                 q: {type: 'string'},
                 minPrice: {type: 'string'},
                 maxPrice: {type: 'string'},
-                sex: { type: 'string' }
+                sex: { type: 'string' },
+                limit: { type: 'string' },
+                offset: { type: 'string' },
             },
         },
         response: {
@@ -132,6 +134,15 @@ const getAllProductSchema = {
                                 }
                             },
                             required: ['id', 'title']
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

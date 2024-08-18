@@ -11,7 +11,7 @@ export interface IProductRepository {
             order?: "asc" | "desc",
             search?: string,
             minPrice?: number,
-            maxPrice?: number, sex?: string): Promise<Product[]>;
+            maxPrice?: number, sex?: string, limit?: number, offset?: number): Promise<Product[]>;
     findById(id: string): Promise<Product | null>;
     delete(id: string): Promise<boolean>;
 }

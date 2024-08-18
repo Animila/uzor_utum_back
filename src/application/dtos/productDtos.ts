@@ -54,7 +54,9 @@ interface ProductRequest {
         materialId?: string;
         q?: string
         minPrice?: string,
-        maxPrice?: string
+        maxPrice?: string,
+        limit: string,
+        offset: string
     },
     Body: {
         title: string;
