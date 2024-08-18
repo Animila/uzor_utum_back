@@ -76,7 +76,7 @@ const getAllProductSchema = {
                     type: 'array',
                     items: { type: 'string' },
                 },
-
+                discount_at: { type: 'boolean'},
                 sortBy: { type: 'string' },
                 order: { type: 'string' },
                 categoryId: { type: 'string' },

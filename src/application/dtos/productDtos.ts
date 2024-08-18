@@ -56,7 +56,8 @@ interface ProductRequest {
         minPrice?: string,
         maxPrice?: string,
         limit: string,
-        offset: string
+        offset: string,
+        discount_at: boolean
     },
     Body: {
         title: string;

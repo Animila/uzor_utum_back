@@ -46,7 +46,7 @@ export class GetAllProducts {
         category_id: string,
         material_id: string,
         created_at: Date,
-        updated_at: Date
+        updated_at: Date,
     }[]> {
         const {
             probIds, decorationIds, sizeIds, sortBy, order, categoryId, materialId, search, minPrice, maxPrice, sex, limit, offset } = input;
@@ -63,7 +63,6 @@ export class GetAllProducts {
         users.map(async (item) => {
             item.images = await getFiles.execute({entity_id: item.id, entity_type: 'product'})
         })
-        console.log(users)
         return users;
 
     }

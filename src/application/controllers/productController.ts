@@ -108,7 +108,8 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             sex,
             maxPrice,
             limit = "10",
-            offset = "0"
+            offset = "0",
+            discount_at
         } = request.query as ProductRequest['Query'];
         const minPriceInt = minPrice ? parseInt(minPrice) : undefined
         const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
@@ -117,25 +118,53 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
         const probIdsArray = probIds ? probIds[0].split(',') : undefined;
         const getAllProduct = new GetAllProducts(productRepo, fileRepo);
         const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({categoryId, materialId, sizeIds: sizeIdsArray, decorationIds: decorIdsArray, probIds: probIdsArray, sortBy, order, search: q, maxPrice: maxPriceInt, minPrice: minPriceInt, sex: sex, limit: parseInt(limit), offset: parseInt(offset)});
+        const products = await getAllProduct.execute({
+            categoryId,
+            materialId,
+            sizeIds: sizeIdsArray,
+            decorationIds: decorIdsArray,
+            probIds: probIdsArray,
+            sortBy,
+            order,
+            search: q,
+            maxPrice: maxPriceInt,
+            minPrice: minPriceInt,
+            sex: sex,
+            limit: parseInt(limit),
+            offset: parseInt(offset)
+        });
 
-        for(const product of products) {
+        console.log(discount_at)
+
+        const filteredProducts = [];
+        for (const product of products) {
             try {
+                console.log(1)
                 const result = await getDiscount.execute({ product_id: product.id });
-                product.discount = DiscountMap.toPersistence(result);
+                if (discount_at) {
+                    console.log(2)
+                    product.discount = DiscountMap.toPersistence(result);
+                    console.log(3)
+                    filteredProducts.push(product);
+                }
             } catch (error) {
-
+                console.log(4)
+                if (!discount_at) {
+                    console.log(5)
+                    product.discount = undefined; // Если скидка не важна, оставляем продукт
+                    console.log(6)
+                    filteredProducts.push(product);
+                }
             }
         }
 
-        const totalPages = Math.ceil(products.length / parseInt(limit));
+        const totalPages = Math.ceil(filteredProducts.length / parseInt(limit));
 
-        console.log(products)
         reply.status(200).send({
             success: true,
-            data: products,
+            data: filteredProducts,
             pagination: {
-                totalItems: products.length,
+                totalItems: filteredProducts.length,
                 totalPages: totalPages,
                 currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1,
                 limit: parseInt(limit)
