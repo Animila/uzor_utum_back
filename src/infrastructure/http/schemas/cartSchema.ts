@@ -35,6 +35,7 @@ const getCartSchema = {
                                             proba_id: {type: 'string'},
                                             cart_id: {type: 'string'},
                                             count: {type: 'number'},
+                                            discount: { type: 'object', additionalProperties: true },
                                             updated_at: {type: 'string'},
                                             created_at: {type: 'string'}
                                         }

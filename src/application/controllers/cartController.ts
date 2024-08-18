@@ -30,6 +30,7 @@ import {SizeMap} from "../../mappers/SizeMap";
 import {DecorateMap} from "../../mappers/DecorateMap";
 import {ProbMap} from "../../mappers/ProbMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {DiscountMap} from "../../mappers/DiscountMap";
 
 const cartRepo = new PrismaCartRepository()
 const userRepo = new PrismaUserRepo()
@@ -78,6 +79,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
 
             const itemPer = ItemCartMap.toPersistence(item)
             itemPer.product = existingProduct ? ProductMap.toPersistence(existingProduct) : undefined
+            itemPer.discount = discountProduct ? DiscountMap.toPersistence(discountProduct) : undefined
 
             try {
                 const getSize = new GetByIdSize(sizeRepo)

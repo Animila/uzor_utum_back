@@ -30,6 +30,7 @@ export class ItemCartMap {
         cart_id: string,
         cart?: any,
         count: number,
+        discount?: any,
         created_at: Date,
         updated_at: Date
     } {
