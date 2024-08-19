@@ -46,6 +46,7 @@ export class PrismaSendTypeRepo implements ISendTypeRepository {
             if(!newUser) return null
             return SendTypeMap.toDomain(newUser)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

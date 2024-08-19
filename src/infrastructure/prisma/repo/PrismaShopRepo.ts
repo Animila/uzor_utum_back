@@ -54,6 +54,7 @@ export class PrismaShopRepo implements IShopRepository {
             if(!newUser) return null
             return ShopMap.toDomain(newUser)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

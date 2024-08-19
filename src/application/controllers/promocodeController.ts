@@ -13,9 +13,10 @@ const promoCodeRepo = new PrismaPromoCodeRepo()
 export async function createPromoCodeController(request: FastifyRequest<PromoCodeRequest>, reply: FastifyReply) {
     const data = request.body;
 
-
     try {
         const createData = new CreatePromoCode(promoCodeRepo);
+        data.valid_to = new Date(data.valid_to)
+        data.valid_from = new Date(data.valid_from)
         const result = await createData.execute(data);
         reply.status(201).send({
             success: true,

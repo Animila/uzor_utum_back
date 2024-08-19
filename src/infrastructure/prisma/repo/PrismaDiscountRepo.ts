@@ -71,6 +71,7 @@ export class PrismaDiscountRepo implements IDiscountRepository {
             if(!newData) return null
             return DiscountMap.toDomain(newData)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

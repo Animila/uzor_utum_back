@@ -41,6 +41,7 @@ export class PrismaUserRepo implements IUserRepository {
             if (!user) return null
             return UserMap.toDomain(user)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Проблемы с базой данных'

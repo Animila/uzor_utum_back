@@ -52,6 +52,7 @@ export class PrismaSizeRepo implements ISizeRepository {
             if(!newUser) return null
             return SizeMap.toDomain(newUser)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

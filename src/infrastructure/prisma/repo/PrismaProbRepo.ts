@@ -53,6 +53,7 @@ export class PrismaProbRepo implements IProbRepository {
             if(!newUser) return null
             return ProbMap.toDomain(newUser)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

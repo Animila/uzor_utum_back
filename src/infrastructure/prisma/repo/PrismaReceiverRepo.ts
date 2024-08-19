@@ -50,6 +50,7 @@ export class PrismaReceiverRepo implements IReceiverRepository {
             if(!newUser) return null
             return ReceiverMap.toDomain(newUser)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'

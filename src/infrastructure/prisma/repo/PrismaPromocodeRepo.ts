@@ -84,6 +84,7 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
 
             return PromoCodeMap.toDomain(result)
         } catch (error) {
+            console.log(error)
             throw new Error(JSON.stringify({
                 status: 500,
                 message: 'Ошибка с базой данных'
