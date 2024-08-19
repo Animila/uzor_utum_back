@@ -88,6 +88,56 @@ const getAllCertificateSchema = {
     }
 };
 
+const checkCertificateSchema = {
+    schema: {
+        description: 'Проверить сертификат',
+        tags: ['Certificate'],
+        query: {
+            code: { type: 'string' }
+        },
+        response: {
+            200: {
+                description: 'Успешно получены',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            id: {type: 'string'},
+                            phone: { type: 'string' },
+                            email: { type: 'string' },
+                            accepted: { type: 'boolean' },
+                            delivery_at: { type: 'string' },
+                            user_id: { type: 'string' },
+                            code: { type: 'string' },
+                            activated: { type: 'boolean' },
+                            certificate_type_id: { type: 'string' },
+                            orderId: { type: 'string' }
+                        },
+                    }
+                }
+            },
+            404: {
+                description: 'Если нет такого сертификата',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 const getByIdCertificateSchema = {
     schema: {
         description: 'Получить сертифкат',
@@ -166,6 +216,7 @@ const deleteCertificateSchema = {
 
 export {
     createCertificateSchema,
+    checkCertificateSchema,
     getAllCertificateSchema,
     getByIdCertificateSchema,
     deleteCertificateSchema

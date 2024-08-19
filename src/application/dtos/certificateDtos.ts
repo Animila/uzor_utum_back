@@ -4,6 +4,7 @@ interface CertificateRequest {
     },
     Query: {
         certificate_type_id?: string
+        code?: string
     },
     Body: {
         phone: string

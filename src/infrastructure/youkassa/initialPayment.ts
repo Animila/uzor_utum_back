@@ -2,8 +2,10 @@ import {randomUUID} from "node:crypto";
 import axios from "axios";
 
 export async function initialPayment(
+    entity_type: string,
+    entity_id: string,
     msg: string,
-    urlRedirect: string,
+    id: string,
     price: string
 ): Promise<{
     success: boolean;
@@ -23,16 +25,30 @@ export async function initialPayment(
             "Content-Type": "application/json"
         };
 
+        console.log(auth)
+        console.log(headers)
+
+        const now = new Date();
+        const minutesToAdd = 1;
+        now.setMinutes(now.getMinutes() + minutesToAdd);
+        const futureTimeUTC = now.toUTCString();
+
+
         let params = {
             amount: {
                 value: price,
                 currency: "RUB",
             },
             description: msg,
+            expires_at: futureTimeUTC,
+            metadata: {
+                entity_type: entity_type,
+                entity_id: entity_id
+            },
             capture: false,
             confirmation: {
                 type: "redirect",
-                return_url: urlRedirect
+                return_url: (process.env.WEBSITE || 'https://uzorutum.ru/thanks') + '?id=' + id
             },
             save_method_method: false
         }

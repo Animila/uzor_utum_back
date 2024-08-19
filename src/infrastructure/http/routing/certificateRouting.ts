@@ -1,11 +1,12 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import {
     createCertificateController,
-    deleteCertificateController, getAllCertificateController,
+    deleteCertificateController, getAllCertificateController, getByCodeCertificateController,
     getByIdCertificateController
 } from "../../../application/controllers/certificateController";
 import {Roles} from "../../../domain/user/valueObjects/role";
 import {
+    checkCertificateSchema,
     createCertificateSchema,
     deleteCertificateSchema,
     getAllCertificateSchema,
@@ -19,6 +20,9 @@ export function registerCertificateRouting(fastify: FastifyInstance) {
         // @ts-ignore
         if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await getAllCertificateController(req, res)
+    });
+    fastify.get('/certificate/check', checkCertificateSchema, async (req: FastifyRequest<CertificateRequest>, res: FastifyReply) => {
+        await getByCodeCertificateController(req, res)
     });
     fastify.get('/certificate/:id',getByIdCertificateSchema, async (req: FastifyRequest<CertificateRequest>, res: FastifyReply) => {
         await getByIdCertificateController(req, res)

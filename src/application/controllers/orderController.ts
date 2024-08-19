@@ -131,8 +131,10 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         // создать платеж
 
         const resultPay = await initialPayment(
+            "product",
+            order.getId(),
             `Оплата заказа №${order.getId()}`,
-            process.env.WEBSITE || process.env.LOCALHOST || 'https://uzorutum.ru',
+            order.getId(),
             data.total_amount.toString())
 
         if(!resultPay.success) {

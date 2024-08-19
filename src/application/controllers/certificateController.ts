@@ -11,6 +11,8 @@ import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/Prisma
 import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
 import {GetUserById} from "../../useCases/user/userGetById";
 import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
+import {GetByCodeCertificate} from "../../useCases/certificate/certificateGetByCode";
+import {Guard} from "../../domain/guard";
 
 const certRepo = new PrismaCertificateRepo();
 const certTypeRepo = new PrismaCertificateTypeRepo();
@@ -24,6 +26,40 @@ export async function getAllCertificateController(request: FastifyRequest<Certif
         reply.status(200).send({
             success: true,
             data: results
+        });
+    } catch (error: any) {
+        console.log('345678', error.message)
+        const errors = JSON.parse(error.message)
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        })
+    }
+}
+
+export async function getByCodeCertificateController(request: FastifyRequest<CertificateRequest>, reply: FastifyReply) {
+    try {
+        const {code} = request.query as CertificateRequest['Query']
+        const check = Guard.againstNullOrUndefined(code, 'code')
+        if(!check.succeeded)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'code',
+                        message: 'Нет code'
+                    }
+                ]
+            }))
+        const getCertificate = new GetByCodeCertificate(certRepo)
+        const result =  await getCertificate.execute({code: code!});
+        console.log({
+            success: true,
+            data: CertificateMap.toPersistence(result)
+        })
+        reply.status(200).send({
+            success: true,
+            data: CertificateMap.toPersistence(result)
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -71,14 +107,16 @@ export async function createCertificateController(request: FastifyRequest<Certif
             user_id: data.user_id,
             certificate_type_id: data.certificate_type_id,
             accepted: data.accepted,
-            phone: data.phone,
-            email: data.email,
+            phone: user ? user.getPhone().getFullPhone() : data.phone,
+            email: user ? user.getEmail().getFull() : data.email,
             delivery_at: data.delivery_at
         });
 
         const resultPay = await initialPayment(
+            "certificate",
+            result.getId(),
             `Покупка сертификата на: ${certType.getValue()} рублей`,
-            process.env.WEBSITE || 'https://45b62676-f78d-4370-a8a3-9fe5aac2ffad.tunnel4.com/documentation',
+            result.getId(),
             certType.getValue().toString())
 
         if(!resultPay.success) {
@@ -111,29 +149,6 @@ export async function createCertificateController(request: FastifyRequest<Certif
     }
 }
 
-// export async function updateCertificateController(request: FastifyRequest<CertificateRequest>, reply: FastifyReply) {
-//     try {
-//         const {id} = request.params
-//         const data = request.body || {};
-//         const updateCertificate = new UpdateCertificate(certRepo)
-//         const material = await updateCertificate.execute({
-//             id: id,
-//             title: data.title
-//         });
-//
-//         reply.status(200).send({
-//             success: true,
-//             data: CertificateMap.toPersistence(material)
-//         });
-//     } catch (error: any) {
-//         console.log('345678', error.message)
-//         const errors = JSON.parse(error.message)
-//         reply.status(errors.status).send({
-//             success: false,
-//             message: errors.message
-//         })
-//     }
-// }
 
 export async function deleteCertificateController(request: FastifyRequest<CertificateRequest>, reply: FastifyReply) {
     try {

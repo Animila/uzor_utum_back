@@ -19,7 +19,12 @@ export class GetUserById {
         if(!check.succeeded)
             throw new Error(JSON.stringify({
                 status: 400,
-                message: 'Нет user_id'
+                message: [
+                    {
+                        type: 'user_id',
+                        message: 'Нет user_id'
+                    }
+                ]
             }))
         const existingUser = await this.userRepository.findById(user_id)
 

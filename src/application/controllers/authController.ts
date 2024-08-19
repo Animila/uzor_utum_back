@@ -21,7 +21,7 @@ export async function registerController(request: FastifyRequest<AuthRequest>, r
         const createToken = new CreateToken(tokenRepo)
         const newToken = await createToken.execute({userId: newUser.getId()})
         await rabbit.sendEmail({
-            code: newToken.getToken().props.value,
+            text: "Код для завершения регистрации: ", newToken.getToken().props.value,
             subject: 'Код для регистрации',
             to: newUser.getEmail().getFull()
         })
@@ -50,7 +50,7 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
         const createToken = new CreateToken(tokenRepo)
         const newToken = await createToken.execute({userId: newUser.getId()})
         await rabbit.sendEmail({
-            code: newToken.getToken().props.value,
+            text: "Код для входа: " + newToken.getToken().props.value,
             subject: 'Код для входа',
             to: newUser.getEmail().getFull()
         })

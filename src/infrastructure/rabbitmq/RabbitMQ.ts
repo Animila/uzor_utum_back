@@ -43,7 +43,7 @@ class RabbitMQ {
         await this.channel!.consume('sendEmail', async data => {
             try {
                 const bufferData = Buffer.from(data?.content!);
-                const dataMail: { subject: string, to: string, code: number } = JSON.parse(bufferData.toString());
+                const dataMail: { subject: string, to: string, text: string } = JSON.parse(bufferData.toString());
                 console.log('Received data: ', dataMail);
                 const checkEmail = Email.create(dataMail.to);
                 if (checkEmail instanceof Error) {
@@ -54,7 +54,7 @@ class RabbitMQ {
                 const mailOptions = {
                     to: checkEmail as Email,
                     subject: dataMail.subject,
-                    text: `Ваш код для входа: ${dataMail.code}`
+                    text: dataMail.text
                 };
                 const newMail = new Mail(mailOptions);
                 const result: boolean = await this.mailService.sendMail(newMail);
@@ -74,7 +74,7 @@ class RabbitMQ {
     public async sendEmail(data: {
         to: string
         subject: string
-        code: string
+        text: string
     }): Promise<void> {
         try {
             await this.assertQueue('sendEmail');

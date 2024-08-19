@@ -19,7 +19,7 @@ export class CreateReceiver {
 
     async execute(input: CreateReceiverInput): Promise<Receiver> {
         const {token, phone, full_name} = input
-        
+
         const phoneOrError = Phone.create(phone)
         const errors: Array<{type: string, message: string}> = []
         phoneOrError instanceof Error && errors.push({type: 'phone', message: phoneOrError.message})
@@ -161,7 +161,12 @@ export class DeleteReceiver {
         if(!check.succeeded)
             throw new Error(JSON.stringify({
                 status: 400,
-                message: 'Нет id'
+                message: [
+                    {
+                        type: 'id',
+                        message: 'Нет id'
+                    }
+                ]
             }))
         return await this.receiverRepository.delete(id)
 

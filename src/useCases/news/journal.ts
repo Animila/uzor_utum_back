@@ -131,7 +131,12 @@ export class DeleteJournal {
         if(!check.succeeded)
             throw new Error(JSON.stringify({
                 status: 400,
-                message: 'Нет id'
+                message: [
+                    {
+                        type: 'id',
+                        message: 'Нет id'
+                    }
+                ]
             }))
         return await this.repository.delete(id)
 
