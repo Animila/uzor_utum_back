@@ -42,7 +42,7 @@ export class UpdateNews {
             journalId: journal_id || existingData.getJournalId(),
             views: views || existingData.getViews(),
             createdAt: existingData.getCreatedAt(),
-        });
+        }, existingData.getId());
         await this.repository.save(result);
         return result;
 
