@@ -53,6 +53,7 @@ const getLikesSchema = {
             entity_id: { type: 'string' },
             entity_type: { type: 'string' },
             user_id: { type: 'string' },
+            obj_type: { type: 'string' }
         },
         response: {
             200: {

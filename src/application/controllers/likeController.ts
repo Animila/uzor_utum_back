@@ -11,9 +11,9 @@ const likeRepo = new PrismaLikeRepo();
 
 export async function getAllLikeController(request: FastifyRequest<LikeRequest>, reply: FastifyReply) {
     try {
-        const { entity_id, entity_type, user_id } = request.query as LikeRequest["Query"]
+        const { entity_id, entity_type, user_id, obj_type } = request.query as LikeRequest["Query"]
         const getAllData = new GetAllLike(likeRepo)
-        const result =  await getAllData.execute({entity_type: entity_type, entity_id: entity_id, user_id: user_id});
+        const result =  await getAllData.execute({entity_type: entity_type, entity_id: entity_id, user_id: user_id, type: obj_type});
         reply.status(200).send({
             success: true,
             data: result

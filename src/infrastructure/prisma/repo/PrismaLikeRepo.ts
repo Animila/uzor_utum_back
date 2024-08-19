@@ -6,13 +6,14 @@ import {LikeMap} from "../../../mappers/LikeMap";
 export class PrismaLikeRepo implements ILikeRepository {
     private prisma = new PrismaClient();
 
-    async findAll(entity_type?: string, entity_id?: string, user_id?: string): Promise<Like[]> {
+    async findAll(entity_type?: string, entity_id?: string, user_id?: string, type?: string): Promise<Like[]> {
         try {
             const data = await this.prisma.likes.findMany({
                 where: {
                     entity_type,
                     entity_id,
-                    user_id
+                    user_id,
+                    type: type as LikeType
                 }
             })
             return data.map(Like => LikeMap.toDomain(Like)).filter(material => material != null)
