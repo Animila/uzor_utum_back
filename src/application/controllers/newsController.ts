@@ -67,9 +67,9 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
 
         const getFiles = new GetAllFile(fileRepo)
 
-        resultAll.map(async (dataPer) => {
+        await Promise.all(resultAll.map(async (dataPer) => {
             dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
-        })
+        }))
 
         reply.status(200).send({
             success: true,
@@ -96,7 +96,7 @@ export async function getByIdNewsController(request: FastifyRequest<NewsRequest>
         dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
         reply.status(200).send({
             success: true,
-            data: data
+            data: dataPer
         });
     } catch (error: any) {
         console.log('Error:', error.message);
