@@ -13,6 +13,7 @@ import {GetUserById} from "../../useCases/user/userGetById";
 import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
 import {GetByCodeCertificate} from "../../useCases/certificate/certificateGetByCode";
 import {Guard} from "../../domain/guard";
+import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
 
 const certRepo = new PrismaCertificateRepo();
 const certTypeRepo = new PrismaCertificateTypeRepo();
@@ -55,7 +56,7 @@ export async function getByCodeCertificateController(request: FastifyRequest<Cer
         const getTypeCert = new GetByIdCertificateType(certTypeRepo)
         const result =  await getCertificate.execute({code: code!});
         const dataPer = CertificateMap.toPersistence(result)
-        dataPer.certificate_type = await getTypeCert.execute({id: result.getCertificateTypeId()})
+        dataPer.certificate_type = CertificateTypeMap.toPersistence(await getTypeCert.execute({id: result.getCertificateTypeId()}))
         reply.status(200).send({
             success: true,
             data: dataPer
