@@ -276,8 +276,12 @@ model orders {
 
 enum StatusPayment {
 	PENDING
+	CANCELLED
+	PAIDING
+	BUILDING
+	SENDING
+	AWAITING
 	SUCCESSED
-	CANCALLED
 }
 
 model send_types {

@@ -1,8 +1,12 @@
 
 export enum OrderStatusAll {
     PENDING='PENDING',
+    CANCELLED='CANCELLED',
+    PAIDING='PAIDING',
+    BUILDING='BUILDING',
+    SENDING='SENDING',
+    AWAITING='AWAITING',
     SUCCESSED='SUCCESSED',
-    CANCALLED='CANCALLED'
 }
 
 export interface IOrderStatus {
