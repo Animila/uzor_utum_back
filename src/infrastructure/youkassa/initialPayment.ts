@@ -48,7 +48,7 @@ export async function initialPayment(
             capture: false,
             confirmation: {
                 type: "redirect",
-                return_url: (process.env.WEBSITE || 'https://uzorutum.ru/thanks') + '?id=' + id
+                return_url: (process.env.THANKS || 'https://uzorutum.ru/thanks') + '?id=' + id
             },
             save_method_method: false
         }
