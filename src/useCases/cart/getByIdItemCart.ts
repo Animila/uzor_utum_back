@@ -23,7 +23,6 @@ export class GetByIdItemCart {
                 message: 'Пункт корзины не найден'
             }))
 
-        console.log(existingData)
 
         return existingData as CartItem;
 

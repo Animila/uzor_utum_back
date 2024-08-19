@@ -10,7 +10,6 @@ export default class SendMail {
 
     async sendMail(data: Mail): Promise<boolean> {
         try {
-            console.log(data)
             const result = await this.smtpMail.sendMail({
                 text: data.getText(),
                 subject: data.getSubject(),

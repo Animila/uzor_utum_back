@@ -34,7 +34,6 @@ export class PrismaLikeRepo implements ILikeRepository {
     async save(data: Like): Promise<Like | null> {
         try {
             const dataPer = LikeMap.toPersistence(data)
-            console.log(dataPer)
             const newUser = await this.prisma.likes.upsert({
                 where: {id: dataPer.id},
                 create: {

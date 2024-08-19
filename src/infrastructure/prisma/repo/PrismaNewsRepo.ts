@@ -45,7 +45,6 @@ export class PrismaNewsRepo implements INewsRepository {
                     text: dataPer.text,
                     views: dataPer.views,
                     journal_id: dataPer.journal_id,
-                    preview_path: dataPer.preview_path,
                     created_at: dataPer.created_at
                 },
                 update: {
@@ -55,7 +54,6 @@ export class PrismaNewsRepo implements INewsRepository {
                     text: dataPer.text,
                     views: dataPer.views,
                     journal_id: dataPer.journal_id,
-                    preview_path: dataPer.preview_path,
                     created_at: dataPer.created_at
                 }
             })

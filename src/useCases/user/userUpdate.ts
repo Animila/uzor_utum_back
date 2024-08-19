@@ -55,7 +55,6 @@ export class UpdateUser {
                 message: 'Пользователь не найден'
             }))
 
-        console.log(roleOrError)
 
         const updateUser = new User(
             {
@@ -71,7 +70,6 @@ export class UpdateUser {
             existingUser.getId()
         )
 
-        console.log(updateUser.getRole())
 
 
         const savedUser = await this.userRepository.save(updateUser);

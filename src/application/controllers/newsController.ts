@@ -18,7 +18,6 @@ export async function createNewsController(request: FastifyRequest<NewsRequest>,
             title: data.title,
             about: data.about,
             text: data.text,
-            preview_path: data.preview_path,
             views: data.views,
             journal_id: data.journal_id
         })
@@ -61,7 +60,6 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
         const {old, popular, journalId, } = request.query as NewsRequest['Query'];
         const getAllData = new GetAllNews(repo)
         const resultAll = await getAllData.execute({journal_id: journalId, old: old === 'true', popular: popular === 'true'});
-        console.log(resultAll)
         reply.status(200).send({
             success: true,
             data: resultAll
@@ -105,7 +103,6 @@ export async function updateNewsController(request: FastifyRequest<NewsRequest>,
             title: data.title,
             about: data.about,
             text: data.text,
-            preview_path: data.preview_path,
             views: data.views,
             journal_id: data.journal_id
         });

@@ -43,7 +43,6 @@ export class UpdateDiscount {
             endDate: end_date || existingData.getEndDate()
         }, existingData.getId())
 
-        console.log(updateData)
         const savedData = await this.repository.save(updateData);
         if(!savedData) {
             throw new Error(JSON.stringify({

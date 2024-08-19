@@ -5,7 +5,6 @@ interface INews {
     journalId: string
     about: string
     text: string
-    previewPath: string
     views: number
     createdAt: Date
 }
@@ -28,8 +27,6 @@ export class News {
     getAbout(): string { return this.props.about }
 
     getText(): string { return this.props.text }
-
-    getPreviewPath(): string { return this.props.previewPath }
 
     getViews(): number { return this.props.views }
 

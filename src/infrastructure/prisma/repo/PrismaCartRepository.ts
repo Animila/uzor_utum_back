@@ -81,7 +81,6 @@ export class PrismaCartRepository implements ICartRepository {
             const existingCart = await this.prisma.carts.findUnique({
                 where: {token: dataPer.token}
             })
-            console.log(existingCart)
 
             let result
             if (existingCart) {

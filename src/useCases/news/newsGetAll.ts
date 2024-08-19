@@ -20,7 +20,6 @@ export class GetAllNews {
         text: string
         about: string
         journal_id: string
-        preview_path: string
         created_at: Date
         views:  number
     }[]> {

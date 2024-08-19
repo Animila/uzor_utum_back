@@ -28,7 +28,6 @@ export class PrismaBonusRepository implements IBonusRepository {
                 }
             })
             const res = data.map(itemPer => { return BonusMap.toDomain(itemPer) })
-            console.log(res)
             return data.map(itemPer => BonusMap.toDomain(itemPer)).filter(item => item != null )
         } finally {
             await this.prisma.$disconnect();

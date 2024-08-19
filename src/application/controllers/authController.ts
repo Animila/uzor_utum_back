@@ -47,7 +47,6 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
 
         const getUser = new GetUserByPhone(userRepo)
         const newUser =  await getUser.execute({phone: phone});
-        console.log(newUser)
         const createToken = new CreateToken(tokenRepo)
         const newToken = await createToken.execute({userId: newUser.getId()})
         await rabbit.sendEmail({
@@ -72,14 +71,10 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
 export async function verifyController(request: FastifyRequest<AuthRequest>, reply: FastifyReply, fastify: FastifyInstance) {
     try {
         const {code} = request.body;
-        console.log(code)
-
         const updateToken = new UpdateToken(tokenRepo)
         const getUser = new GetUserById(userRepo)
         const user_id =  await updateToken.execute({token: code});
-        console.log(user_id)
         const user = await getUser.execute({user_id: user_id})
-        console.log(user)
 
         const token = fastify.jwt.sign({
             data: {

@@ -36,7 +36,6 @@ export class PrismaItemCartRepository implements ICartItemRepository {
                 const data = await this.prisma.cart_items.findMany({
                     where: {cart_id}
                 })
-                console.log(data)
                 return data.map(item => ItemCartMap.toDomain(item)).filter(item => item !== null)
             }
         } finally {

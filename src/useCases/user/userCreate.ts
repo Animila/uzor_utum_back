@@ -24,7 +24,6 @@ export class CreateUser {
         const phoneOrError = Phone.create(phone)
         const roleOrError = Role.create(Roles.user)
 
-        console.log(emailOrError, phoneOrError, roleOrError)
 
         const errors: Array<{type: string, message: string}> = []
 

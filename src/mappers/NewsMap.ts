@@ -9,7 +9,6 @@ export class NewsMap {
             about: raw.about,
             journalId: raw.journal_id,
             views: raw.views,
-            previewPath: raw.preview_path,
             createdAt: raw.created_at
         }, raw.id)
         if(!result) return null
@@ -22,7 +21,6 @@ export class NewsMap {
         text: string
         about: string
         journal_id: string
-        preview_path: string
         created_at: Date
         views:  number
     } {
@@ -33,7 +31,6 @@ export class NewsMap {
             about: data.getAbout(),
             journal_id: data.getJournalId(),
             views: data.getViews(),
-            preview_path: data.getPreviewPath(),
             created_at: data.getCreatedAt()
         }
     }

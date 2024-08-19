@@ -1,8 +1,7 @@
 import {ICategoryRepository} from "../../../repositories/ICategoryRepository";
-import {PrismaClient} from "@prisma/client";
 import {Category} from "../../../domain/products/categories";
 import {CategoryMap} from "../../../mappers/CategoryMap";
-
+import {PrismaClient} from '@prisma/client'
 export class PrismaCategoryRepo implements ICategoryRepository {
     private prisma = new PrismaClient();
 
@@ -43,7 +42,6 @@ export class PrismaCategoryRepo implements ICategoryRepository {
                 create: {
                     id: dataPer.id,
                     title: dataPer.title,
-                    image_path: '/test'
                 },
                 update: {
                     id: dataPer.id,

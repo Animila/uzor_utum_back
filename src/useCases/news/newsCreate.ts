@@ -6,7 +6,6 @@ interface CreateNewsInput {
     text: string
     about: string
     journal_id: string
-    preview_path: string
     views: number
 }
 
@@ -23,7 +22,6 @@ export class CreateNews {
             journal_id,
             text,
             views,
-            preview_path,
             about
         } = input;
 
@@ -32,7 +30,6 @@ export class CreateNews {
             text: text,
             about: about,
             journalId: journal_id,
-            previewPath: preview_path,
             views: views,
             createdAt: new Date(),
         });

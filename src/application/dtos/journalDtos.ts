@@ -22,7 +22,6 @@ interface NewsRequest {
         text: string
         about: string
         journal_id: string
-        preview_path: string
         views: number
     }
 }

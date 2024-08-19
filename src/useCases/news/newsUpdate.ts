@@ -7,7 +7,6 @@ interface UpdateNewsInput {
     text?: string
     about?: string
     journal_id?: string
-    preview_path?: string
     views?: number
 }
 
@@ -25,7 +24,6 @@ export class UpdateNews {
             journal_id,
             text,
             views,
-            preview_path,
             about
         } = input;
 
@@ -42,7 +40,6 @@ export class UpdateNews {
             text: text || existingData.getText(),
             about: about || existingData.getAbout(),
             journalId: journal_id || existingData.getJournalId(),
-            previewPath: preview_path || existingData.getPreviewPath(),
             views: views || existingData.getViews(),
             createdAt: existingData.getCreatedAt(),
         });

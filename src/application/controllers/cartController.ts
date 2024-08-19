@@ -95,7 +95,6 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
 
             return itemPer
         }))
-        console.log('3: ', cartRep.items)
         await cartRepo.save(result)
         cartRep.total_amount = result.props.totalAmount
 

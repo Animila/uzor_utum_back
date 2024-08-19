@@ -33,7 +33,6 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
 
     async findById(id: string): Promise<PromoCode | null> {
         try {
-            console.log(new Date())
             const data = await this.prisma.promocodes.findUnique({where: {id: id}})
             if (!data) return null;
             return PromoCodeMap.toDomain(data)

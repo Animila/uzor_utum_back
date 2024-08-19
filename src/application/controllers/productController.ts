@@ -134,25 +134,17 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             offset: parseInt(offset)
         });
 
-        console.log(discount_at)
-
         const filteredProducts = [];
         for (const product of products) {
             try {
-                console.log(1)
                 const result = await getDiscount.execute({ product_id: product.id });
                 if (discount_at) {
-                    console.log(2)
                     product.discount = DiscountMap.toPersistence(result);
-                    console.log(3)
                     filteredProducts.push(product);
                 }
             } catch (error) {
-                console.log(4)
                 if (!discount_at) {
-                    console.log(5)
                     product.discount = undefined; // Если скидка не важна, оставляем продукт
-                    console.log(6)
                     filteredProducts.push(product);
                 }
             }

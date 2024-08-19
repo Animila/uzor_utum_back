@@ -24,7 +24,6 @@ export class PrismaProductRepo implements IProductRepository {
     ): Promise<Product[]> {
         try {
             const where: any = {};
-            console.log(probIds)
             if (categoryId) where.category_id = categoryId;
             if (materialId) where.material_id = materialId;
             if (sex) where.sex = sex;
@@ -32,7 +31,6 @@ export class PrismaProductRepo implements IProductRepository {
             if (decorationIds) where.decoration_ids = {hasSome: decorationIds};
             if (sizeIds) where.size_ids = {hasSome: sizeIds};
 
-            console.log(where)
 
             if (minPrice !== undefined && maxPrice !== undefined) where.price = {gte: minPrice, lte: maxPrice};
             else if (minPrice !== undefined) where.price = {gte: minPrice};
