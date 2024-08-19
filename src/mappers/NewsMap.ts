@@ -22,6 +22,7 @@ export class NewsMap {
         about: string
         journal_id: string
         created_at: Date
+        images?: any
         views:  number
     } {
         return {

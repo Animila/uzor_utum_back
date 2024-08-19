@@ -1,5 +1,6 @@
 import {INewsRepository} from "../../repositories/INewsRepository";
 import {NewsMap} from "../../mappers/NewsMap";
+import {News} from "../../domain/news/news";
 
 interface GetByIdNewsInput {
     id: string
@@ -12,15 +13,7 @@ export class GetByIdNews {
         this.repository = repository;
     }
 
-    async execute(input: GetByIdNewsInput): Promise<{
-        id: string,
-        title: string
-        text: string
-        about: string
-        journal_id: string
-        created_at: Date
-        views:  number
-    }> {
+    async execute(input: GetByIdNewsInput): Promise<News> {
         const { id } = input;
 
         const existingData = await this.repository.findById(id)
@@ -30,6 +23,6 @@ export class GetByIdNews {
                 message: 'Новость не найдена'
             }))
         }
-        return NewsMap.toPersistence(existingData)
+        return existingData
     }
 }

@@ -25,6 +25,13 @@ const createNewsSchema = {
                             id: { type: 'string' },
                             title: { type: 'string' },
                             about: { type: 'string' },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            },
                             text: {type: 'string'},
                             views: { type: 'number' },
                             journal_id: { type: 'string' },
@@ -69,6 +76,13 @@ const getAllNewsSchema = {
                                 about: { type: 'string' },
                                 text: {type: 'string'},
                                 views: { type: 'number' },
+                                images: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'object',
+                                        additionalProperties: true
+                                    }
+                                },
                                 journal_id: { type: 'string' },
                                 created_at: { type: 'string' },
                             }
@@ -109,6 +123,13 @@ const getByIdNewsSchema = {
                             about: { type: 'string' },
                             text: {type: 'string'},
                             views: { type: 'number' },
+                            images: {
+                                type: 'array',
+                                items: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
+                            },
                             journal_id: { type: 'string' },
                             create_at: { type: 'string' },
                         },

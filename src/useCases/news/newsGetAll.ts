@@ -21,6 +21,7 @@ export class GetAllNews {
         about: string
         journal_id: string
         created_at: Date
+        images?: any
         views:  number
     }[]> {
         const {

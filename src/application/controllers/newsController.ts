@@ -7,8 +7,12 @@ import {GetByIdNews} from "../../useCases/news/newsGetById";
 import {UpdateNews} from "../../useCases/news/newsUpdate";
 import {DeleteNews} from "../../useCases/news/newsDelete";
 import {AddViewNews} from "../../useCases/news/newsAddView";
+import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 
 const repo = new PrismaNewsRepo()
+const fileRepo = new PrismaFileRepo();
+
 export async function createNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     const data = request.body;
 
@@ -60,6 +64,13 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
         const {old, popular, journalId, } = request.query as NewsRequest['Query'];
         const getAllData = new GetAllNews(repo)
         const resultAll = await getAllData.execute({journal_id: journalId, old: old === 'true', popular: popular === 'true'});
+
+        const getFiles = new GetAllFile(fileRepo)
+
+        resultAll.map(async (dataPer) => {
+            dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
+        })
+
         reply.status(200).send({
             success: true,
             data: resultAll
@@ -79,6 +90,10 @@ export async function getByIdNewsController(request: FastifyRequest<NewsRequest>
         const { id } = request.params;
         const getData = new GetByIdNews(repo);
         const data = await getData.execute({ id });
+        const getFiles = new GetAllFile(fileRepo)
+
+        const dataPer = NewsMap.toPersistence(data)
+        dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
         reply.status(200).send({
             success: true,
             data: data
@@ -98,6 +113,7 @@ export async function updateNewsController(request: FastifyRequest<NewsRequest>,
         const { id } = request.params;
         const data = request.body || {};
         const updateNews = new UpdateNews(repo);
+
         const product = await updateNews.execute({
             id: id,
             title: data.title,
@@ -107,9 +123,11 @@ export async function updateNewsController(request: FastifyRequest<NewsRequest>,
             journal_id: data.journal_id
         });
 
+        const dataPer = NewsMap.toPersistence(product)
+
         reply.status(200).send({
             success: true,
-            data: NewsMap.toPersistence(product)
+            data: dataPer
         });
     } catch (error: any) {
         console.log('Error:', error.message);
