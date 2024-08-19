@@ -29,6 +29,7 @@ export class CertificateMap {
     public static toPersistence(data: Certificate): {
         id: string,
         certificate_type_id: string
+        certificate_type?: any
         code: string
         activated: boolean
         phone?: string

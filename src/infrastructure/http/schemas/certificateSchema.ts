@@ -111,6 +111,10 @@ const checkCertificateSchema = {
                             delivery_at: { type: 'string' },
                             user_id: { type: 'string' },
                             code: { type: 'string' },
+                            certificate_type: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
                             activated: { type: 'boolean' },
                             certificate_type_id: { type: 'string' },
                             orderId: { type: 'string' }

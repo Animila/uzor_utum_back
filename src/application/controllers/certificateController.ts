@@ -52,14 +52,13 @@ export async function getByCodeCertificateController(request: FastifyRequest<Cer
                 ]
             }))
         const getCertificate = new GetByCodeCertificate(certRepo)
+        const getTypeCert = new GetByIdCertificateType(certTypeRepo)
         const result =  await getCertificate.execute({code: code!});
-        console.log({
-            success: true,
-            data: CertificateMap.toPersistence(result)
-        })
+        const dataPer = CertificateMap.toPersistence(result)
+        dataPer.certificate_type = await getTypeCert.execute({id: result.getCertificateTypeId()})
         reply.status(200).send({
             success: true,
-            data: CertificateMap.toPersistence(result)
+            data: dataPer
         });
     } catch (error: any) {
         console.log('345678', error.message)
