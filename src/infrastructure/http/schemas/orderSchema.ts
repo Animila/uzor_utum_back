@@ -43,6 +43,7 @@ const getOrdersSchema = {
                                 add_bonus: { type: 'number' },
                                 use_bonus: { type: 'number' },
                                 total_amount: {type: 'number'},
+                                status: { type: 'string' },
                                 items: {
                                     type: 'array',
                                     items: {
@@ -107,6 +108,7 @@ const getOrderSchema = {
                             promocode_id: { type: 'string' },
                             add_bonus: { type: 'number' },
                             use_bonus: { type: 'number' },
+                            status: { type: 'string' },
                             total_amount: {type: 'number'},
                             items: {
                                 type: 'array',
@@ -158,6 +160,7 @@ const createOrderSchema = {
             certificate_id: { type: 'string' },
             promocode_id: { type: 'string' },
             add_bonus: { type: 'number' },
+            status: { type: 'string' },
             use_bonus: { type: 'number' },
             total_amount: {type: 'number'},
             items: {
