@@ -34,6 +34,10 @@ export async function initialPayment(
         const futureTimeUTC = now.toUTCString();
 
 
+        const idl = id.split('-');
+
+
+
         let params = {
             amount: {
                 value: price,
@@ -48,7 +52,7 @@ export async function initialPayment(
             capture: false,
             confirmation: {
                 type: "redirect",
-                return_url: (process.env.THANKS || 'https://uzorutum.ru/thanks') + '?id=' + id
+                return_url: (process.env.THANKS || 'https://uzorutum.ru/thanks') + '?id=' + idl[idl.length - 1]
             },
             save_method_method: false
         }

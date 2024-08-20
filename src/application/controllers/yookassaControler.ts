@@ -56,9 +56,10 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
                 // @ts-ignore
                 order.props.status = OrderStatus.create(OrderStatus.getAvailables().PAIDING)
                 await orderRepo.save(order)
+                const id = order.getId().split('-');
 
                 await rabbit.sendEmail({
-                    text: `Заказ №${order.getId()} на сумму ${order.getTotalAmount()} оплачен и скоро будет отправлен`,
+                    text: `Заказ №${id[id.length - 1]} на сумму ${order.getTotalAmount()} оплачен и скоро будет отправлен`,
                     subject: `Заказ Uzor Utum`,
                     to: order.getEmail().getFull()!
                 })
