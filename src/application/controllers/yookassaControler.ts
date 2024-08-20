@@ -1,15 +1,10 @@
 import {PrismaCertificateRepo} from "../../infrastructure/prisma/repo/PrismaCertificateRepo";
 import {FastifyReply, FastifyRequest} from "fastify";
-import {GetAllCertificate} from "../../useCases/certificate/certificateGetAll";
 import {randomUUID} from "node:crypto";
 import axios from "axios";
-import {success} from "concurrently/dist/src/defaults";
 import {GetByIdCertificate} from "../../useCases/certificate/certificateGetById";
 import {DeleteCertificate} from "../../useCases/certificate/certificateDelete";
 import {rabbit} from "../../config/SMTPOptions";
-import {GetByIdProducts} from "../../useCases/product/productGetById";
-import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
-import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
@@ -29,7 +24,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
                 if(data.object.metadata.entity_type === "product") {
                     const order = await getOrder.execute({id: data.object.metadata.entity_id})
                     // @ts-ignore
-                    order.props.status = OrderStatus.getAvailables().PENDING
+                    order.props.status = OrderStatus.create(OrderStatus.getAvailables().PENDING)
                     await orderRepo.save(order)
                 }
                 const url = `https://api.yookassa.ru/v3/payments/${data.object.id}/capture`;
