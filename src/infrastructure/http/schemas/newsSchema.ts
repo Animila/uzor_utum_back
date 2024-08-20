@@ -131,7 +131,7 @@ const getByIdNewsSchema = {
                                 }
                             },
                             journal_id: { type: 'string' },
-                            create_at: { type: 'string' },
+                            created_at: { type: 'string' },
                         },
                     }
                 }
