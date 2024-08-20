@@ -54,7 +54,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
             if(dataObject.entity_type === "product") {
                 const order = await getOrder.execute({id: dataObject.entity_id})
                 // @ts-ignore
-                order.props.status = OrderStatus.getAvailables().PAIDING
+                order.props.status = OrderStatus.create(OrderStatus.getAvailables().PAIDING)
                 await orderRepo.save(order)
 
                 await rabbit.sendEmail({
@@ -75,7 +75,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
                 const getOrder = new GetByIdOrder(orderRepo)
                 const order = await getOrder.execute({id: dataObject.entity_id})
                 // @ts-ignore
-                order.props.status = OrderStatus.getAvailables().CANCELLED
+                order.props.status = OrderStatus.create(OrderStatus.getAvailables().CANCELLED)
                 await orderRepo.save(order)
             }
         }
