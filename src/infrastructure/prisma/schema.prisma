@@ -89,6 +89,7 @@ model products {
 	prob_ids       String[]
 	size_ids       String[]
 	decoration_ids String[]
+	reviews reviews[]
 }
 
 enum Roles {
@@ -272,6 +273,7 @@ model orders {
 	token String
 	created_at DateTime @default(now())
 	updated_at DateTime @default(now())
+	reviews reviews[]
 }
 
 enum StatusPayment {
@@ -319,4 +321,20 @@ model files {
 	entity_type String
 	entity_id   String
 	typefile    String
+}
+
+model reviews {
+	id            String    @id @default(cuid())
+	url						String		@unique
+	name					String
+	text					String
+	rating        Int
+	created_at    DateTime  @default(now())
+	published_at  DateTime?
+
+	order_id       String
+	order          orders     @relation(fields: [order_id], references: [id], onDelete: Cascade)
+
+	product_id    String
+	product       products  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }

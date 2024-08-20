@@ -22,6 +22,7 @@ import {registerDecorateRouting} from "./routing/decorateRouting";
 import {registerProbRouting} from "./routing/prodRouting";
 import {registerSizeRouting} from "./routing/sizeRouting";
 import {registerFileRouting} from "./routing/fileRouting";
+import {registerReviewRouting} from "./routing/reviewRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
@@ -35,6 +36,7 @@ export default function registerRoutes(fastify: FastifyInstance) {
     registerSizeRouting(fastify)
     registerDecorateRouting(fastify)
     registerProbRouting(fastify)
+    registerReviewRouting(fastify)
 
     registerCartRouting(fastify)
     registerOrderRouting(fastify)
