@@ -183,7 +183,8 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
             const result = await getDiscount.execute({product_id: product.getId()})
             productPer.discount = DiscountMap.toPersistence(result)
         } catch (err) {}
-        productPer.images = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
+        const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
+        productPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: productPer
@@ -234,8 +235,8 @@ export async function updateProductController(request: FastifyRequest<ProductReq
 
         const productPer = ProductMap.toPersistence(product)
         const getFiles = new GetAllFile(fileRepo)
-        productPer.images = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
-
+        const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
+        productPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: productPer

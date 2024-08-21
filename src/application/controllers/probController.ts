@@ -51,8 +51,8 @@ export async function getByIdProbController(request: FastifyRequest<ProbRequest>
         const prob =  await getProb.execute({id: id});
         const probPer = ProbMap.toPersistence(prob)
         const getFiles = new GetAllFile(fileRepo)
-        probPer.images = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
-
+        const dataFile = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
+        probPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: probPer
@@ -101,8 +101,8 @@ export async function updateProbController(request: FastifyRequest<ProbRequest>,
         });
         const probPer = ProbMap.toPersistence(prob)
         const getFiles = new GetAllFile(fileRepo)
-        probPer.images = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
-
+        const dataFile = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
+        probPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: probPer

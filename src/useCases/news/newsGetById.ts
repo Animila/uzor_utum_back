@@ -27,7 +27,8 @@ export class GetByIdNews {
             }))
         }
         const getFiles = new GetAllFile(this.fileRepo)
-        existingData.props.images = await getFiles.execute({limit: 10, offset: 0, entity_id: existingData.getId(), entity_type: 'news'})
+        const data = await getFiles.execute({limit: 10, offset: 0, entity_id: existingData.getId(), entity_type: 'news'})
+        existingData.props.images = data.data
         return existingData;
     }
 }

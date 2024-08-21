@@ -51,8 +51,8 @@ export async function getByIdSizeController(request: FastifyRequest<SizeRequest>
         const size =  await getSize.execute({id: id});
         const sizePer = SizeMap.toPersistence(size)
         const getFiles = new GetAllFile(fileRepo)
-        sizePer.images = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
-
+        const dataFile = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
+        sizePer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: sizePer
@@ -101,8 +101,8 @@ export async function updateSizeController(request: FastifyRequest<SizeRequest>,
         });
         const sizePer = SizeMap.toPersistence(size)
         const getFiles = new GetAllFile(fileRepo)
-        sizePer.images = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
-
+        const dataFile = await getFiles.execute({entity_type: 'size', entity_id: size.getId()})
+        sizePer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: sizePer

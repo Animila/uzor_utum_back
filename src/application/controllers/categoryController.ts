@@ -61,7 +61,8 @@ export async function getByIdCategoryController(request: FastifyRequest<Category
         const category =  await getCategory.execute({id: id});
         const categoryPer = CategoryMap.toPersistence(category)
         const getFiles = new GetAllFile(fileRepo)
-        categoryPer.images = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
+        const data = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
+        categoryPer.images = data.data
         reply.status(200).send({
             success: true,
             data: categoryPer
@@ -111,7 +112,8 @@ export async function updateCategoryController(request: FastifyRequest<CategoryR
         });
         const categoryPer = CategoryMap.toPersistence(category)
         const getFiles = new GetAllFile(fileRepo)
-        categoryPer.images = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
+        const dataFile = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
+        categoryPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: categoryPer

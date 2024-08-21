@@ -51,7 +51,8 @@ export async function getByIdDecorateController(request: FastifyRequest<Decorate
         const decor =  await getDecorate.execute({id: id});
         const decorPer = DecorateMap.toPersistence(decor)
         const getFiles = new GetAllFile(fileRepo)
-        decorPer.images = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
+        const dataFile = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
+        decorPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: decorPer
@@ -100,7 +101,8 @@ export async function updateDecorateController(request: FastifyRequest<DecorateR
         });
         const decorPer = DecorateMap.toPersistence(decor)
         const getFiles = new GetAllFile(fileRepo)
-        decorPer.images = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
+        const dataFile = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
+        decorPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: decorPer

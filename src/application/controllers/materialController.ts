@@ -52,8 +52,8 @@ export async function getByIdMaterialController(request: FastifyRequest<Material
         const material =  await getMaterial.execute({id: id});
         const matPer = MaterialMap.toPersistence(material)
         const getFiles = new GetAllFile(fileRepo)
-        matPer.images = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
-
+        const dataFile = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
+        matPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: matPer
@@ -102,8 +102,8 @@ export async function updateMaterialController(request: FastifyRequest<MaterialR
         });
         const matPer = MaterialMap.toPersistence(material)
         const getFiles = new GetAllFile(fileRepo)
-        matPer.images = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
-
+        const dataFile = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
+        matPer.images = dataFile.data
         reply.status(200).send({
             success: true,
             data: matPer
