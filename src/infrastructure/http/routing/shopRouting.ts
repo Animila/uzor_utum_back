@@ -9,8 +9,9 @@ import {
 import {
     createShopController, deleteShopController,
     getAllShopController,
-    getByIdShopController
+    getByIdShopController, updateShopController
 } from "../../../application/controllers/shopController";
+import {Roles} from "../../../domain/user/valueObjects/role";
 
 
 export function registerShopRouting(fastify: FastifyInstance) {
@@ -19,18 +20,23 @@ export function registerShopRouting(fastify: FastifyInstance) {
     });
     fastify.get('/shop/:id',getShopSchema, async (req: FastifyRequest<ShopRequest>, res: FastifyReply) => {
         await getByIdShopController(req, res)
-        // получить заказ по id
     });
     fastify.post('/shop',createShopSchema, async (req: FastifyRequest<ShopRequest>, res: FastifyReply) => {
+        await req.jwtVerify()
+        //@ts-ignore
+        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await createShopController(req, res)
-        // создать заказ
     });
     fastify.put('/shop/:id',updateShopSchema, async (req: FastifyRequest<ShopRequest>, res: FastifyReply) => {
-        await getByIdShopController(req, res)
-        // получить заказ по id
+        await req.jwtVerify()
+        //@ts-ignore
+        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
+        await updateShopController(req, res)
     });
     fastify.delete('/shop/:id', deleteShopSchema, async (req: FastifyRequest<ShopRequest>, res: FastifyReply) => {
+        await req.jwtVerify()
+        //@ts-ignore
+        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await deleteShopController(req, res)
-        // удалить заказ
     });
 }
