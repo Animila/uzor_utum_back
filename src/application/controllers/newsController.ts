@@ -97,12 +97,10 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
 export async function getByIdNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getData = new GetByIdNews(repo);
+        const getData = new GetByIdNews(repo, fileRepo);
         const data = await getData.execute({ id });
-        const getFiles = new GetAllFile(fileRepo)
 
         const dataPer = NewsMap.toPersistence(data)
-        dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
         reply.status(200).send({
             success: true,
             data: dataPer

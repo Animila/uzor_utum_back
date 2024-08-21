@@ -31,6 +31,7 @@ export class NewsMap {
             text: data.getText(),
             about: data.getAbout(),
             journal_id: data.getJournalId(),
+            images: data.getImages(),
             views: data.getViews(),
             created_at: data.getCreatedAt()
         }

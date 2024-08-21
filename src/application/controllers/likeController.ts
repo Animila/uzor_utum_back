@@ -36,9 +36,9 @@ export async function getAllLikeController(request: FastifyRequest<LikeRequest>,
         console.log(offset)
 
         const getAllData = new GetAllLike(likeRepo)
-        const getNews = new GetByIdNews(newsRepo)
+        const getNews = new GetByIdNews(newsRepo, fileRepo)
         const getProduct = new GetByIdProducts(prodRepo, fileRepo)
-        const getReview = new GetByIdReview(revRepo)
+        const getReview = new GetByIdReview(revRepo, fileRepo)
 
         const result =  await getAllData.execute({
             entity_type: entity_type,
@@ -89,9 +89,9 @@ export async function getByIdLikeController(request: FastifyRequest<LikeRequest>
     try {
         const {id} = request.params
         const getData = new GetByIdLike(likeRepo)
-        const getNews = new GetByIdNews(newsRepo)
+        const getNews = new GetByIdNews(newsRepo, fileRepo)
         const getProduct = new GetByIdProducts(prodRepo, fileRepo)
-        const getReview = new GetByIdReview(revRepo)
+        const getReview = new GetByIdReview(revRepo, fileRepo)
 
         const result =  await getData.execute({id: id});
 

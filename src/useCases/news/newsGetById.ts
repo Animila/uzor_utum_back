@@ -1,5 +1,7 @@
 import {INewsRepository} from "../../repositories/INewsRepository";
 import {News} from "../../domain/news/news";
+import {IFileRepo} from "../../repositories/IFileRepository";
+import {GetAllFile} from "../file/fileGetAll";
 
 interface GetByIdNewsInput {
     id: string
@@ -7,9 +9,11 @@ interface GetByIdNewsInput {
 
 export class GetByIdNews {
     private repository: INewsRepository;
+    private fileRepo: IFileRepo
 
-    constructor(repository: INewsRepository) {
+    constructor(repository: INewsRepository, fileRepo: IFileRepo) {
         this.repository = repository;
+        this.fileRepo = fileRepo;
     }
 
     async execute(input: GetByIdNewsInput): Promise<News> {
@@ -22,6 +26,8 @@ export class GetByIdNews {
                 message: 'Новость не найдена'
             }))
         }
-        return existingData
+        const getFiles = new GetAllFile(this.fileRepo)
+        existingData.props.images = await getFiles.execute({limit: 10, offset: 0, entity_id: existingData.getId(), entity_type: 'news'})
+        return existingData;
     }
 }

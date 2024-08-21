@@ -9,6 +9,7 @@ interface IReview {
     productId: string
     createdAt: Date
     publishedAt?: Date
+    images?: any
 }
 
 export class Review {
@@ -25,6 +26,8 @@ export class Review {
     getUrl(): string { return this.props.url }
 
     getName(): string { return this.props.name }
+
+    getImages(): any { return this.props.images }
 
     getText(): string { return this.props.text }
 

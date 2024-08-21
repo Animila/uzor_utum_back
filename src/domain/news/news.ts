@@ -6,6 +6,7 @@ interface INews {
     about: string
     text: string
     views: number
+    images?: any
     createdAt: Date
 }
 
@@ -23,6 +24,8 @@ export class News {
     getTitle(): string { return this.props.title }
 
     getJournalId(): string { return this.props.journalId }
+
+    getImages(): any { return this.props.images }
 
     getAbout(): string { return this.props.about }
 
