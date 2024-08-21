@@ -5,7 +5,8 @@ import {createFile, deleteFile, getFiles} from "../../../application/controllers
 
 export function registerFileRouting(fastify: FastifyInstance) {
     fastify.post('/file/upload',loadFileSchema, async (req: FastifyRequest<FileRouting>, res: FastifyReply) => {
-        await req.jwtVerify()
+        if(req.body.entity_type !== 'review')
+            await req.jwtVerify()
         await createFile(req, res)
     });
     fastify.get('/file/:entity_type/:entity_id', getFilesSchema, async (req: FastifyRequest<FileRouting>, res: FastifyReply) => {
