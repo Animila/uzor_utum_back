@@ -14,19 +14,26 @@ import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 const materialRepo = new PrismaMaterialRepo();
 const fileRepo = new PrismaFileRepo();
 
-export async function getAllMaterialController(request: FastifyRequest, reply: FastifyReply) {
+export async function getAllMaterialController(request: FastifyRequest<MaterialRequest>, reply: FastifyReply) {
     try {
-
+        const data = request.query as MaterialRequest['Query']
         const getAllMaterial = new GetAllMaterial(materialRepo)
-        const materials =  await getAllMaterial.execute();
+        const materials =  await getAllMaterial.execute(data.limit ? parseInt(data.limit): undefined, data.offset ? parseInt(data.offset) : undefined);
         const getFiles = new GetAllFile(fileRepo)
 
-        for(const material of materials) {
-            material.images = await getFiles.execute({entity_type: 'material', entity_id: material.id});
+        for(const material of materials.data) {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_type: 'material', entity_id: material.id});
+            material.images = data.data
         }
         reply.status(200).send({
             success: true,
-            data: materials
+            data: materials.data,
+            pagination: {
+                totalItems: materials.count,
+                totalPages: Math.ceil(materials.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                limit: data.limit ? parseInt(data.limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

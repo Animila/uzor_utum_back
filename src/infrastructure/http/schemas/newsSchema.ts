@@ -59,6 +59,8 @@ const getAllNewsSchema = {
             old: {type: 'string'},
             popular: {type: 'string'},
             journalId: {type: 'string'},
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -86,6 +88,15 @@ const getAllNewsSchema = {
                                 journal_id: { type: 'string' },
                                 created_at: { type: 'string' },
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

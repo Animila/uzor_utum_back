@@ -2,6 +2,7 @@ import {PrismaClient} from "@prisma/client";
 import {IFileRepo} from "../../../repositories/IFileRepository";
 import {FileMap} from "../../../mappers/FileMap";
 import {File} from '../../../domain/file/file'
+import {LikeMap} from "../../../mappers/LikeMap";
 
 export class PrismaFileRepo implements IFileRepo {
     prisma = new PrismaClient()
@@ -19,12 +20,21 @@ export class PrismaFileRepo implements IFileRepo {
         }
     }
 
-    async getByEntityIdAndType(entity_type: string, entity_id: string): Promise<File[]> {
+    async getByEntityIdAndType(limit: number, offset: number, entity_type: string, entity_id: string): Promise<{data: File[], count: number}> {
         try {
-            const files = await this.prisma.files.findMany({
+            const countData = await this.prisma.files.count({
                 where: { entity_type, entity_id }
             })
-            return files.map((item: any) =>  FileMap.toDomain(item)).filter(item => item !== null)
+            const files = await this.prisma.files.findMany({
+                take: limit,
+                skip: limit * offset,
+                where: { entity_type, entity_id }
+            })
+            const result = files.map((item: any) =>  FileMap.toDomain(item)).filter(item => item !== null)
+            return {
+                data: result,
+                count: countData
+            }
         }finally {
             await this.prisma.$disconnect();
         }

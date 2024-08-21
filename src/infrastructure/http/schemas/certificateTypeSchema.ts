@@ -42,6 +42,10 @@ const getAllCertificateTypeSchema = {
     schema: {
         description: 'Получить список всех номиналов',
         tags: ['CertificateType'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешно получены',
@@ -57,6 +61,15 @@ const getAllCertificateTypeSchema = {
                                 value: {type: 'number'},
                                 description: {type: 'string'},
                             },
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

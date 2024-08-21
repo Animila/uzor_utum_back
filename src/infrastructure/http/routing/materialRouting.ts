@@ -16,7 +16,7 @@ import {Roles} from "../../../domain/user/valueObjects/role";
 
 
 export function registerMaterialRouting(fastify: FastifyInstance) {
-    fastify.get('/material', getAllMaterialSchema, async (req, res) => {
+    fastify.get('/material', getAllMaterialSchema, async (req: FastifyRequest<MaterialRequest>, res) => {
         await getAllMaterialController(req, res)
     });
     fastify.get('/material/:id',getMaterialSchema, async (req: FastifyRequest<MaterialRequest>, res: FastifyReply) => {

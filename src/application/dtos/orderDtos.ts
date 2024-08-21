@@ -10,6 +10,8 @@ interface OrderRequest {
         phone: string,
         email: string,
         total_amount: string,
+        limit: string,
+        offset: string
     },
     Body: {
         token: string

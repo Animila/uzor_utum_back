@@ -6,10 +6,18 @@ import {UserMap} from "../../../mappers/UserMap";
 export class PrismaUserRepo implements IUserRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<User[]> {
+    async findAll(limit: number, offset: number): Promise<{data: User[], count: number}> {
         try {
-            const users_data = await this.prisma.users.findMany();
-            return users_data.map(item => UserMap.toDomain(item)).filter((user): user is User => user !== null);
+            const countData = await this.prisma.users.count()
+            const users_data = await this.prisma.users.findMany({
+                take: limit,
+                skip: limit * offset
+            });
+            const result = users_data.map(item => UserMap.toDomain(item)).filter((user): user is User => user !== null);
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

@@ -1,5 +1,4 @@
 import {ICertificateRepository} from "../../repositories/ICertificateRepository";
-import {Certificate} from "../../domain/certificate/certificate";
 
 interface DeleteCertificateInput {
     id: string,

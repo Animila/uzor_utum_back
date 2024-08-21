@@ -1,9 +1,5 @@
 import {IOrderRepository} from "../../repositories/IOrderRepository";
 import {Order} from "../../domain/order/order";
-import {iItems, Items} from "../../domain/order/valueObjects/items";
-import {Phone} from "../../domain/order/valueObjects/phone";
-import {Email} from "../../domain/order/valueObjects/email";
-import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 
 interface GetByIdOrderInput {
     id: string,

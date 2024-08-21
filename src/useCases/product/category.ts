@@ -32,22 +32,28 @@ export class GetAllCategory {
         this.categoryRepository = categoryRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string,
-        images?: any
-    }[]> {
-        const existingCategories = await this.categoryRepository.findAll()
-        const categories = existingCategories.map(item => {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string,
+            title: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const existingCategories = await this.categoryRepository.findAll(limit, offset)
+        const categories = existingCategories.data.map(item => {
             return CategoryMap.toPersistence(item)
         })
-        if(!existingCategories) {
+        if(!categories) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Категория не найдена'
             }))
         }
-        return categories
+        return {
+            data: categories,
+            count: existingCategories.count
+        }
     }
 }
 

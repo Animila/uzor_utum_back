@@ -14,18 +14,25 @@ import {GetAllFile} from "../../useCases/file/fileGetAll";
 const materialRepo = new PrismaSizeRepo();
 const fileRepo = new PrismaFileRepo();
 
-export async function getAllSizeController(request: FastifyRequest, reply: FastifyReply) {
+export async function getAllSizeController(request: FastifyRequest<SizeRequest>, reply: FastifyReply) {
     try {
-
+        const data = request.query as SizeRequest['Query'];
         const getAllSize = new GetAllSize(materialRepo)
-        const sizes =  await getAllSize.execute();
+        const sizes =  await getAllSize.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
         const getFiles = new GetAllFile(fileRepo)
-        for(const size of sizes) {
-            size.images = await getFiles.execute({entity_id: size.id, entity_type: 'size'})
+        for(const size of sizes.data) {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: size.id, entity_type: 'size'})
+            size.images = data.data
         }
         reply.status(200).send({
             success: true,
-            data: sizes
+            data: sizes.data,
+            pagination: {
+                totalItems: sizes.count,
+                totalPages: Math.ceil(sizes.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1 ,
+                limit: data.limit ? parseInt(data.limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

@@ -9,7 +9,7 @@ import {
 import {Roles} from "../../../domain/user/valueObjects/role";
 
 export function registerUserRoutes(fastify: FastifyInstance) {
-    fastify.get('/user', getAllSchema, async (req, res) => {
+    fastify.get('/user', getAllSchema, async (req: FastifyRequest<UserRequest>, res) => {
         await req.jwtVerify()
         // @ts-ignore
         if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')

@@ -1,4 +1,8 @@
 interface ShopRequest {
+    Query: {
+        offset: string
+        limit: string
+    }
     Params: {
         id: string
     },

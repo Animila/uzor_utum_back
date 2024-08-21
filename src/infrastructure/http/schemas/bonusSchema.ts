@@ -48,6 +48,10 @@ const getBonusesSchema = {
         description: 'Получить список всех бонусов',
         tags: ['Bonus'],
         security: [{ApiToken: []}],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешно получены',
@@ -66,6 +70,15 @@ const getBonusesSchema = {
                                 user_id: { type: 'string' },
                                 created_at: { type: 'string' },
                             },
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }
@@ -106,7 +119,7 @@ const getByIdBonusSchema = {
                             user_id: { type: 'string' },
                             created_at: { type: 'string' },
                         },
-                    }
+                    },
                 }
             },
             500: {
@@ -146,6 +159,15 @@ const getUserBonusesSchema = {
                                 user_id: { type: 'string' },
                                 created_at: { type: 'string' },
                             },
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

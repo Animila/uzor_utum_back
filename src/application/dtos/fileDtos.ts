@@ -1,4 +1,8 @@
 interface FileRouting {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
         entity_id: string,

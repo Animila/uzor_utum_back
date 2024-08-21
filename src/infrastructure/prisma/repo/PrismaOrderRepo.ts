@@ -7,14 +7,21 @@ export class PrismaOrderRepo implements IOrderRepository {
 
     private prisma = new PrismaClient();
 
-    async findAll(token?:string, user_id?:string): Promise<Order[]> {
+    async findAll(limit: number, offset: number, token?:string, user_id?:string): Promise<{data: Order[], count: number}> {
         try {
             const where: any = {};
             if (token) where.token = token;
             if (user_id) where.user_id = user_id;
 
-            const result = await this.prisma.orders.findMany({where});
-            return result.map(item => OrderMap.toDomain(item)).filter(product => product != null);
+            const countData = await this.prisma.orders.count({where: where})
+            const data = await this.prisma.orders.findMany({where,
+                take: limit,
+                skip: limit * offset});
+            const result =  data.map(item => OrderMap.toDomain(item)).filter(product => product != null);
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

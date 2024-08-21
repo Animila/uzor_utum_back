@@ -87,3 +87,33 @@ export async function initialPayment(
         }
     }
 }
+
+export async function getDataPayment(payment_id: string): Promise<{success: boolean, data?: any, message?: string}> {
+    try {
+        const url = `https://api.yookassa.ru/v3/payments/${payment_id}`;
+
+        let auth = "Basic " + btoa(process.env.YOUKASSA_ID + ':' + process.env.YOUKASSA_SECRET)
+        let headers = {
+            "Authorization": auth,
+            "Idempotence-Key": randomUUID().toString(),
+            "Content-Type": "application/json"
+        };
+
+        const response = await axios.get(url, { headers });
+        const res = response.data;
+
+        console.log(res)
+
+        return {
+            success: true,
+            data: res
+        }
+
+    } catch (e: any) {
+        console.log('EEEEERRRRRROR: ',e)
+        return {
+            success: false,
+            message: e.message,
+        }
+    }
+}

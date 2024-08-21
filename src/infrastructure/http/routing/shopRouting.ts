@@ -14,7 +14,7 @@ import {
 
 
 export function registerShopRouting(fastify: FastifyInstance) {
-    fastify.get('/shop', getAllShopSchema, async (req, res) => {
+    fastify.get('/shop', getAllShopSchema, async (req: FastifyRequest<ShopRequest>, res) => {
         await getAllShopController(req, res)
     });
     fastify.get('/shop/:id',getShopSchema, async (req: FastifyRequest<ShopRequest>, res: FastifyReply) => {

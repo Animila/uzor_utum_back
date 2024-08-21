@@ -48,6 +48,10 @@ const getAllSizeSchema = {
     schema: {
         description: 'Получить все размеры',
         tags: ['Size'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -70,6 +74,15 @@ const getAllSizeSchema = {
                                 }
                             },
                             required: ['id', 'title']
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

@@ -5,7 +5,9 @@ interface GetAllLikeInput {
     entity_type: string,
     entity_id: string,
     user_id: string
-    type?: string
+    type?: string,
+    limit: number
+    offset: number
 }
 
 export class GetAllLike {
@@ -16,22 +18,29 @@ export class GetAllLike {
     }
 
     async execute(input: GetAllLikeInput): Promise<{
-        id: string
-        entity_type: string,
-        entity_id: string,
-        user_id: string,
-        type: string,
-        created_at: Date,
-    }[]> {
-        const { entity_id, entity_type, user_id, type} = input;
+        data: {
+            id: string
+            entity_type: string,
+            entity_id: string,
+            user_id: string,
+            type: string,
+            entity?: any,
+            created_at: Date
+        }[],
+        count: number
+    }> {
+        const { entity_id, entity_type, user_id, type, limit = 10, offset = 0} = input;
 
-        const existingData = await this.repository.findAll(entity_type, entity_id, user_id, type)
-        if(!existingData) {
+        const existingData = await this.repository.findAll( limit, offset, entity_type, entity_id, user_id, type)
+        if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Лайки не найдены'
             }))
         }
-        return existingData.map(item => LikeMap.toPersistence(item)).filter(item =>  item !== null);
+        return {
+            data: existingData.data.map(item => LikeMap.toPersistence(item)).filter(item =>  item !== null),
+            count: existingData.count
+        };
     }
 }

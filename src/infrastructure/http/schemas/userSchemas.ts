@@ -3,6 +3,10 @@ const getAllSchema = {
         description: 'Получить всех пользователей. Доступно для модераторов и админов',
         tags: ['User'],
         security: [{ApiToken: []}],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -26,6 +30,15 @@ const getAllSchema = {
                                 updated_at: { type: 'string', format: 'date-time', nullable: true }
                             },
                             required: ['id', 'phone', 'email', 'first_name', 'last_name', 'role', 'accepted_at', 'created_at']
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

@@ -1,5 +1,4 @@
 import {IPromocodeRepository} from "../../repositories/IPromocodeRepository";
-import {PromoCodeMap} from "../../mappers/PromoCodeMap";
 import {PromoCode} from "../../domain/promocode/promocode";
 
 interface GetIdPromoCodeInput {

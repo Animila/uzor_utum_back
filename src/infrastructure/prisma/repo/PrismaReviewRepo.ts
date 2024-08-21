@@ -6,7 +6,7 @@ import {ReviewMap} from "../../../mappers/ReviewMap";
 export class PrismaReviewRepo implements IReviewRepository {
     private prisma = new PrismaClient();
 
-    async findAll(user_id?: string, product_id?: string, old?: boolean, popular?: boolean): Promise<Review[]> {
+    async findAll(limit: number, offset: number, user_id?: string, product_id?: string, old?: boolean, popular?: boolean): Promise<{data: Review[], count: number}> {
         try {
             const filters: any = {};
 
@@ -30,12 +30,19 @@ export class PrismaReviewRepo implements IReviewRepository {
                 orderBy.push({ rating: popular ? 'desc' : 'asc' });
             }
 
+            const countData = await this.prisma.reviews.count({where: filters})
             const reviews = await this.prisma.reviews.findMany({
                 where: filters,
                 orderBy: orderBy.length ? orderBy : undefined,
+                take: limit,
+                skip: limit * offset
             });
 
-            return reviews.map(review => ReviewMap.toDomain(review)).filter(review => review != null);
+            const result = reviews.map(review => ReviewMap.toDomain(review)).filter(review => review != null);
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

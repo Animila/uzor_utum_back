@@ -7,18 +7,18 @@ export function registerReviewRouting(fastify: FastifyInstance) {
         await getAllReviewsController(req, res)
     });
 
-    fastify.get('/reviews/:id', async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
-
-    });
+    // fastify.get('/reviews/:id', async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
+    //
+    // });
 
     fastify.post('/reviews',createReviewSchema, async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
         await createReviewController(req, res)
     })
 
-    fastify.put('/reviews/:id',async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
-    })
-
-    fastify.delete('/reviews/:id',  async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
-    })
+    // fastify.put('/reviews/:id',async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
+    // })
+    //
+    // fastify.delete('/reviews/:id',  async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
+    // })
 
 }

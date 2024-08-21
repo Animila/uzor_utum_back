@@ -5,10 +5,22 @@ import {PrismaClient} from '@prisma/client'
 export class PrismaCategoryRepo implements ICategoryRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Category[]> {
+    async findAll(limit: number, offset: number ): Promise<{
+        data: Category[],
+        count: number
+    }> {
         try {
-            const data = await this.prisma.categories.findMany()
-            return data.map(category => CategoryMap.toDomain(category)).filter(category => category != null)
+            const countData = await this.prisma.categories.count()
+            const data = await this.prisma.categories.findMany({
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(category => CategoryMap.toDomain(category)).filter(category => category != null)
+            console.log(data)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

@@ -11,19 +11,26 @@ import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
 const userRepo = new PrismaUserRepo();
 const bonusRepo = new PrismaBonusRepository();
 
-export async function getAllController(request: FastifyRequest, reply: FastifyReply) {
+export async function getAllController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
-
+        const data = request.query as UserRequest['Query']
         const getAllUser = new GetUserAll(userRepo)
-        const users =  await getAllUser.execute();
+        const users =  await getAllUser.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset): undefined);
         const getBonus = new GetBySumUserBonus(bonusRepo)
 
-        for (const user of users) {
+        for (const user of users.data) {
             user.bonus = await getBonus.execute({user_id: user.id});
         }
+
         reply.status(200).send({
             success: true,
-            data: users
+            data: users.data,
+            pagination: {
+                totalItems: users.count,
+                totalPages: Math.ceil(users.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                limit: (data.limit ? parseInt(data.limit) : 10)
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

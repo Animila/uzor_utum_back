@@ -9,6 +9,7 @@ import {DeleteNews} from "../../useCases/news/newsDelete";
 import {AddViewNews} from "../../useCases/news/newsAddView";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {News} from "../../domain/news/news";
 
 const repo = new PrismaNewsRepo()
 const fileRepo = new PrismaFileRepo();
@@ -61,19 +62,27 @@ export async function addViewNewsController(request: FastifyRequest<NewsRequest>
 
 export async function getAllNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     try {
+        const {limit, offset} = request.query as NewsRequest['Query']
         const {old, popular, journalId, } = request.query as NewsRequest['Query'];
         const getAllData = new GetAllNews(repo)
-        const resultAll = await getAllData.execute({journal_id: journalId, old: old === 'true', popular: popular === 'true'});
+        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0,limit: !!limit ? parseInt(limit) : 10, journal_id: journalId, old: old === 'true', popular: popular === 'true'});
 
         const getFiles = new GetAllFile(fileRepo)
 
-        await Promise.all(resultAll.map(async (dataPer) => {
-            dataPer.images = await getFiles.execute({entity_type: 'news', entity_id: dataPer.id});
+        await Promise.all(resultAll.data.map(async (dataPer) => {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_type: 'news', entity_id: dataPer.id});
+            dataPer.images = data.data
         }))
 
         reply.status(200).send({
             success: true,
-            data: resultAll
+            data: resultAll.data,
+            pagination: {
+                totalItems: resultAll.count,
+                totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);

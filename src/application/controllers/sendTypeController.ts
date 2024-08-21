@@ -13,12 +13,18 @@ const sendTypeRepo = new PrismaSendTypeRepo();
 
 export async function getAllSendTypeController(request: FastifyRequest<SendTypeRequest>, reply: FastifyReply) {
     try {
-
+        const {limit, offset} = request.query as SendTypeRequest['Query']
         const getAllSendType = new GetAllSendType(sendTypeRepo)
-        const sendTypes =  await getAllSendType.execute();
+        const sendTypes =  await getAllSendType.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0);
         reply.status(200).send({
             success: true,
-            data: sendTypes
+            data: sendTypes.data,
+            pagination: {
+                totalItems: sendTypes.count,
+                totalPages: Math.ceil(sendTypes.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

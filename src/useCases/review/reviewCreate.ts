@@ -1,5 +1,4 @@
 import {IReviewRepository} from "../../repositories/IReviewRepository";
-import {ReviewMap} from "../../mappers/ReviewMap";
 import {Review} from "../../domain/review/review";
 
 interface CreateReviewInput {

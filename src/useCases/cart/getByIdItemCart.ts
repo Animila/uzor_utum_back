@@ -1,9 +1,10 @@
 import {ICartItemRepository} from "../../repositories/ICartItemRepository";
-import {ItemCartMap} from "../../mappers/ItemCartMap";
 import {CartItem} from "../../domain/cart/cartItem";
 
 interface GetIdCartInput {
-    id: string
+    id: string,
+    limit?: number,
+    offset?: number
 }
 
 export class GetByIdItemCart {
@@ -14,17 +15,17 @@ export class GetByIdItemCart {
     }
 
     async execute(input: GetIdCartInput): Promise<CartItem> {
-        const {id} = input;
+        const {id, limit = 10, offset = 0 } = input;
 
-        const existingData = await this.repository.find(undefined, id)
-        if(!existingData)
+        const existingData = await this.repository.find(limit, offset, id)
+        if(!existingData.data)
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Пункт корзины не найден'
             }))
 
 
-        return existingData as CartItem;
+        return existingData.data as CartItem;
 
     }
 }

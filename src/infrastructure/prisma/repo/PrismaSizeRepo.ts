@@ -6,10 +6,17 @@ import {Size} from "../../../domain/products/sizes";
 export class PrismaSizeRepo implements ISizeRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Size[]> {
+    async findAll(limit: number, offset: number): Promise<{data: Size[], count: number}> {
         try {
-            const data = await this.prisma.sizes.findMany()
-            return data.map(result => SizeMap.toDomain(result)).filter(material => material != null)
+            const countData = await this.prisma.sizes.count()
+            const data = await this.prisma.sizes.findMany({
+                take: limit,
+                skip: limit * offset})
+            const result = data.map(result => SizeMap.toDomain(result)).filter(material => material != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

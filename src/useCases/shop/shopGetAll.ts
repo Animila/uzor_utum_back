@@ -8,26 +8,32 @@ export class GetAllShop {
         this.shopRepository = shopRepository;
     }
 
-    async execute(): Promise<{
-        id: string
-        title: string
-        address: string
-        latitude: string
-        longitude: string
-        email: string
-        phones: string[]
-        times: JSON
-    }[]> {
-        const existingShops = await this.shopRepository.findAll()
-        const categories = existingShops.map(item => {
+    async execute(limit: number = 10, offset: number =0): Promise<{
+        data: {
+            id: string
+            title: string
+            address: string
+            latitude: string
+            longitude: string
+            email: string
+            phones: string[]
+            times: JSON
+        }[],
+        count: number
+    }> {
+        const existingShops = await this.shopRepository.findAll(limit, offset)
+        const categories = existingShops.data.map(item => {
             return ShopMap.toPersistence(item)
         })
-        if(!existingShops) {
+        if(!categories) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Магазины не найдены'
             }))
         }
-        return categories
+        return {
+            data: categories,
+            count: existingShops.count
+        }
     }
 }

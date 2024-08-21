@@ -21,7 +21,7 @@ const createCategorySchema = {
                         properties: {
                             id: { type: 'string' },
                             title: {type: 'string'},
-                            images: { 
+                            images: {
                                 type: 'array',
                                 items: {
                                     type: 'object',
@@ -48,6 +48,10 @@ const getAllCategorySchema = {
     schema: {
         description: 'Получить всех категории',
         tags: ['Category'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -69,6 +73,15 @@ const getAllCategorySchema = {
                                     }
                                 }
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

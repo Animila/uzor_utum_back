@@ -46,6 +46,8 @@ const getAllSendTypeSchema = {
         tags: ['SendType'],
         query: {
             token: { type: 'string' },
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -63,6 +65,15 @@ const getAllSendTypeSchema = {
                                 description: { type: 'string' },
                                 price: { type: 'number' },
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

@@ -12,6 +12,7 @@ export class PrismaProductRepo implements IProductRepository {
         materialId?: string,
         probIds?: string[],
         decorationIds?: string[],
+        discount_at?: boolean,
         sizeIds?: string[],
         sortBy?: string,
         order?: "asc" | "desc",
@@ -21,8 +22,9 @@ export class PrismaProductRepo implements IProductRepository {
         sex?: string,
         limit?: number,
         offset?: number
-    ): Promise<Product[]> {
+    ): Promise<{data: Product[], count: number}> {
         try {
+
             const where: any = {};
             if (categoryId) where.category_id = categoryId;
             if (materialId) where.material_id = materialId;
@@ -30,6 +32,12 @@ export class PrismaProductRepo implements IProductRepository {
             if (probIds) where.prob_ids = {hasSome: probIds};
             if (decorationIds) where.decoration_ids = {hasSome: decorationIds};
             if (sizeIds) where.size_ids = {hasSome: sizeIds};
+
+            if (discount_at !== undefined) {
+                where.discounts = discount_at
+                    ? { some: { activated: true, end_date: { gt: new Date() } } }
+                    : { none: { activated: true, end_date: { gt: new Date() } } };
+            }
 
 
             if (minPrice !== undefined && maxPrice !== undefined) where.price = {gte: minPrice, lte: maxPrice};
@@ -47,13 +55,20 @@ export class PrismaProductRepo implements IProductRepository {
             }
 
             const orderBy = sortBy ? {[sortBy]: order} : undefined;
+            const countData = await this.prisma.products.count({
+                where: where,
+            })
             const products = await this.prisma.products.findMany({
-                where,
+                where: where,
                 orderBy,
                 take: limit, // Ограничение на количество элементов
-                skip: offset
+                skip: offset! * limit!
             });
-            return products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
+            const result = products.map(product => ProductMap.toDomain(product)).filter(product => product != null);
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

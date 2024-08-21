@@ -45,7 +45,7 @@ const fileRepo = new PrismaFileRepo()
 
 export async function checkCartController(request: FastifyRequest<CartRequest>, reply: FastifyReply) {
     try {
-        const {user_id, token} = request.query as CartRequest['Query']
+        const {user_id, token, limit, offset} = request.query as CartRequest['Query']
         const checkUser = Guard.againstNullOrUndefined(user_id, 'user_id')
 
         if(checkUser.succeeded) {
@@ -58,13 +58,13 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const cartRep = CartMap.toPersistence(result)
 
         const getItems = new GetItemsCart(itemCartRepo)
-        const data = await getItems.execute({cart_id: result.getId()})
+        const data = await getItems.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, cart_id: result.getId()})
 
         const getProduct = new GetByIdProducts(productRepo, fileRepo)
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
         result.props.totalAmount = 0
-        cartRep.items = await Promise.all(data.map(async (item, index) => {
+        cartRep.items = await Promise.all(data.data.map(async (item, index) => {
             let existingProduct, discountProduct
             try {
                 existingProduct = await getProduct.execute({id: item.getProductId()})
@@ -100,7 +100,13 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
 
         reply.status(201).send({
             success: true,
-            data: cartRep
+            data: cartRep,
+            pagination: {
+                totalItems: data.count,
+                totalPages: Math.ceil(data.count / (!!limit ?parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);

@@ -6,10 +6,17 @@ import {ShopMap} from "../../../mappers/ShopMap";
 export class PrismaShopRepo implements IShopRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Shop[]> {
+    async findAll(limit: number, offset: number ): Promise<{data: Shop[], count: number}> {
         try {
-            const data = await this.prisma.shops.findMany()
-            return data.map(shop => ShopMap.toDomain(shop)).filter(shop => shop != null)
+            const countData = await this.prisma.shops.count()
+            const data = await this.prisma.shops.findMany({
+                take: limit,
+                skip: limit * offset})
+            const result = data.map(shop => ShopMap.toDomain(shop)).filter(shop => shop != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

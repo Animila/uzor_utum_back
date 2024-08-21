@@ -1,4 +1,8 @@
 interface SendTypeRequest {
+    Query: {
+        limit: string
+        offset: string
+    }
     Params: {
         id: string
     },

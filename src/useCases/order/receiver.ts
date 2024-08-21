@@ -47,23 +47,29 @@ export class GetAllReceiver {
         this.receiverRepository = receiverRepository;
     }
 
-    async execute(token?: string): Promise<{
-        id: string,
-        token: string
-        phone: string
-        full_name: string
-    }[]> {
-        const existingReceivers = await this.receiverRepository.findAll(token)
-        const receivers = existingReceivers.map(item => {
+    async execute(limit: number, offset: number, token?: string): Promise<{
+        data: {
+            id: string,
+            token: string
+            phone: string
+            full_name: string
+        }[],
+        count: number
+    }> {
+        const existingReceivers = await this.receiverRepository.findAll(limit, offset, token)
+        const receivers = existingReceivers.data.map(item => {
             return ReceiverMap.toPersistence(item)
         })
-        if(!existingReceivers) {
+        if(!receivers) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Получатель не найден'
             }))
         }
-        return receivers
+        return {
+            data: receivers,
+            count: existingReceivers.count
+        }
     }
 }
 

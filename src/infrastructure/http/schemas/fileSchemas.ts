@@ -42,6 +42,10 @@ const getFilesSchema = {
     schema: {
         description: 'Получить файлы. Открывать по /public/...',
         tags: ['File'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         params: {
             entity_type: { type: 'string' },
             entity_id: { type: 'string' },
@@ -64,6 +68,15 @@ const getFilesSchema = {
                                 type_file: { type: 'string' },
                                 path: { type: 'string' }
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

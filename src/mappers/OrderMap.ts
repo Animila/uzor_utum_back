@@ -56,6 +56,7 @@ export class OrderMap {
         phone: string,
         email: string,
         send_type_id: string,
+        send_type_data?: any,
         address?: string,
         apartament?: string,
         house?: string,
@@ -64,17 +65,22 @@ export class OrderMap {
         comment?: string,
         delivery_at?: Date,
         shop_id?: string,
+        shop_data?: any,
         receiver_id: string,
-
+        receiver_data?: any,
         add_bonus: number,
         use_bonus: number,
         total_amount: number,
         certificate_id?: string,
+        certificate_data?: any,
         promocode_id?: string,
+        promocode_data?: any,
 
         user_id?: string,
+        user_data?: any
         token: string,
         payment_id?: string,
+        payment_data?: any
         items: any,
         status: string,
         created_at: Date,

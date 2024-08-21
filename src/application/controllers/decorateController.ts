@@ -16,16 +16,23 @@ const fileRepo = new PrismaFileRepo();
 
 export async function getAllDecorateController(request: FastifyRequest, reply: FastifyReply) {
     try {
-
+        const data = request.query as DecorateRequest['Query']
         const getAllDecorate = new GetAllDecorate(materialRepo)
-        const decors =  await getAllDecorate.execute();
+        const decors =  await getAllDecorate.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
         const getFiles = new GetAllFile(fileRepo)
-        for(const decor of decors) {
-            decor.images = await getFiles.execute({entity_id: decor.id, entity_type: 'decorate'})
+        for(const decor of decors.data) {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: decor.id, entity_type: 'decorate'})
+            decor.images = data.data
         }
         reply.status(200).send({
             success: true,
-            data: decors
+            data: decors.data,
+            pagination: {
+                totalItems: decors.count,
+                totalPages: Math.ceil(decors.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                limit: data.limit ? parseInt(data.limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

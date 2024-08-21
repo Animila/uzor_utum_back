@@ -10,6 +10,8 @@ const getOrdersSchema = {
             phone: { type: 'string' },
             email: { type: 'string' },
             total_amount: { type: 'string' },
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -23,27 +25,57 @@ const getOrdersSchema = {
                             type: 'object',
                             properties: {
                                 id: {type: 'string'},
-                                first_name: { type: 'string' },
-                                last_name: { type: 'string' },
-                                phone: { type: 'string' },
-                                email: { type: 'string' },
-                                send_type_id: { type: 'string' },
-                                address: { type: 'string' },
+                                first_name: {type: 'string'},
+                                last_name: {type: 'string'},
+                                phone: {type: 'string'},
+                                email: {type: 'string'},
+                                send_type_id: {type: 'string'},
+                                send_type_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                address: {type: 'string'},
                                 house: {type: 'string'},
-                                apartment: { type: 'string' },
-                                postal_code: { type: 'number' },
-                                office: { type: 'string' },
-                                delivery_at: { type: 'string' },
-                                shop_id: { type: 'string' },
-                                comment: { type: 'string' },
-                                receiver_id: { type: 'string' },
-                                payment_id: {type: 'string'},
-                                certificate_id: { type: 'string' },
-                                promocode_id: { type: 'string' },
-                                add_bonus: { type: 'number' },
-                                use_bonus: { type: 'number' },
+                                apartment: {type: 'string'},
+                                postal_code: {type: 'number'},
+                                office: {type: 'string'},
+                                delivery_at: {type: 'string'},
+                                shop_id: {type: 'string'},
+                                shop_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                comment: {type: 'string'},
+                                user_id: {type: 'string'},
+                                user_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                receiver_id: {type: 'string'},
+                                receiver_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                certificate_id: {type: 'string'},
+                                certificate_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                promocode_id: {type: 'string'},
+                                promocode_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+                                add_bonus: {type: 'number'},
+                                status: {type: 'string'},
+                                use_bonus: {type: 'number'},
                                 total_amount: {type: 'number'},
-                                status: { type: 'string' },
+
+                                payment_id: {type: 'string'},
+                                payment_data: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
                                 items: {
                                     type: 'array',
                                     items: {
@@ -51,11 +83,17 @@ const getOrdersSchema = {
                                         additionalProperties: true
                                     }
                                 },
-                                user_id: {type: 'string'},
                                 token: {type: 'string'},
-                                created_at: {type: 'string'},
-                                updated_at: {type: 'string'},
-                            },
+                            }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }
@@ -89,27 +127,57 @@ const getOrderSchema = {
                         type: 'object',
                         properties: {
                             id: {type: 'string'},
-                            first_name: { type: 'string' },
-                            last_name: { type: 'string' },
-                            phone: { type: 'string' },
-                            email: { type: 'string' },
-                            send_type_id: { type: 'string' },
-                            address: { type: 'string' },
+                            first_name: {type: 'string'},
+                            last_name: {type: 'string'},
+                            phone: {type: 'string'},
+                            email: {type: 'string'},
+                            send_type_id: {type: 'string'},
+                            send_type_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            address: {type: 'string'},
                             house: {type: 'string'},
-                            apartment: { type: 'string' },
-                            postal_code: { type: 'number' },
-                            office: { type: 'string' },
-                            delivery_at: { type: 'string' },
-                            shop_id: { type: 'string' },
-                            comment: { type: 'string' },
-                            receiver_id: { type: 'string' },
-                            payment_id: {type: 'string'},
-                            certificate_id: { type: 'string' },
-                            promocode_id: { type: 'string' },
-                            add_bonus: { type: 'number' },
-                            use_bonus: { type: 'number' },
-                            status: { type: 'string' },
+                            apartment: {type: 'string'},
+                            postal_code: {type: 'number'},
+                            office: {type: 'string'},
+                            delivery_at: {type: 'string'},
+                            shop_id: {type: 'string'},
+                            shop_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            comment: {type: 'string'},
+                            user_id: {type: 'string'},
+                            user_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            receiver_id: {type: 'string'},
+                            receiver_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            certificate_id: {type: 'string'},
+                            certificate_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            promocode_id: {type: 'string'},
+                            promocode_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
+                            add_bonus: {type: 'number'},
+                            status: {type: 'string'},
+                            use_bonus: {type: 'number'},
                             total_amount: {type: 'number'},
+
+                            payment_id: {type: 'string'},
+                            payment_data: {
+                                type: 'object',
+                                additionalProperties: true
+                            },
                             items: {
                                 type: 'array',
                                 items: {
@@ -117,11 +185,8 @@ const getOrderSchema = {
                                     additionalProperties: true
                                 }
                             },
-                            user_id: {type: 'string'},
                             token: {type: 'string'},
-                            created_at: {type: 'string'},
-                            updated_at: {type: 'string'},
-                        },
+                        }
 
                     }
                 }
@@ -156,11 +221,11 @@ const createOrderSchema = {
             delivery_at: { type: 'string' },
             shop_id: { type: 'string' },
             comment: { type: 'string' },
+            user_id: {type: 'string'},
             receiver_id: { type: 'string' },
             certificate_id: { type: 'string' },
             promocode_id: { type: 'string' },
             add_bonus: { type: 'number' },
-            status: { type: 'string' },
             use_bonus: { type: 'number' },
             total_amount: {type: 'number'},
             items: {
@@ -170,7 +235,6 @@ const createOrderSchema = {
                     additionalProperties: true
                 }
             },
-            user_id: {type: 'string'},
             token: {type: 'string'},
         },
         response: {

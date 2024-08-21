@@ -1,4 +1,3 @@
-import {Bonus} from "../../domain/bonus/bonus";
 import {IBonusRepository} from "../../repositories/IBonusRepository";
 
 interface GetByUserBonusSumInput {

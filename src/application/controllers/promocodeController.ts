@@ -34,11 +34,18 @@ export async function createPromoCodeController(request: FastifyRequest<PromoCod
 
 export async function getAllPromoCodeController(request: FastifyRequest<PromoCodeRequest>, reply: FastifyReply) {
     try {
+        const {offset, limit} = request.query as PromoCodeRequest['Query']
         const getData = new GetAllPromoCode(promoCodeRepo)
-        const allData = await getData.execute()
+        const allData = await getData.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0);
         reply.status(200).send({
             success: true,
-            data: allData
+            data: allData.data,
+            pagination: {
+                totalItems: allData.count,
+                totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);

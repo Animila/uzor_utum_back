@@ -27,11 +27,18 @@ export async function createJournalController(request: FastifyRequest<JournalReq
 
 export async function getAllJournalController(request: FastifyRequest<JournalRequest>, reply: FastifyReply) {
     try {
+        const {offset, limit} = request.query as JournalRequest['Query']
         const getAllData = new GetAllJournal(journalRepo)
-        const resultAll = await getAllData.execute();
+        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0, limit: !!limit ? parseInt(limit) : 10});
         reply.status(200).send({
             success: true,
-            data: resultAll
+            data: resultAll.data,
+            pagination: {
+                totalItems: resultAll.count,
+                totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);

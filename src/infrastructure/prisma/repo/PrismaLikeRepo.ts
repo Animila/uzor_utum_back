@@ -6,9 +6,12 @@ import {LikeMap} from "../../../mappers/LikeMap";
 export class PrismaLikeRepo implements ILikeRepository {
     private prisma = new PrismaClient();
 
-    async findAll(entity_type?: string, entity_id?: string, user_id?: string, type?: string): Promise<Like[]> {
+    async findAll(limit: number, offset: number, entity_type?: string, entity_id?: string, user_id?: string, type?: string): Promise<{
+        data: Like[] | null,
+        count: number
+    }> {
         try {
-            const data = await this.prisma.likes.findMany({
+            const countData = await this.prisma.likes.count({
                 where: {
                     entity_type,
                     entity_id,
@@ -16,7 +19,21 @@ export class PrismaLikeRepo implements ILikeRepository {
                     type: type as LikeType
                 }
             })
-            return data.map(Like => LikeMap.toDomain(Like)).filter(material => material != null)
+            const data = await this.prisma.likes.findMany({
+                where: {
+                    entity_type,
+                    entity_id,
+                    user_id,
+                    type: type as LikeType
+                },
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(Like => LikeMap.toDomain(Like)).filter(material => material != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

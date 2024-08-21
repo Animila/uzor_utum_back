@@ -3,7 +3,6 @@ import {Certificate} from "../../domain/certificate/certificate";
 import {generateCode} from "../../infrastructure/crypto/generateCode";
 import {Email} from "../../domain/user/valueObjects/email";
 import {Phone} from "../../domain/user/valueObjects/phone";
-import {Role, Roles} from "../../domain/user/valueObjects/role";
 
 interface CreateCertificateInput {
     certificate_type_id: string,

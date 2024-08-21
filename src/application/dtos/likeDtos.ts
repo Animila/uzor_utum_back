@@ -7,6 +7,8 @@ interface LikeRequest {
         entity_id: string
         user_id: string
         obj_type: string
+        limit: string,
+        offset: string,
     },
     Body: {
         entity_id: string

@@ -29,12 +29,19 @@ export async function createFile(request: FastifyRequest<FileRouting>, reply: Fa
 
 export async function getFiles(request: FastifyRequest<FileRouting>, reply: FastifyReply) {
     try {
+        const data = request.query as FileRouting['Query']
         const {entity_id, entity_type} = request.params
         const loadFile = new GetAllFile(repoFile)
-        const result = await loadFile.execute({entity_type, entity_id})
+        const result = await loadFile.execute({entity_type, entity_id, offset: data.offset ? parseInt(data.offset) : undefined, limit: data.limit ? parseInt(data.limit) : undefined})
         reply.status(200).send({
             success: true,
-            data: result
+            data: result.data,
+            pagination: {
+                totalItems: result.count,
+                totalPages: Math.ceil(result.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                limit: data.limit ? parseInt(data.limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

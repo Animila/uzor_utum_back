@@ -32,22 +32,28 @@ export class GetAllProb {
         this.decorateRepository = decorateRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string,
-        images?: any
-    }[]> {
-        const existingProbs = await this.decorateRepository.findAll()
-        const result = existingProbs.map(item => {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string,
+            title: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const existingProbs = await this.decorateRepository.findAll(limit, offset)
+        const result = existingProbs.data.map(item => {
             return ProbMap.toPersistence(item)
         })
-        if(!existingProbs) {
+        if(!result) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Категория не найдена'
             }))
         }
-        return result
+        return {
+            data: result,
+            count: existingProbs.count
+        }
     }
 }
 

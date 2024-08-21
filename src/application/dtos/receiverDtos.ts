@@ -3,7 +3,9 @@ interface ReceiverRequest {
         id: string
     },
     Query: {
-      token: string
+        token: string
+        limit: string
+        offset: string
     },
     Body: {
         token: string

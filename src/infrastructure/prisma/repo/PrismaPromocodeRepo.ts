@@ -6,10 +6,17 @@ import {PromoCodeMap} from "../../../mappers/PromoCodeMap";
 export class PrismaPromoCodeRepo implements IPromocodeRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<PromoCode[]> {
+    async findAll(limit: number, offset: number ): Promise<{data: PromoCode[], count: number}> {
         try {
-            const data = await this.prisma.promocodes.findMany()
-            return data.map(itemNull => PromoCodeMap.toDomain(itemNull)).filter(item => item != null)
+            const countData = await this.prisma.promocodes.count()
+            const data = await this.prisma.promocodes.findMany({
+                take: limit,
+                skip: limit * offset})
+            const result = data.map(itemNull => PromoCodeMap.toDomain(itemNull)).filter(item => item != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

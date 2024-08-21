@@ -4,7 +4,7 @@ import {GetAllFile} from "../file/fileGetAll";
 import {IFileRepo} from "../../repositories/IFileRepository";
 
 interface GetByIdProductsInput {
-    id: string;
+    id: string,
 }
 
 export class GetByIdProducts {
@@ -17,7 +17,7 @@ export class GetByIdProducts {
     }
 
     async execute(input: GetByIdProductsInput): Promise<Product> {
-        const { id } = input;
+        const { id} = input;
         const existingData = await this.productRepository.findById(id)
         if(!existingData)
             throw new Error(JSON.stringify({
@@ -25,7 +25,7 @@ export class GetByIdProducts {
                 message: 'Продукт не найден'
             }))
         const getFiles = new GetAllFile(this.fileRepo)
-        existingData.props.images = await getFiles.execute({entity_id: existingData.getId(), entity_type: 'product'})
+        existingData.props.images = await getFiles.execute({limit: 10, offset: 0, entity_id: existingData.getId(), entity_type: 'product'})
         return existingData;
 
     }

@@ -1,5 +1,4 @@
 import {INewsRepository} from "../../repositories/INewsRepository";
-import {NewsMap} from "../../mappers/NewsMap";
 import {News} from "../../domain/news/news";
 
 interface GetByIdNewsInput {

@@ -21,10 +21,18 @@ export class PrismaCertificateTypeRepo implements ICertificateTypeRepository{
         }
     }
 
-    async findAll(): Promise<CertificateType[]> {
+    async findAll(limit: number, offset: number): Promise<{data: CertificateType[], count: number}> {
         try {
-            const result = await this.prisma.certificate_types.findMany()
-            return result.map(item => CertificateTypeMap.toDomain(item)).filter(item => item != null)
+            const countData = await this.prisma.certificate_types.count()
+            const data = await this.prisma.certificate_types.findMany({
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(item => CertificateTypeMap.toDomain(item)).filter(item => item != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

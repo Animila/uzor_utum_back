@@ -9,14 +9,20 @@ import {GetAllShop} from "../../useCases/shop/shopGetAll";
 
 const shopRepo = new PrismaShopRepo();
 
-export async function getAllShopController(request: FastifyRequest, reply: FastifyReply) {
+export async function getAllShopController(request: FastifyRequest<ShopRequest>, reply: FastifyReply) {
     try {
-
+        const {limit, offset} = request.query as ShopRequest['Query']
         const getAllShop = new GetAllShop(shopRepo)
-        const shops =  await getAllShop.execute();
+        const shops =  await getAllShop.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0);
         reply.status(200).send({
             success: true,
-            data: shops
+            data: shops.data,
+            pagination: {
+                totalItems: shops.count,
+                totalPages: Math.ceil(shops.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

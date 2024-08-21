@@ -37,11 +37,18 @@ export async function createBonusController(request: FastifyRequest<BonusRequest
 
 export async function getAllBonusController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     try {
+        const {limit = "10", offset = "0" } = request.query as BonusRequest["Query"]
         const getData = new GetAllBonus(bonusRepo)
-        const allData = await getData.execute({ })
+        const allData = await getData.execute({limit: parseInt(limit), offset: parseInt(offset)})
         reply.status(200).send({
             success: true,
-            data: allData
+            data: allData.data,
+            pagination: {
+                totalItems: allData.count,
+                totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -56,11 +63,19 @@ export async function getAllBonusController(request: FastifyRequest<BonusRequest
 export async function getBonusesUserController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     try {
         const { user_id } = request.params
+        const {limit = "10", offset = "0" } = request.query as BonusRequest["Query"]
         const getData = new GetAllBonus(bonusRepo)
-        const allData = await getData.execute({user_id})
+        const allData = await getData.execute({user_id, limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0})
+
         reply.status(200).send({
             success: true,
-            data: allData
+            data: allData.data,
+            pagination: {
+                totalItems: allData.count,
+                totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);

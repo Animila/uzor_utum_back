@@ -19,7 +19,7 @@ import {CreateOrder} from "../../useCases/order/orderCreate";
 import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
 import {PrismaItemCartRepository} from "../../infrastructure/prisma/repo/PrismaItemCartRepository";
 import {DeleteItemCart} from "../../useCases/cart/deleteItemCart";
-import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
+import {getDataPayment, initialPayment} from "../../infrastructure/youkassa/initialPayment";
 import {GetAllOrder} from "../../useCases/order/orderGetAll";
 import {OrderMap} from "../../mappers/OrderMap";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
@@ -31,6 +31,12 @@ import {Guard} from "../../domain/guard";
 import {GetUserById} from "../../useCases/user/userGetById";
 import {PrismaUserRepo} from "../../infrastructure/prisma/repo/PrismaUserRepo";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {UserMap} from "../../mappers/UserMap";
+import {SendTypeMap} from "../../mappers/SendTypeMap";
+import {ReceiverMap} from "../../mappers/ReceiverMap";
+import {ShopMap} from "../../mappers/ShopMap";
+import {CertificateMap} from "../../mappers/CertificateMap";
+import {PromoCodeMap} from "../../mappers/PromoCodeMap";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -186,16 +192,26 @@ export async function getAllOrderController(request: FastifyRequest<OrderRequest
             token,
             last_name,
             total_amount,
-            first_name
+            first_name,
+            limit,
+            offset
         } = request.query as OrderRequest['Query'];
 
         const getAllOrder = new GetAllOrder(orderRepo);
-        const products = await getAllOrder.execute({user_id: user_id, token: token});
+        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token});
 
         console.log(products)
+        const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
+
         reply.status(200).send({
             success: true,
-            data: products.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
+            data: filterOrder,
+            pagination: {
+                totalItems: products.count,
+                totalPages: Math.ceil(products.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -213,9 +229,45 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
         const getOrder = new GetByIdOrder(orderRepo);
         const product = await getOrder.execute({ id });
 
+        const getUser = new GetUserById(userRep)
+        const getSendType = new GetByIdSendType(sendTypeRepo)
+        const getReceiver = new GetByIdReceiver(receiverRepo)
+        const getShop = new GetByIdShop(shopRepo)
+        const getCert = new GetByIdCertificate(certRepo)
+        const getPromo = new GetByIdPromoCode(promoRepo)
+
+        const item = OrderMap.toPersistence(product)
+        if(item.user_id !== undefined) {
+            const result = await getUser.execute({user_id: item.user_id})
+            item.user_data = UserMap.toPersistence(result)
+        }
+
+        if(item.shop_id !== undefined) {
+            const result = await getShop.execute({id: item.shop_id})
+            item.shop_data = ShopMap.toPersistence(result)
+        }
+
+        if(item.certificate_id !== undefined) {
+            const result = await getCert.execute({id: item.certificate_id})
+            item.certificate_data = CertificateMap.toPersistence(result)
+        }
+
+        if(item.promocode_id !== undefined) {
+            const result = await getPromo.execute({id: item.promocode_id})
+            item.promocode_data = PromoCodeMap.toPersistence(result)
+        }
+
+        const resultST = await getSendType.execute({id: item.send_type_id})
+        item.send_type_data = SendTypeMap.toPersistence(resultST)
+
+        const resultR = await getReceiver.execute({id: item.receiver_id})
+        item.receiver_data = ReceiverMap.toPersistence(resultR)
+
+        item.payment_data = await getDataPayment(item.payment_id!)
+
         reply.status(200).send({
             success: true,
-            data: OrderMap.toPersistence(product)
+            data: item
         });
     } catch (error: any) {
         console.log('Error:', error.message);

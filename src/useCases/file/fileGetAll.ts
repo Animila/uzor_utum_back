@@ -4,6 +4,8 @@ import {FileMap} from "../../mappers/FileMap";
 interface GetAllFileInput {
     entity_id: string,
     entity_type: string,
+    limit?: number,
+    offset?: number
 }
 
 export class GetAllFile {
@@ -14,24 +16,30 @@ export class GetAllFile {
     }
 
     async execute(input: GetAllFileInput): Promise<{
-        id: string,
-        name: string,
-        entity_id: string,
-        entity_type: string,
-        type_file: string,
-        path: string,
-    }[]> {
-        const { entity_id, entity_type } = input;
+        data: {
+            id: string,
+            name: string,
+            entity_id: string,
+            entity_type: string,
+            type_file: string,
+            path: string,
+        }[],
+        count: number
+    }> {
+        const { entity_id, entity_type, limit = 10, offset = 0 } = input;
 
-        const existingData = await this.repository.getByEntityIdAndType(entity_type, entity_id)
-        if(!existingData) {
+        const existingData = await this.repository.getByEntityIdAndType(limit, offset, entity_type, entity_id)
+        if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Новость не найдена'
             }))
         }
 
-        return existingData.map(item => FileMap.toPersistence(item));
+        return {
+            data: existingData.data.map(item => FileMap.toPersistence(item)),
+            count: existingData.count
+        }
 
     }
 }

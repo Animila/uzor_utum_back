@@ -46,6 +46,8 @@ const getAllReceiverSchema = {
         tags: ['Receiver'],
         query: {
             token: { type: 'string' },
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -63,6 +65,15 @@ const getAllReceiverSchema = {
                                 full_name: { type: 'string' },
                                 phone: { type: 'string' },
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

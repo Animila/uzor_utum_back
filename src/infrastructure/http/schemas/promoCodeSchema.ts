@@ -71,6 +71,15 @@ const getPromoCodesSchema = {
                                 valid_to: { type: 'string' }
                             },
                         }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
+                        }
                     }
                 }
             },
@@ -130,6 +139,10 @@ const checkPromoCodeSchema = {
     schema: {
         description: 'Проверить промокод',
         tags: ['PromoCode'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         body: {
             code: { type: 'string' },
         },

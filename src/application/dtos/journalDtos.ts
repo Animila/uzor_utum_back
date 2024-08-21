@@ -1,4 +1,8 @@
 interface JournalRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },
@@ -16,6 +20,8 @@ interface NewsRequest {
         old?: string;
         popular?: string
         journalId?: string;
+        limit: string
+        offset: string
     },
     Body: {
         title: string

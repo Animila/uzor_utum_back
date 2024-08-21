@@ -24,6 +24,10 @@ export class CreateJournal {
     }
 }
 
+interface GetAllJournalInput {
+    offset: number
+    limit: number
+}
 
 export class GetAllJournal {
     private repository: IJournalRepository
@@ -32,21 +36,28 @@ export class GetAllJournal {
         this.repository = repository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string
-    }[]> {
-        const existingJournals = await this.repository.findAll()
-        const result = existingJournals.map(item => {
-            return JournalMap.toPersistence(item)
-        })
-        if(!existingJournals) {
+    async execute(input: GetAllJournalInput): Promise<{
+        data: {
+            id: string,
+            title: string
+        }[],
+        count: number
+    }> {
+        const {offset, limit} = input
+        const existingJournals = await this.repository.findAll(limit, offset)
+
+        if(!existingJournals.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Журнал не найден'
             }))
         }
-        return result
+        return {
+            data: existingJournals.data.map(item => {
+                return JournalMap.toPersistence(item)
+            }),
+            count: existingJournals.count
+        }
     }
 }
 

@@ -1,13 +1,11 @@
 import {IOrderRepository} from "../../repositories/IOrderRepository";
 import {Order} from "../../domain/order/order";
-import {iItems, Items} from "../../domain/order/valueObjects/items";
-import {Phone} from "../../domain/order/valueObjects/phone";
-import {Email} from "../../domain/order/valueObjects/email";
-import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 
 interface GetAllOrderInput {
     user_id: string,
     token: string,
+    offset: number,
+    limit: number,
 }
 
 export class GetAllOrder {
@@ -17,13 +15,17 @@ export class GetAllOrder {
         this.productRepository = productRepository;
     }
 
-    async execute(input: GetAllOrderInput): Promise<Order[]> {
+    async execute(input: GetAllOrderInput): Promise<{data: Order[], count: number}> {
         const {
             token,
             user_id,
+            limit = 10, offset = 0
         } = input;
 
-        return await this.productRepository.findAll(token, user_id);
-
+        const res = await this.productRepository.findAll(limit, offset, token, user_id);
+        return {
+            data: res.data,
+            count: res.count,
+        }
     }
 }

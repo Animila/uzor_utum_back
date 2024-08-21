@@ -1,5 +1,4 @@
 import {ICartItemRepository} from "../../repositories/ICartItemRepository";
-import {ItemCartMap} from "../../mappers/ItemCartMap";
 import {CartItem} from "../../domain/cart/cartItem";
 
 interface deleteCartInput {

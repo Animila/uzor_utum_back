@@ -16,7 +16,7 @@ import {Roles} from "../../../domain/user/valueObjects/role";
 
 
 export function registerProbRouting(fastify: FastifyInstance) {
-    fastify.get('/probs', getAllProbSchema, async (req, res) => {
+    fastify.get('/probs', getAllProbSchema, async (req: FastifyRequest<ProbRequest>, res) => {
         await getAllProbController(req, res)
     });
     fastify.get('/probs/:id',getProbSchema, async (req: FastifyRequest<ProbRequest>, res: FastifyReply) => {

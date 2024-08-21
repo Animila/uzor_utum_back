@@ -10,18 +10,25 @@ const reviewRepo = new PrismaReviewRepo()
 const fileRepo = new PrismaFileRepo()
 export async function getAllReviewsController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
     try {
-        const {user_id, old, url, popular, product_id} = request.query as ReviewRequest["Query"]
+        const {user_id, old, url, popular, product_id, offset, limit} = request.query as ReviewRequest["Query"]
 
         const getFiles = new GetAllFile(fileRepo)
         const getAll = new GetAllReview(reviewRepo)
-        const all =  await getAll.execute({old, user_id, popular, product_id});
+        const all =  await getAll.execute({old, user_id, popular, product_id, offset: !!offset ? parseInt(offset) : 0, limit: !!limit ? parseInt(limit) : 10});
 
-        for (const item of all) {
-            item.images = await getFiles.execute({entity_id: item.id, entity_type: 'review'})
+        for (const item of all.data) {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: item.id, entity_type: 'review'})
+            item.images = data.data
         }
         reply.status(200).send({
             success: true,
-            data: all
+            data: all.data,
+            pagination: {
+                totalItems: all.count,
+                totalPages: Math.ceil(all.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

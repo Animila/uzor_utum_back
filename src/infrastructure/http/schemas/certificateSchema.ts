@@ -48,7 +48,9 @@ const getAllCertificateSchema = {
         tags: ['Certificate'],
         security: [{ApiToken: []}],
         query: {
-            certificate_type_id: { type: 'string' }
+            certificate_type_id: { type: 'string' },
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -72,6 +74,15 @@ const getAllCertificateSchema = {
                                 certificate_type_id: { type: 'string' },
                                 orderId: { type: 'string' }
                             },
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

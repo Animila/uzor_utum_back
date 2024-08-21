@@ -1,15 +1,6 @@
 import {IPromocodeRepository} from "../../repositories/IPromocodeRepository";
 import {PromoCodeMap} from "../../mappers/PromoCodeMap";
 
-// interface GetAllPromoCodeInput {
-//     code: string
-//     description: string
-//     discount: string
-//     valid_to: Date
-//     valid_from: Date
-//     active: boolean
-// }
-
 export class GetAllPromoCode {
     private repository: IPromocodeRepository;
 
@@ -17,23 +8,29 @@ export class GetAllPromoCode {
         this.repository = repository;
     }
 
-    async execute(): Promise<{
-        id: string
-        code: string
-        description: string
-        discount: number
-        valid_to: Date
-        valid_from: Date
-        active: boolean
-    }[]> {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string
+            code: string
+            description: string
+            discount: number
+            valid_to: Date
+            valid_from: Date
+            active: boolean
+        }[],
+        count: number
+    }> {
 
-        const existingData = await this.repository.findAll()
-        if(!existingData) {
+        const existingData = await this.repository.findAll(limit, offset)
+        if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Промокоды не найдены'
             }))
         }
-        return existingData.map(item => PromoCodeMap.toPersistence(item)).filter(item =>  item !== null);
+        return {
+            data: existingData.data.map(item => PromoCodeMap.toPersistence(item)).filter(item =>  item !== null),
+            count: existingData.count
+        }
     }
 }

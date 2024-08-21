@@ -6,10 +6,19 @@ import {Material} from "../../../domain/products/materials";
 export class PrismaMaterialRepo implements IMaterialRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Material[]> {
+    async findAll(limit: number, offset: number): Promise<{data: Material[], count: number}> {
         try {
-            const data = await this.prisma.materials.findMany()
-            return data.map(Material => MaterialMap.toDomain(Material)).filter(material => material != null)
+            const countData = await this.prisma.materials.count()
+            const data = await this.prisma.materials.findMany({
+
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(Material => MaterialMap.toDomain(Material)).filter(material => material != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

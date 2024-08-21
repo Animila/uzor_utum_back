@@ -21,14 +21,25 @@ export class PrismaCertificateRepo implements ICertificateRepository{
         }
     }
 
-    async findAll(certificate_type_id?: string): Promise<Certificate[]> {
+    async findAll(limit: number, offset: number, certificate_type_id?: string): Promise<{data: Certificate[], count: number}> {
         try {
-            const result = await this.prisma.certificates.findMany({
+            const countData = await this.prisma.certificates.count({
                 where: {
                     certificate_type_id: certificate_type_id
                 }
             })
-            return result.map(item => CertificateMap.toDomain(item)).filter(item => item != null)
+            const data = await this.prisma.certificates.findMany({
+                where: {
+                    certificate_type_id: certificate_type_id
+                },
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(item => CertificateMap.toDomain(item)).filter(item => item != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

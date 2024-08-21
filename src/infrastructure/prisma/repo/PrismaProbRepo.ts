@@ -7,10 +7,17 @@ export class PrismaProbRepo implements IProbRepository {
     private prisma = new PrismaClient();
 
 
-    async findAll(): Promise<Prob[]> {
+    async findAll(limit: number, offset: number ): Promise<{data: Prob[], count: number}> {
         try {
-            const data = await this.prisma.probs.findMany()
-            return data.map(result => ProbMap.toDomain(result)).filter(material => material != null)
+            const countData = await this.prisma.probs.count()
+            const data = await this.prisma.probs.findMany({
+                take: limit,
+                skip: limit * offset})
+            const result = data.map(result => ProbMap.toDomain(result)).filter(material => material != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

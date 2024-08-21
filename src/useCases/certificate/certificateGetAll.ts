@@ -3,6 +3,8 @@ import {CertificateMap} from "../../mappers/CertificateMap";
 
 interface GetAllCertificateInput {
     certificate_type_id?: string,
+    limit: number,
+    offset: number
 }
 
 export class GetAllCertificate {
@@ -13,25 +15,32 @@ export class GetAllCertificate {
     }
 
     async execute(input: GetAllCertificateInput): Promise<{
-        id: string,
-        certificate_type_id: string,
-        code: string,
-        activated: boolean,
-        phone?: string,
-        email?: string,
-        user_id?: string,
-        delivery_at: Date,
-        accepted: boolean
-    }[]> {
-        const { certificate_type_id} = input;
+        data: {
+            id: string,
+            certificate_type_id: string,
+            code: string,
+            activated: boolean,
+            phone?: string,
+            email?: string,
+            user_id?: string,
+            delivery_at: Date,
+            accepted: boolean
+        }[],
+        count: number
+    }> {
+        const { certificate_type_id, limit = 10, offset = 0} = input;
 
-        const existingData = await this.repository.findAll(certificate_type_id)
-        if(!existingData) {
+        const existingData = await this.repository.findAll(limit, offset, certificate_type_id)
+        if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Сертификаты не найдены'
             }))
         }
-        return existingData.map(item => CertificateMap.toPersistence(item)).filter(item =>  item !== null);
+        const result =  existingData.data.map(item => CertificateMap.toPersistence(item)).filter(item =>  item !== null);
+        return {
+            data: result,
+            count: existingData.count
+        }
     }
 }

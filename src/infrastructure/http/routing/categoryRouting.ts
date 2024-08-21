@@ -16,7 +16,7 @@ import {
 import {Roles} from "../../../domain/user/valueObjects/role";
 
 export function registerCategoryRouting(fastify: FastifyInstance) {
-    fastify.get('/category', getAllCategorySchema, async (req, res) => {
+    fastify.get('/category', getAllCategorySchema, async (req: FastifyRequest<CategoryRequest>, res) => {
         await getAllCategoryController(req, res)
     });
     fastify.get('/category/:id',getCategorySchema, async (req: FastifyRequest<CategoryRequest>, res: FastifyReply) => {

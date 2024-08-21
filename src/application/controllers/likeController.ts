@@ -6,17 +6,74 @@ import {LikeMap} from "../../mappers/LikeMap";
 import {CreateLike} from "../../useCases/like/likeCreate";
 import {UpdateLike} from "../../useCases/like/likeUpdate";
 import {DeleteLike} from "../../useCases/like/likeDelete";
+import {GetByIdNews} from "../../useCases/news/newsGetById";
+import {PrismaNewsRepo} from "../../infrastructure/prisma/repo/PrismaNewsRepo";
+import {NewsMap} from "../../mappers/NewsMap";
+import {GetByIdProducts} from "../../useCases/product/productGetById";
+import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
+import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {ProductMap} from "../../mappers/ProductMap";
+import {GetByIdReview} from "../../useCases/review/reviewById";
+import {PrismaReviewRepo} from "../../infrastructure/prisma/repo/PrismaReviewRepo";
+import {ReviewMap} from "../../mappers/ReviewMap";
 
 const likeRepo = new PrismaLikeRepo();
+const newsRepo = new PrismaNewsRepo()
+const prodRepo = new PrismaProductRepo()
+const fileRepo = new PrismaFileRepo()
+const revRepo = new PrismaReviewRepo()
 
 export async function getAllLikeController(request: FastifyRequest<LikeRequest>, reply: FastifyReply) {
     try {
-        const { entity_id, entity_type, user_id, obj_type } = request.query as LikeRequest["Query"]
+        const {
+            entity_id,
+            entity_type,
+            user_id,
+            obj_type,
+            limit = "10",
+            offset = "0", } = request.query as LikeRequest["Query"]
+
+        console.log(offset)
+
         const getAllData = new GetAllLike(likeRepo)
-        const result =  await getAllData.execute({entity_type: entity_type, entity_id: entity_id, user_id: user_id, type: obj_type});
+        const getNews = new GetByIdNews(newsRepo)
+        const getProduct = new GetByIdProducts(prodRepo, fileRepo)
+        const getReview = new GetByIdReview(revRepo)
+
+        const result =  await getAllData.execute({
+            entity_type: entity_type,
+            entity_id: entity_id,
+            user_id: user_id,
+            type: obj_type,
+            limit: parseInt(limit),
+            offset: parseInt(offset)});
+        for(const item of result.data) {
+            switch (item.entity_type) {
+                case 'news':
+                    const newsData = await getNews.execute({id: item.entity_id})
+                    item.entity = NewsMap.toPersistence(newsData)
+                    break;
+                case 'product':
+                    const prodData = await getProduct.execute({id: item.entity_id})
+                    item.entity = ProductMap.toPersistence(prodData)
+                    break
+                case 'review':
+                    const reviewData = await getReview.execute({id: item.entity_id})
+                    item.entity = ReviewMap.toPersistence(reviewData)
+                    break
+            }
+        }
+        const totalPages = Math.ceil(result.count / parseInt(limit));
+
         reply.status(200).send({
             success: true,
-            data: result
+            data: result.data,
+            pagination: {
+                totalItems: result.count,
+                totalPages: totalPages,
+                currentPage: parseInt(offset) + 1,
+                limit: parseInt(limit)
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -32,7 +89,27 @@ export async function getByIdLikeController(request: FastifyRequest<LikeRequest>
     try {
         const {id} = request.params
         const getData = new GetByIdLike(likeRepo)
+        const getNews = new GetByIdNews(newsRepo)
+        const getProduct = new GetByIdProducts(prodRepo, fileRepo)
+        const getReview = new GetByIdReview(revRepo)
+
         const result =  await getData.execute({id: id});
+
+
+        switch (result.entity_type) {
+            case 'news':
+                const newsData = await getNews.execute({id: result.entity_id})
+                result.entity = NewsMap.toPersistence(newsData)
+                break;
+            case 'product':
+                const prodData = await getProduct.execute({id: result.entity_id})
+                result.entity = ProductMap.toPersistence(prodData)
+                break
+            case 'review':
+                const reviewData = await getReview.execute({id: result.entity_id})
+                result.entity = ReviewMap.toPersistence(reviewData)
+                break
+        }
 
         reply.status(200).send({
             success: true,

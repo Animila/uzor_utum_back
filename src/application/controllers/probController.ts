@@ -14,18 +14,25 @@ import {GetAllFile} from "../../useCases/file/fileGetAll";
 const materialRepo = new PrismaProbRepo();
 const fileRepo = new PrismaFileRepo();
 
-export async function getAllProbController(request: FastifyRequest, reply: FastifyReply) {
+export async function getAllProbController(request: FastifyRequest<ProbRequest>, reply: FastifyReply) {
     try {
-
+        const data = request.query as ProbRequest['Query']
         const getAllProb = new GetAllProb(materialRepo)
-        const probs =  await getAllProb.execute();
+        const probs =  await getAllProb.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
         const getFiles = new GetAllFile(fileRepo)
-        for(const proba of probs) {
-            proba.images = await getFiles.execute({entity_id: proba.id, entity_type: 'proba'})
+        for(const proba of probs.data) {
+            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: proba.id, entity_type: 'proba'})
+            proba.images = data.data
         }
         reply.status(200).send({
             success: true,
-            data: probs
+            data: probs.data,
+            pagination: {
+                totalItems: probs.count,
+                totalPages: Math.ceil(probs.count / (data.limit ? parseInt(data.limit) : 10)),
+                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                limit: data.limit ? parseInt(data.limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

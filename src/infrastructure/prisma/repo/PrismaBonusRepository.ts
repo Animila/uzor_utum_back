@@ -20,15 +20,25 @@ export class PrismaBonusRepository implements IBonusRepository {
         }
     }
 
-    async findAll(user_id?: string): Promise<Bonus[]> {
+    async findAll( limit: number, offset: number, user_id?: string): Promise<{data: Bonus[], count: number}> {
         try {
-            const data = await this.prisma.bonuses.findMany({
+            const countData = await this.prisma.bonuses.count({
                 where: {
                     user_id: user_id
                 }
             })
-            const res = data.map(itemPer => { return BonusMap.toDomain(itemPer) })
-            return data.map(itemPer => BonusMap.toDomain(itemPer)).filter(item => item != null )
+            const data = await this.prisma.bonuses.findMany({
+                where: {
+                    user_id: user_id
+                },
+                take: limit,
+                skip: offset * limit
+            })
+            const res = data.map(itemPer => BonusMap.toDomain(itemPer)).filter(item => item != null )
+            return {
+                data: res,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

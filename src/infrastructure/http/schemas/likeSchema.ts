@@ -53,7 +53,9 @@ const getLikesSchema = {
             entity_id: { type: 'string' },
             entity_type: { type: 'string' },
             user_id: { type: 'string' },
-            obj_type: { type: 'string' }
+            obj_type: { type: 'string' },
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -71,7 +73,20 @@ const getLikesSchema = {
                                 entity_id: {type: 'string'},
                                 user_id: {type: 'string'},
                                 type: {type: 'string'},
+                                entity: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                }
                             },
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }
@@ -109,7 +124,20 @@ const getByIdLikeSchema = {
                             entity_id: { type: 'string' },
                             user_id: { type: 'string' },
                             type:   { type: 'string' },
+                            entity: {
+                                type: 'object',
+                                additionalProperties: true
+                            }
                         },
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
+                        }
                     }
                 }
             },
@@ -156,6 +184,10 @@ const updateLikeSchema = {
                             entity_id: { type: 'string' },
                             user_id: { type: 'string' },
                             type:   { type: 'string' },
+                            entity: {
+                                type: 'object',
+                                additionalProperties: true
+                            }
                         },
                     }
                 }

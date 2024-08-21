@@ -60,6 +60,10 @@ const getAllShopSchema = {
     schema: {
         description: 'Получить все магазины',
         tags: ['Shop'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -84,6 +88,15 @@ const getAllShopSchema = {
                                 times: { type: 'object', additionalProperties: true },
                             }
                         }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
+                        }
                     }
                 }
             },
@@ -105,6 +118,10 @@ const getShopSchema = {
         tags: ['Shop'],
         parameters: {
             id: { type: 'string' },
+        },
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {

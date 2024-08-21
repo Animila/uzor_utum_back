@@ -16,7 +16,7 @@ import {Roles} from "../../../domain/user/valueObjects/role";
 
 
 export function registerSizeRouting(fastify: FastifyInstance) {
-    fastify.get('/size', getAllSizeSchema, async (req, res) => {
+    fastify.get('/size', getAllSizeSchema, async (req: FastifyRequest<SizeRequest>, res) => {
         await getAllSizeController(req, res)
     });
     fastify.get('/size/:id',getSizeSchema, async (req: FastifyRequest<SizeRequest>, res: FastifyReply) => {

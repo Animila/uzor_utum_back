@@ -5,6 +5,8 @@ interface CertificateRequest {
     Query: {
         certificate_type_id?: string
         code?: string
+        limit: string,
+        offset: string
     },
     Body: {
         phone: string
@@ -18,6 +20,10 @@ interface CertificateRequest {
 
 
 interface CertificateTypeRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },

@@ -6,6 +6,8 @@ interface GetAllReviewInput {
     product_id?: string,
     old?: boolean,
     popular?: boolean
+    limit: number,
+    offset: number
 }
 
 export class GetAllReview {
@@ -16,26 +18,32 @@ export class GetAllReview {
     }
 
     async execute(input: GetAllReviewInput): Promise<{
-        id: string,
-        name: string,
-        url: string,
-        rating: number,
-        text: string,
-        created_at: Date,
-        published_at?: Date,
-        product_id: string,
-        order_id: string,
-        images?: any
-    }[]> {
-        const { user_id, product_id, old, popular} = input;
+        data: {
+            id: string,
+            name: string,
+            url: string,
+            rating: number,
+            text: string,
+            created_at: Date,
+            published_at?: Date,
+            product_id: string,
+            order_id: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const { user_id, product_id, old, popular, limit = 10, offset = 0} = input;
 
-        const existingData = await this.repository.findAll(user_id, product_id, old, popular)
-        if(!existingData) {
+        const existingData = await this.repository.findAll(limit, offset, user_id, product_id, old, popular)
+        if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Лайки не найдены'
             }))
         }
-        return existingData.map(item => ReviewMap.toPersistence(item)).filter(item =>  item !== null);
+        return {
+            data: existingData.data.map(item => ReviewMap.toPersistence(item)).filter(item =>  item !== null),
+            count: existingData.count
+        }
     }
 }

@@ -6,10 +6,18 @@ import {JournalMap} from "../../../mappers/JournalMap";
 export class PrismaJournalRepo implements IJournalRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Journal[]> {
+    async findAll(limit: number, offset: number): Promise<{data: Journal[], count: number}> {
         try {
-            const data = await this.prisma.journals.findMany()
-            return data.map(journal => JournalMap.toDomain(journal)).filter(item => item != null)
+            const countData = await this.prisma.journals.count()
+            const data = await this.prisma.journals.findMany({
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(journal => JournalMap.toDomain(journal)).filter(item => item != null)
+            return {
+                data: result,
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

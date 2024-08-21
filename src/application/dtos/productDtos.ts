@@ -1,4 +1,8 @@
 interface CategoryRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },
@@ -7,6 +11,10 @@ interface CategoryRequest {
     }
 }
 interface MaterialRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },
@@ -15,6 +23,10 @@ interface MaterialRequest {
     }
 }
 interface DecorateRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },
@@ -23,6 +35,10 @@ interface DecorateRequest {
     }
 }
 interface SizeRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },
@@ -31,6 +47,10 @@ interface SizeRequest {
     }
 }
 interface ProbRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    }
     Params: {
         id: string
     },

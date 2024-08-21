@@ -32,22 +32,28 @@ export class GetAllDecorate {
         this.decorateRepository = decorateRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string,
-        images?: any
-    }[]> {
-        const existingDecorates = await this.decorateRepository.findAll()
-        const result = existingDecorates.map(item => {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string,
+            title: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const existingDecorates = await this.decorateRepository.findAll(limit, offset)
+        const result = existingDecorates.data.map(item => {
             return DecorateMap.toPersistence(item)
         })
-        if(!existingDecorates) {
+        if(!result) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Категория не найдена'
             }))
         }
-        return result
+        return {
+            data: result,
+            count: existingDecorates.count
+        }
     }
 }
 

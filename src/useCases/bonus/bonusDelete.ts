@@ -1,6 +1,4 @@
-import {Bonus} from "../../domain/bonus/bonus";
 import {IBonusRepository} from "../../repositories/IBonusRepository";
-import {BonusMap} from "../../mappers/BonusMap";
 
 interface DeleteBonusInput {
     id: string

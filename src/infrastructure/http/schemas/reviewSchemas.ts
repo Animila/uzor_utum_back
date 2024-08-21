@@ -3,14 +3,13 @@ const getAllReviewSchema = {
     schema: {
         description: 'Получить все отзывы',
         tags: ['Review'],
-        querystring: {
-            type: 'object',
-            properties: {
-                user_id: {type: 'string'},
-                product_id: {type: 'string'},
-                old: {type: 'boolean'},
-                popular: {type: 'boolean'},
-            },
+        query: {
+            user_id: {type: 'string'},
+            product_id: {type: 'string'},
+            old: {type: 'boolean'},
+            popular: {type: 'boolean'},
+            limit: {type: 'string'},
+            offset: {type: 'string'}
         },
         response: {
             200: {
@@ -28,9 +27,7 @@ const getAllReviewSchema = {
                                     type: 'array',
                                     items: {
                                         type: 'object',
-                                        properties: {
-                                            additionalProperties: true
-                                        },
+                                        additionalProperties: true
                                     }
                                 },
                                 name: {type: 'string'},
@@ -42,6 +39,15 @@ const getAllReviewSchema = {
                                 product_id: {type: 'string'},
                                 order_id: {type: 'string'},
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 },

@@ -8,6 +8,8 @@ interface ReviewRequest {
         old: boolean
         popular: boolean
         user_id: string
+        limit: string
+        offset: string
     },
     Body: {
         product_id: string

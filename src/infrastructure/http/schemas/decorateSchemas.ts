@@ -48,6 +48,10 @@ const getAllDecorateSchema = {
     schema: {
         description: 'Получить все материалы',
         tags: ['Decorate'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешное выполнение',
@@ -70,6 +74,15 @@ const getAllDecorateSchema = {
                                 }
                             },
                             required: ['id', 'title']
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

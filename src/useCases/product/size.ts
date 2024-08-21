@@ -32,22 +32,28 @@ export class GetAllSize {
         this.materialRepository = materialRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string,
-        images?: any
-    }[]> {
-        const existingSizes = await this.materialRepository.findAll()
-        const result = existingSizes.map(item => {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string,
+            title: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const existingSizes = await this.materialRepository.findAll(limit, offset)
+        const result = existingSizes.data.map(item => {
             return SizeMap.toPersistence(item)
         })
-        if(!existingSizes) {
+        if(!result) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Категория не найдена'
             }))
         }
-        return result
+        return {
+            data: result,
+            count: existingSizes.count
+        }
     }
 }
 

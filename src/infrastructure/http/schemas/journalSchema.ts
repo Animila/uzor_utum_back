@@ -40,6 +40,10 @@ const getAllJournalSchema = {
     schema: {
         description: 'Получить список всех журналов',
         tags: ['Journal'],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешно получены',
@@ -54,6 +58,15 @@ const getAllJournalSchema = {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
                             }
+                        }
+                    },
+                    pagination: {
+                        type: 'object',
+                        properties: {
+                            totalItems: { type: 'number' },
+                            totalPages: { type: 'number' },
+                            currentPage: { type: 'number' },
+                            limit: { type: 'number' },
                         }
                     }
                 }

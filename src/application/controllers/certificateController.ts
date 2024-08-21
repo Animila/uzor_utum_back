@@ -21,12 +21,18 @@ const userRepo = new PrismaUserRepo()
 
 export async function getAllCertificateController(request: FastifyRequest<CertificateRequest>, reply: FastifyReply) {
     try {
-        const {certificate_type_id} = request.query as CertificateRequest['Query']
+        const {certificate_type_id, limit, offset, } = request.query as CertificateRequest['Query']
         const getAllCertificate = new GetAllCertificate(certRepo)
-        const results =  await getAllCertificate.execute({certificate_type_id});
+        const results =  await getAllCertificate.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, certificate_type_id});
         reply.status(200).send({
             success: true,
-            data: results
+            data: results.data,
+            pagination: {
+                totalItems: results.count,
+                totalPages: Math.ceil(results.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

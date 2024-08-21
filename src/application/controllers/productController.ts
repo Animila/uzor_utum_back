@@ -21,6 +21,7 @@ import {GetByIdSize} from "../../useCases/product/size";
 import {GetByIdDecorate} from "../../useCases/product/decorate";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {bool} from "sharp";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
@@ -123,6 +124,7 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             materialId,
             sizeIds: sizeIdsArray,
             decorationIds: decorIdsArray,
+            discount_at: discount_at,
             probIds: probIdsArray,
             sortBy,
             order,
@@ -134,32 +136,28 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             offset: parseInt(offset)
         });
 
-        const filteredProducts = [];
-        for (const product of products) {
+        const productsWithDiscount = await Promise.all(products.data.map(async (product) => {
             try {
-                const result = await getDiscount.execute({ product_id: product.id });
-                if (discount_at) {
-                    product.discount = DiscountMap.toPersistence(result);
-                    filteredProducts.push(product);
-                }
+                const discountResult = await getDiscount.execute({ product_id: product.id });
+                product.discount = DiscountMap.toPersistence(discountResult);
             } catch (error) {
-                if (!discount_at) {
-                    product.discount = undefined; // Если скидка не важна, оставляем продукт
-                    filteredProducts.push(product);
-                }
+                console.log(error);
             }
-        }
+            return product;
+        }));
 
-        const totalPages = Math.ceil(filteredProducts.length / parseInt(limit));
+        console.log(productsWithDiscount.length)
+        console.log(products.count)
+
 
         reply.status(200).send({
             success: true,
-            data: filteredProducts,
+            data: productsWithDiscount,
             pagination: {
-                totalItems: filteredProducts.length,
-                totalPages: totalPages,
-                currentPage: Math.floor(parseInt(offset) / parseInt(limit)) + 1,
-                limit: parseInt(limit)
+                totalItems: products.count,
+                totalPages: Math.ceil(products.count / (limit ? parseInt(limit) : 10)),
+                currentPage: (offset ? parseInt(offset) : 0) + 1,
+                limit: limit ? parseInt(limit) : 10
             }
 
         });

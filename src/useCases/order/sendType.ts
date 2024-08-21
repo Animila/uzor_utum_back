@@ -37,23 +37,29 @@ export class GetAllSendType {
         this.sendTypeRepository = sendTypeRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string
-        price: number
-        description: string
-    }[]> {
-        const existingSendTypes = await this.sendTypeRepository.findAll()
-        const sendTypes = existingSendTypes.map(item => {
+    async execute(limit: number, offset: number): Promise<{
+        data: {
+            id: string,
+            title: string
+            price: number
+            description: string
+        }[],
+        count: number
+    }> {
+        const existingSendTypes = await this.sendTypeRepository.findAll(limit, offset)
+        const sendTypes = existingSendTypes.data.map(item => {
             return SendTypeMap.toPersistence(item)
         })
-        if(!existingSendTypes) {
+        if(!sendTypes) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Тип доставки не найден'
             }))
         }
-        return sendTypes
+        return {
+            data: sendTypes,
+            count: existingSendTypes.count
+        }
     }
 }
 

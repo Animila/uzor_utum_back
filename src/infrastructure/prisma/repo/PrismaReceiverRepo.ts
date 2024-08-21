@@ -6,14 +6,24 @@ import {ReceiverMap} from "../../../mappers/ReceiverMap";
 export class PrismaReceiverRepo implements IReceiverRepository {
     private prisma = new PrismaClient();
 
-    async findAll(token?: string): Promise<Receiver[]> {
+    async findAll(limit: number, offset: number, token?: string): Promise<{data: Receiver[], count: number}> {
         try {
-            const data = await this.prisma.receivers.findMany({
+            const countData = await this.prisma.receivers.count({
                 where: {
                     token
                 }
             })
-            return data.map(receiver => ReceiverMap.toDomain(receiver)).filter(receiver => receiver != null)
+            const data = await this.prisma.receivers.findMany({
+                where: {
+                    token
+                },
+                take: limit,
+                skip: limit * offset
+            })
+            return {
+                data: data.map(receiver => ReceiverMap.toDomain(receiver)).filter(receiver => receiver != null),
+                count: countData
+            }
         } finally {
             await this.prisma.$disconnect();
         }

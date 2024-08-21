@@ -1,7 +1,6 @@
 import {IFileRepo} from "../../repositories/IFileRepository";
 import {File} from "../../domain/file/file";
 import {PathSharp} from "../../infrastructure/local/PathSharp";
-import {FileMap} from "../../mappers/FileMap";
 
 interface CreateFileInput {
     file: object,

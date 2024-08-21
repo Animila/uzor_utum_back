@@ -13,12 +13,18 @@ const receiverRepo = new PrismaReceiverRepo();
 
 export async function getAllReceiverController(request: FastifyRequest<ReceiverRequest>, reply: FastifyReply) {
     try {
-        const {token} = request.query as ReceiverRequest['Query']
+        const {token, limit, offset} = request.query as ReceiverRequest['Query']
         const getAllReceiver = new GetAllReceiver(receiverRepo)
-        const receivers =  await getAllReceiver.execute(token);
+        const receivers =  await getAllReceiver.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, token);
         reply.status(200).send({
             success: true,
-            data: receivers
+            data: receivers.data,
+            pagination: {
+                totalItems: receivers.count,
+                totalPages: Math.ceil(receivers.count / (!!limit ? parseInt(limit) : 10)),
+                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                limit: !!limit ? parseInt(limit) : 10
+            }
         });
     } catch (error: any) {
         console.log('345678', error.message)

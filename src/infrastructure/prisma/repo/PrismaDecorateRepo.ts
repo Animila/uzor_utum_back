@@ -6,10 +6,18 @@ import {Decorate} from "../../../domain/products/decorates";
 export class PrismaDecorateRepo implements IDecorateRepository {
     private prisma = new PrismaClient();
 
-    async findAll(): Promise<Decorate[]> {
+    async findAll(limit: number, offset: number): Promise<{data: Decorate[], count: number}> {
         try {
-            const data = await this.prisma.decorations.findMany()
-            return data.map(result => DecorateMap.toDomain(result)).filter(material => material != null)
+            const countData = await this.prisma.decorations.count()
+            const data = await this.prisma.decorations.findMany({
+                take: limit,
+                skip: limit * offset
+            })
+            const result = data.map(result => DecorateMap.toDomain(result)).filter(material => material != null)
+            return {
+                data: result,
+                count: countData,
+            }
         } finally {
             await this.prisma.$disconnect();
         }

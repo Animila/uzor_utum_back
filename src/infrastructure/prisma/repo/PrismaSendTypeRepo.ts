@@ -6,10 +6,17 @@ import {SendTypeMap} from "../../../mappers/SendTypeMap";
 export class PrismaSendTypeRepo implements ISendTypeRepository {
     private prisma = new PrismaClient();
 
-    async findAll(token?: string): Promise<SendType[]> {
+    async findAll(limit: number, offset: number, token?: string): Promise<{data: SendType[], count: number}> {
         try {
-            const data = await this.prisma.send_types.findMany()
-            return data.map(sendType => SendTypeMap.toDomain(sendType)).filter(sendType => sendType != null)
+            const countData = await this.prisma.send_types.count()
+            const data = await this.prisma.send_types.findMany({
+                take: limit,
+                skip: limit * offset})
+            const result = data.map(sendType => SendTypeMap.toDomain(sendType)).filter(sendType => sendType != null)
+            return {
+                data: result,
+                count: countData,
+            }
         } finally {
             await this.prisma.$disconnect();
         }

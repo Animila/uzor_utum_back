@@ -19,6 +19,7 @@ export class GetByIdLike {
         user_id: string,
         type: string,
         created_at: Date,
+        entity?: any
     }> {
         const { id } = input;
 

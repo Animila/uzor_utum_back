@@ -1,5 +1,9 @@
 
 interface BonusRequest {
+    Query: {
+        limit: string,
+        offset: string,
+    },
     Params: {
         id: string
         user_id: string

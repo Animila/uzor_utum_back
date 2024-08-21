@@ -3,6 +3,8 @@ interface CartRequest {
     Query: {
         token: string
         user_id: string
+        limit: string,
+        offset: string
     },
     Body: {}
 }

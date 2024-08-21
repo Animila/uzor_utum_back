@@ -32,22 +32,28 @@ export class GetAllMaterial {
         this.materialRepository = materialRepository;
     }
 
-    async execute(): Promise<{
-        id: string,
-        title: string,
-        images?: any
-    }[]> {
-        const existingMaterials = await this.materialRepository.findAll()
-        const result = existingMaterials.map(item => {
+    async execute(limit: number = 10, offset: number = 0): Promise<{
+        data: {
+            id: string,
+            title: string,
+            images?: any
+        }[],
+        count: number
+    }> {
+        const existingMaterials = await this.materialRepository.findAll(limit, offset)
+        const result = existingMaterials.data.map(item => {
             return MaterialMap.toPersistence(item)
         })
-        if(!existingMaterials) {
+        if(!result) {
             throw new Error(JSON.stringify({
                 status: 404,
                 message: 'Категория не найдена'
             }))
         }
-        return result
+        return {
+            data: result,
+            count: existingMaterials.count
+        }
     }
 }
 
