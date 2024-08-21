@@ -42,7 +42,7 @@ export class OrderMap {
             items: items,
             status: statusOrError,
             createdAt: raw.created_at,
-            updatedAt: new Date()
+            updatedAt: raw.updated_at
         }, raw.id)
 
         if(!result) return null
