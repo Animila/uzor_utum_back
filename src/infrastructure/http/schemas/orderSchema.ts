@@ -151,6 +151,8 @@ const getOrderSchema = {
                             },
                             comment: {type: 'string'},
                             user_id: {type: 'string'},
+                            created_at: {type: 'string'},
+                            updated_at: {type: 'string'},
                             user_data: {
                                 type: 'object',
                                 additionalProperties: true
