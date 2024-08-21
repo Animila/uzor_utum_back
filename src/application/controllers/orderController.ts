@@ -37,6 +37,9 @@ import {ReceiverMap} from "../../mappers/ReceiverMap";
 import {ShopMap} from "../../mappers/ShopMap";
 import {CertificateMap} from "../../mappers/CertificateMap";
 import {PromoCodeMap} from "../../mappers/PromoCodeMap";
+import {GetByIdCertificateType} from "../../useCases/certificate/certificateTypeGetById";
+import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/PrismaCertificateTypeRepo";
+import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -50,6 +53,7 @@ const orderRepo = new PrismaOrderRepo()
 const bonusRepo = new PrismaBonusRepository()
 const userRep = new PrismaUserRepo()
 const fileRepo = new PrismaFileRepo()
+const certTypeRepo = new PrismaCertificateTypeRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
@@ -234,6 +238,7 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
         const getShop = new GetByIdShop(shopRepo)
         const getCert = new GetByIdCertificate(certRepo)
         const getPromo = new GetByIdPromoCode(promoRepo)
+        const getCertType = new GetByIdCertificateType(certTypeRepo)
 
         const item = OrderMap.toPersistence(product)
         if(item.user_id !== undefined) {
@@ -248,7 +253,9 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
 
         if(item.certificate_id !== undefined) {
             const result = await getCert.execute({id: item.certificate_id})
+            const res = await getCertType.execute({id: result.getCertificateTypeId()})
             item.certificate_data = CertificateMap.toPersistence(result)
+            item.certificate_data.type = CertificateTypeMap.toPersistence(res)
         }
 
         if(item.promocode_id !== undefined) {
