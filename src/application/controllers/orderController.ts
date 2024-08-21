@@ -200,7 +200,6 @@ export async function getAllOrderController(request: FastifyRequest<OrderRequest
         const getAllOrder = new GetAllOrder(orderRepo);
         const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token});
 
-        console.log(products)
         const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
 
         reply.status(200).send({

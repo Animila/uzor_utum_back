@@ -40,6 +40,8 @@ const getOrdersSchema = {
                                 postal_code: {type: 'number'},
                                 office: {type: 'string'},
                                 delivery_at: {type: 'string'},
+                                created_at: {type: 'string'},
+                                updated_at: {type: 'string'},
                                 shop_id: {type: 'string'},
                                 shop_data: {
                                     type: 'object',
