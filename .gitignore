@@ -5,4 +5,4 @@ rmq
 .idea
 .env
 nginx
-storage
+storage/**/*

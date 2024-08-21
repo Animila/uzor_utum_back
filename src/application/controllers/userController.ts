@@ -7,6 +7,7 @@ import {UpdateUser} from "../../useCases/user/userUpdate";
 import {DeleteUserById} from "../../useCases/user/userDeleteById";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
+import {Roles} from "../../domain/user/valueObjects/role";
 
 const userRepo = new PrismaUserRepo();
 const bonusRepo = new PrismaBonusRepository();
@@ -70,6 +71,10 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
     try {
         const {user_id} = request.params
         const data = request.body || {};
+        if(data.role) {
+            // @ts-ignore
+            if(request.user.data.role != Roles.admin) return res.status(403).send('Только админам')
+        }
         const updateUser = new UpdateUser(userRepo)
         const user = await updateUser.execute({
             id: user_id,
