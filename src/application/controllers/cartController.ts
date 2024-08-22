@@ -262,7 +262,8 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
 
         let discountProduct: any;
         try {
-            discountProduct = await getDiscount.execute({product_id})
+            const res = await getDiscount.execute({product_id})
+
         } catch (error: any) {
             console.log(error)
         }

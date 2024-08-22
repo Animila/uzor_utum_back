@@ -32,12 +32,14 @@ export class GetAllFile {
         if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,
-                message: 'Новость не найдена'
+                message: 'Файлы не найдены'
             }))
         }
 
+        const data = existingData.data.map(item => FileMap.toPersistence(item))
+
         return {
-            data: existingData.data.map(item => FileMap.toPersistence(item)),
+            data: data,
             count: existingData.count
         }
 

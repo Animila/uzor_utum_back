@@ -184,6 +184,7 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
             productPer.discount = DiscountMap.toPersistence(result)
         } catch (err) {}
         const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
+        console.log(dataFile)
         productPer.images = dataFile.data
         reply.status(200).send({
             success: true,
