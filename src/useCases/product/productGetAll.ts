@@ -65,10 +65,10 @@ export class GetAllProducts {
                 message: 'Продукт не найден'
             }))
         const getFiles = new GetAllFile(this.fileRepo)
-        users.map(async (item) => {
+        await Promise.all(users.map(async (item) => {
             const res = await getFiles.execute({limit: 10, offset: 0, entity_id: item.id, entity_type: 'product'})
             item.images = res.data
-        })
+        }))
         return {
             data: users,
             count: existingData.count
