@@ -24,11 +24,13 @@ export class PrismaItemCartRepository implements ICartItemRepository {
     async find(limit: number, offset: number, cart_id?: string, id?: string): Promise<{data:CartItem[]|CartItem|null, count: number}> {
         try {
             const checkId = Guard.againstNullOrUndefined(id, 'id')
+            console.log(checkId)
 
             if (checkId.succeeded) {
                 const res = await this.prisma.cart_items.findUnique({
                     where: {id}
                 })
+                console.log(res)
                 if (!res) return {
                     data: null,
                     count: 0
@@ -53,7 +55,13 @@ export class PrismaItemCartRepository implements ICartItemRepository {
                     count: countData
                 }
             }
-        } finally {
+        } catch (err) {
+            console.log(err)
+            return {
+                data: null,
+                count: 0
+            }
+        }finally {
             await this.prisma.$disconnect();
         }
     }

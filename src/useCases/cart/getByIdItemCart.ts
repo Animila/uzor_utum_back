@@ -4,7 +4,8 @@ import {CartItem} from "../../domain/cart/cartItem";
 interface GetIdCartInput {
     id: string,
     limit?: number,
-    offset?: number
+    offset?: number,
+    cart_id?: string
 }
 
 export class GetByIdItemCart {
@@ -15,9 +16,11 @@ export class GetByIdItemCart {
     }
 
     async execute(input: GetIdCartInput): Promise<CartItem> {
-        const {id, limit = 10, offset = 0 } = input;
+        const {cart_id, id, limit = 10, offset = 0 } = input;
+        console.log(id)
 
-        const existingData = await this.repository.find(limit, offset, id)
+        const existingData = await this.repository.find(limit, offset, cart_id, id)
+        console.log(existingData)
         if(!existingData.data)
             throw new Error(JSON.stringify({
                 status: 404,

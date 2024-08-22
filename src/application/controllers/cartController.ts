@@ -217,7 +217,7 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
 export async function changeItemCartController(request: FastifyRequest<ItemCartRequest>, reply: FastifyReply) {
     try {
         const {id} = request.query as ItemCartRequest['Query']
-        const {product_id, count, decorate_id, size_id, proba_id} = request.body
+        const {count, decorate_id, size_id, proba_id} = request.body
         const checkIdResult = Guard.againstNullOrUndefined(id, 'id')
         if (!checkIdResult.succeeded)
             throw new Error(JSON.stringify({
@@ -246,8 +246,11 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
         const getDiscount = new GetByProductIdDiscount(discountRepo)
 
         const existingItem = await getData.execute({id})
-        const existingProduct = await getProduct.execute({id: product_id ? product_id : existingItem.getProductId()})
+        console.log('222 ', existingItem)
+        const existingProduct = await getProduct.execute({id: existingItem.getProductId()})
+        console.log('222 ', existingProduct)
         const existingCart = await getCart.execute({id: existingItem.getCartId()})
+        console.log('222 ', existingCart)
 
         if(existingItem.getCount() < count && (existingProduct.getAvailable() < count - existingItem.getCount()))
             throw new Error(JSON.stringify({
@@ -262,7 +265,7 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
 
         let discountProduct: any;
         try {
-            const res = await getDiscount.execute({product_id})
+            const res = await getDiscount.execute({product_id: existingItem.getProductId()})
 
         } catch (error: any) {
             console.log(error)
