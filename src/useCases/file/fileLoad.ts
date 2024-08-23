@@ -6,6 +6,7 @@ interface CreateFileInput {
     file: object,
     entity_id: string,
     entity_type: string
+    position: number
 }
 
 export default class LoadFile {
@@ -27,7 +28,7 @@ export default class LoadFile {
     }
 
     async execute(input: CreateFileInput): Promise<File> {
-        const {file, entity_id, entity_type} = input
+        const {file, entity_id, entity_type, position} = input
         console.log(file, entity_id, entity_type)
         //@ts-ignore
         if(!this.imageMimeTypes.includes(file.mimetype)) {
@@ -47,7 +48,8 @@ export default class LoadFile {
             typeFile: dataFile.filetype,
             entityType: dataFile.entity_type,
             entityId: dataFile.entity_id,
-            name: dataFile.name
+            name: dataFile.name,
+            position: position
         })
         console.log('3456', fileOrError)
 

@@ -12,5 +12,6 @@ interface FileRouting {
         entity_type: string
         entity_id: string
         files: object
+        position: number
     }
 }

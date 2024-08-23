@@ -8,7 +8,8 @@ export class FileMap {
             entityId: raw.entity_id,
             entityType: raw.entity_type,
             typeFile: raw.typefile,
-            path: raw.path
+            path: raw.path,
+            position: raw.position
         }, raw.id)
         if(!fileOrError) return null
         return fileOrError
@@ -20,6 +21,7 @@ export class FileMap {
         entity_id: string,
         entity_type: string,
         type_file: string,
+        position: number,
         path: string,
     } {
         return {
@@ -28,7 +30,8 @@ export class FileMap {
             entity_id: file.getEntityId(),
             entity_type: file.getEntityType(),
             type_file: file.getTypeFile(),
-            path: file.getPath()
+            path: file.getPath(),
+            position: file.getPosition(),
         }
     }
 }

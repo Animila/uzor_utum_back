@@ -2,7 +2,6 @@ import {PrismaClient} from "@prisma/client";
 import {IFileRepo} from "../../../repositories/IFileRepository";
 import {FileMap} from "../../../mappers/FileMap";
 import {File} from '../../../domain/file/file'
-import {LikeMap} from "../../../mappers/LikeMap";
 
 export class PrismaFileRepo implements IFileRepo {
     prisma = new PrismaClient()
@@ -28,7 +27,8 @@ export class PrismaFileRepo implements IFileRepo {
             const files = await this.prisma.files.findMany({
                 take: limit,
                 skip: limit * offset,
-                where: { entity_type, entity_id }
+                where: { entity_type, entity_id },
+                orderBy: [{position: 'asc'}]
             })
             const result = files.map((item: any) =>  FileMap.toDomain(item)).filter(item => item !== null)
             return {
@@ -62,7 +62,8 @@ export class PrismaFileRepo implements IFileRepo {
                     entity_type: dataPer.entity_type,
                     name: dataPer.name,
                     path: dataPer.path,
-                    typefile: dataPer.type_file
+                    typefile: dataPer.type_file,
+                    position: dataPer.position
                 },
                 update: {
                     id: dataPer.id,
@@ -70,7 +71,9 @@ export class PrismaFileRepo implements IFileRepo {
                     entity_type: dataPer.entity_type,
                     name: dataPer.name,
                     path: dataPer.path,
-                    typefile: dataPer.type_file}
+                    typefile: dataPer.type_file,
+                    position: dataPer.position
+                },
             })
 
             if(!newData) return null

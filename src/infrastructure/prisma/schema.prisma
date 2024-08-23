@@ -321,6 +321,7 @@ model files {
 	entity_type String
 	entity_id   String
 	typefile    String
+	position		Int 				@default(1)
 }
 
 model reviews {

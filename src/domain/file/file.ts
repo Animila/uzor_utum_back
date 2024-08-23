@@ -6,6 +6,7 @@ interface IFile {
     entityType: string
     entityId: string
     typeFile: string
+    position: number
 }
 
 export class File {
@@ -23,6 +24,7 @@ export class File {
     getEntityType(): string { return this.props.entityType }
     getEntityId(): string { return this.props.entityId }
     getTypeFile(): string { return this.props.typeFile }
+    getPosition(): number { return this.props.position }
 }
 
 

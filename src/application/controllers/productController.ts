@@ -21,7 +21,6 @@ import {GetByIdSize} from "../../useCases/product/size";
 import {GetByIdDecorate} from "../../useCases/product/decorate";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
-import {bool} from "sharp";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
@@ -145,9 +144,6 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             }
             return product;
         }));
-
-        console.log(productsWithDiscount.length)
-        console.log(products.count)
 
 
         reply.status(200).send({

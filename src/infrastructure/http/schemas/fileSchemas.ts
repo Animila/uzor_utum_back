@@ -66,7 +66,8 @@ const getFilesSchema = {
                                 entity_id: { type: 'string' },
                                 name: { type: 'string' },
                                 type_file: { type: 'string' },
-                                path: { type: 'string' }
+                                path: { type: 'string' },
+                                position: {type: 'number'}
                             }
                         }
                     },
@@ -117,7 +118,8 @@ const deleteFileSchema = {
                                 entity_id: { type: 'string' },
                                 name: { type: 'string' },
                                 type_file: { type: 'string' },
-                                path: { type: 'string' }
+                                path: { type: 'string' },
+                                position: {type: 'number'}
                             }
                         }
                     }
