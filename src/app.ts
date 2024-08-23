@@ -2,7 +2,7 @@ import Fastify, {FastifyServerOptions} from "fastify";
 import registerRoutes from "./infrastructure/http";
 import {swaggerOptions, swaggerUIOptions} from "./config/swaggerOptions";
 import {rabbit } from "./config/SMTPOptions";
-import fileUpload from 'fastify-file-upload'
+import multipart from '@fastify/multipart';
 import path from "path";
 export type AppOptions = Partial<FastifyServerOptions>
 
@@ -15,7 +15,11 @@ declare module 'fastify' {
 async function buildApp(options: AppOptions = {}) {
     await rabbit.connectQueue()
     const fastify = Fastify(options)
-    await fastify.register(fileUpload)
+    fastify.register(multipart, {
+        limits: {
+            fileSize: 100000000 // Устанавливаем лимит на размер файла (10MB)
+        }
+    });
     await fastify.register(require("@fastify/swagger"), swaggerOptions)
     await fastify.register(require("@fastify/swagger-ui"), swaggerUIOptions)
     await fastify.register(require('fastify-graceful-shutdown'))
