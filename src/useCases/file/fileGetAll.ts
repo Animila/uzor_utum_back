@@ -1,15 +1,5 @@
 import {IFileRepo} from "../../repositories/IFileRepository";
 import {FileMap} from "../../mappers/FileMap";
-import {GetAllSize, GetByIdSize} from "../product/size";
-import {GetAllProb, GetByIdProb} from "../product/probs";
-import {GetAllDecorate, GetByIdDecorate} from "../product/decorate";
-import {SizeMap} from "../../mappers/SizeMap";
-import {DecorateMap} from "../../mappers/DecorateMap";
-import {ProbMap} from "../../mappers/ProbMap";
-import {PrismaMaterialRepo} from "../../infrastructure/prisma/repo/PrismaMaterialRepo";
-import {PrismaSizeRepo} from "../../infrastructure/prisma/repo/PrismaSizeRepo";
-import {PrismaDecorateRepo} from "../../infrastructure/prisma/repo/PrismaDecorateRepo";
-import {PrismaProbRepo} from "../../infrastructure/prisma/repo/PrismaProbRepo";
 
 interface GetAllFileInput {
     entity_id: string,

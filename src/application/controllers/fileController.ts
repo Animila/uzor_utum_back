@@ -4,6 +4,7 @@ import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {FileMap} from "../../mappers/FileMap";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {DeleteFile} from "../../useCases/file/fileDelete";
+import {GetByIdFile} from "../../useCases/file/fileGetById";
 
 const repoFile = new PrismaFileRepo()
 export async function createFile(request: FastifyRequest<FileRouting>, reply: FastifyReply) {
@@ -13,6 +14,31 @@ export async function createFile(request: FastifyRequest<FileRouting>, reply: Fa
         console.log(file)
         const loadFile = new LoadFile(repoFile)
         const result = await loadFile.execute({file:file, entity_id: entity_id, entity_type: entity_type, position: position})
+        reply.status(200).send({
+            success: true,
+            data: FileMap.toPersistence(result)
+        });
+    } catch (error: any) {
+        console.log('345678', error.message)
+        const errors = JSON.parse(error.message)
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        })
+    }
+}
+
+export async function updateFile(request: FastifyRequest<FileRouting>, reply: FastifyReply) {
+    try {
+        const {position} =  request.body
+        const {id} =  request.params
+        const getFile = new GetByIdFile(repoFile)
+        const result = await getFile.execute({id: id})
+
+        result.props.position = position
+
+        await repoFile.save(result)
+
         reply.status(200).send({
             success: true,
             data: FileMap.toPersistence(result)

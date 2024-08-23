@@ -9,8 +9,8 @@ const loadFileSchema = {
                 entity_type: { type: 'string' },
                 entity_id: { type: 'string' },
                 files: { type: 'object' },
+                position: { type: 'number' },
             },
-            required: ['files']
         },
         response: {
             200: {
@@ -22,6 +22,52 @@ const loadFileSchema = {
                         type: 'object',
                         properties: {
                             id: { type: 'string' }
+                        },
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
+const updateFileSchema = {
+    schema: {
+        description: 'Обновить позицию файла. Для авторизованных',
+        tags: ['File'],
+        security: [{ApiToken: []}],
+        body: {
+            type: 'object',
+            properties: {
+                position: { type: 'number' },
+            },
+        },
+        params: {
+            id: { type: 'string' },
+        },
+        response: {
+            200: {
+                description: 'Успешно сохранено',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            id: { type: 'string' },
+                            entity_type: { type: 'string' },
+                            entity_id: { type: 'string' },
+                            name: { type: 'string' },
+                            type_file: { type: 'string' },
+                            path: { type: 'string' },
+                            position: {type: 'number'}
                         },
                     }
                 }
@@ -140,5 +186,6 @@ const deleteFileSchema = {
 export {
     loadFileSchema,
     getFilesSchema,
-    deleteFileSchema
+    deleteFileSchema,
+    updateFileSchema
 }
