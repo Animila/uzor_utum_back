@@ -37,7 +37,16 @@ const getAllReviewSchema = {
                                 created_at: {type: 'string'},
                                 published_at: {type: 'string'},
                                 product_id: {type: 'string'},
+                                product: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
                                 order_id: {type: 'string'},
+                                order: {
+                                    type: 'object',
+                                    additionalProperties: true
+                                },
+
                             }
                         }
                     },

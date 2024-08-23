@@ -8,9 +8,12 @@ import {DeleteUserById} from "../../useCases/user/userDeleteById";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 import {GetBySumUserBonus} from "../../useCases/bonus/bonusGetSumUser";
 import {Roles} from "../../domain/user/valueObjects/role";
+import {GetAllReview} from "../../useCases/review/reviewGetAll";
+import {PrismaReviewRepo} from "../../infrastructure/prisma/repo/PrismaReviewRepo";
 
 const userRepo = new PrismaUserRepo();
 const bonusRepo = new PrismaBonusRepository();
+const reviewRepo = new PrismaReviewRepo()
 
 export async function getAllController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
@@ -47,11 +50,15 @@ export async function getByIdController(request: FastifyRequest<UserRequest>, re
     try {
         const {user_id} = request.params
         const getUser = new GetUserById(userRepo)
+        const getReview = new GetAllReview(reviewRepo)
+
         const user =  await getUser.execute({user_id: user_id});
         const userPer = UserMap.toPersistence(user)
 
+
         const getBonus = new GetBySumUserBonus(bonusRepo)
         userPer.bonus = await getBonus.execute({user_id: user_id});
+
 
         reply.status(200).send({
             success: true,

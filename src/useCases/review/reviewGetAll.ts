@@ -27,7 +27,9 @@ export class GetAllReview {
             created_at: Date,
             published_at?: Date,
             product_id: string,
+            product?: any,
             order_id: string,
+            order?: any,
             images?: any
         }[],
         count: number
