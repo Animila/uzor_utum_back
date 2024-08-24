@@ -190,19 +190,17 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 export async function getAllOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     try {
         const {
-            phone,
-            email,
             user_id,
             token,
-            last_name,
-            total_amount,
-            first_name,
             limit,
-            offset
+            offset,
+            status,
+            shop_id,
+            send_type_id
         } = request.query as OrderRequest['Query'];
 
         const getAllOrder = new GetAllOrder(orderRepo);
-        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token});
+        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token, status: status, send_type_id: send_type_id, shop_id: shop_id});
 
         const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
 

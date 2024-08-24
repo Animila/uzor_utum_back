@@ -5,11 +5,9 @@ interface OrderRequest {
     Query: {
         user_id: string,
         token: string,
-        first_name: string,
-        last_name: string,
-        phone: string,
-        email: string,
-        total_amount: string,
+        shop_id: string,
+        send_type_id: string,
+        status: string
         limit: string,
         offset: string
     },

@@ -5,11 +5,9 @@ const getOrdersSchema = {
         query: {
             user_id: {type:'string'},
             token: { type: 'string' },
-            first_name: { type: 'string' },
-            last_name: { type: 'string' },
-            phone: { type: 'string' },
-            email: { type: 'string' },
-            total_amount: { type: 'string' },
+            status: { type: 'string' },
+            send_type_id: { type: 'string' },
+            shop_id: { type: 'string' },
             limit: {type: 'string'},
             offset: {type: 'string'}
         },
