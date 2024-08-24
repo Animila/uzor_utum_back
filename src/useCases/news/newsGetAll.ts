@@ -6,7 +6,8 @@ interface GetAllNewsInput {
     popular?: boolean
     journal_id?: string,
     limit: number,
-    offset: number
+    offset: number,
+    search?: string
 }
 
 export class GetAllNews {
@@ -33,10 +34,11 @@ export class GetAllNews {
             old,
             popular,
             journal_id,
-            limit = 10, offset = 0
+            limit = 10, offset = 0,
+            search
         } = input;
 
-        const existingData = await this.repository.findAll(limit, offset, journal_id, old, popular)
+        const existingData = await this.repository.findAll(limit, offset, journal_id, old, popular, search)
         if(!existingData) {
             throw new Error(JSON.stringify({
                 status: 404,

@@ -6,7 +6,7 @@ import {NewsMap} from "../../../mappers/NewsMap";
 export class PrismaNewsRepo implements INewsRepository {
     private prisma = new PrismaClient();
 
-    async findAll(limit: number, offset: number, journalId?: string, old?: boolean, popular?: boolean): Promise<{data: News[], count: number}> {
+    async findAll(limit: number, offset: number, journalId?: string, old?: boolean, popular?: boolean, search?: string): Promise<{data: News[], count: number}> {
         try {
             const where: any = {};
             if (journalId) where.journal_id = journalId;
@@ -15,6 +15,14 @@ export class PrismaNewsRepo implements INewsRepository {
             if (old) orderBy.push({created_at: 'asc'});
             else if (popular) orderBy.push({views: 'desc'});
             else orderBy.push({created_at: 'desc'});
+
+            if (search) {
+                where.OR = [
+                    {title: {contains: search, mode: 'insensitive'}},
+                    {about: {contains: search, mode: 'insensitive'}},
+                    {text: {contains: search, mode: 'insensitive'}},
+                ];
+            }
 
             const countData = await this.prisma.news.count({where: where})
             const data = await this.prisma.news.findMany({where: where, orderBy: orderBy,

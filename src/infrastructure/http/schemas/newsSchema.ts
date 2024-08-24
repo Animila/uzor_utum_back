@@ -60,7 +60,8 @@ const getAllNewsSchema = {
             popular: {type: 'string'},
             journalId: {type: 'string'},
             limit: {type: 'string'},
-            offset: {type: 'string'}
+            offset: {type: 'string'},
+            q: {type: 'string'},
         },
         response: {
             200: {

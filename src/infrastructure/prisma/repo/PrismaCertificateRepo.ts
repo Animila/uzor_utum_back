@@ -21,16 +21,26 @@ export class PrismaCertificateRepo implements ICertificateRepository{
         }
     }
 
-    async findAll(limit: number, offset: number, certificate_type_id?: string): Promise<{data: Certificate[], count: number}> {
+    async findAll(limit: number, offset: number, certificate_type_id?: string, search?: string): Promise<{data: Certificate[], count: number}> {
         try {
             const countData = await this.prisma.certificates.count({
                 where: {
-                    certificate_type_id: certificate_type_id
+                    certificate_type_id: certificate_type_id,
+                    OR: [
+                        { phone: { contains: search, mode: 'insensitive' } },
+                        { code: { contains: search, mode: 'insensitive' } },
+                        { email: { contains: search, mode: 'insensitive' } },
+                    ]
                 }
             })
             const data = await this.prisma.certificates.findMany({
                 where: {
-                    certificate_type_id: certificate_type_id
+                    certificate_type_id: certificate_type_id,
+                    OR: [
+                        { phone: { contains: search, mode: 'insensitive' } },
+                        { code: { contains: search, mode: 'insensitive' } },
+                        { email: { contains: search, mode: 'insensitive' } },
+                    ]
                 },
                 take: limit,
                 skip: limit * offset

@@ -2,6 +2,7 @@ interface UserRequest {
     Query: {
         limit: string,
         offset: string
+        q: string
     }
     Params: {
         user_id: string

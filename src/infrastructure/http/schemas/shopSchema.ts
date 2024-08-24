@@ -62,7 +62,8 @@ const getAllShopSchema = {
         tags: ['Shop'],
         query: {
             limit: {type: 'string'},
-            offset: {type: 'string'}
+            offset: {type: 'string'},
+            q: {type: 'string'}
         },
         response: {
             200: {

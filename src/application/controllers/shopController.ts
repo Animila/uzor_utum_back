@@ -11,9 +11,9 @@ const shopRepo = new PrismaShopRepo();
 
 export async function getAllShopController(request: FastifyRequest<ShopRequest>, reply: FastifyReply) {
     try {
-        const {limit, offset} = request.query as ShopRequest['Query']
+        const {limit, offset, q} = request.query as ShopRequest['Query']
         const getAllShop = new GetAllShop(shopRepo)
-        const shops =  await getAllShop.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0);
+        const shops =  await getAllShop.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, q);
         reply.status(200).send({
             success: true,
             data: shops.data,

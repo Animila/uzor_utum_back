@@ -62,10 +62,9 @@ export async function addViewNewsController(request: FastifyRequest<NewsRequest>
 
 export async function getAllNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     try {
-        const {limit, offset} = request.query as NewsRequest['Query']
-        const {old, popular, journalId, } = request.query as NewsRequest['Query'];
+        const {old, popular, journalId, limit, offset, q} = request.query as NewsRequest['Query']
         const getAllData = new GetAllNews(repo)
-        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0,limit: !!limit ? parseInt(limit) : 10, journal_id: journalId, old: old === 'true', popular: popular === 'true'});
+        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0,limit: !!limit ? parseInt(limit) : 10, journal_id: journalId, old: old === 'true', popular: popular === 'true', search: q});
 
         const getFiles = new GetAllFile(fileRepo)
 

@@ -5,6 +5,7 @@ interface GetAllCertificateInput {
     certificate_type_id?: string,
     limit: number,
     offset: number
+    search?: string
 }
 
 export class GetAllCertificate {
@@ -28,9 +29,9 @@ export class GetAllCertificate {
         }[],
         count: number
     }> {
-        const { certificate_type_id, limit = 10, offset = 0} = input;
+        const { certificate_type_id, limit = 10, offset = 0, search} = input;
 
-        const existingData = await this.repository.findAll(limit, offset, certificate_type_id)
+        const existingData = await this.repository.findAll(limit, offset, certificate_type_id, search)
         if(!existingData.data) {
             throw new Error(JSON.stringify({
                 status: 404,

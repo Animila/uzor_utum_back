@@ -6,10 +6,27 @@ import {UserMap} from "../../../mappers/UserMap";
 export class PrismaUserRepo implements IUserRepository {
     private prisma = new PrismaClient();
 
-    async findAll(limit: number, offset: number): Promise<{data: User[], count: number}> {
+    async findAll(limit: number, offset: number, search?: string): Promise<{data: User[], count: number}> {
         try {
-            const countData = await this.prisma.users.count()
+            const countData = await this.prisma.users.count({
+                where: {
+                    OR: [
+                        { phone: { contains: search, mode: 'insensitive' } },
+                        { email: { contains: search, mode: 'insensitive' } },
+                        { last_name: { contains: search, mode: 'insensitive' } },
+                        { first_name: { contains: search, mode: 'insensitive' } },
+                    ]
+                },
+            })
             const users_data = await this.prisma.users.findMany({
+                where: {
+                    OR: [
+                        { phone: { contains: search, mode: 'insensitive' } },
+                        { email: { contains: search, mode: 'insensitive' } },
+                        { last_name: { contains: search, mode: 'insensitive' } },
+                        { first_name: { contains: search, mode: 'insensitive' } },
+                    ]
+                },
                 take: limit,
                 skip: limit * offset
             });

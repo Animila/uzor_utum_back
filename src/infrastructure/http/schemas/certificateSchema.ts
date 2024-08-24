@@ -50,7 +50,8 @@ const getAllCertificateSchema = {
         query: {
             certificate_type_id: { type: 'string' },
             limit: {type: 'string'},
-            offset: {type: 'string'}
+            offset: {type: 'string'},
+            q: {type: 'string'}
         },
         response: {
             200: {

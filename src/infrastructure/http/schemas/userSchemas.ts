@@ -5,7 +5,8 @@ const getAllSchema = {
         security: [{ApiToken: []}],
         query: {
             limit: {type: 'string'},
-            offset: {type: 'string'}
+            offset: {type: 'string'},
+            q: {type: 'string'}
         },
         response: {
             200: {

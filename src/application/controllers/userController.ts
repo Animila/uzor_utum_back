@@ -19,7 +19,7 @@ export async function getAllController(request: FastifyRequest<UserRequest>, rep
     try {
         const data = request.query as UserRequest['Query']
         const getAllUser = new GetUserAll(userRepo)
-        const users =  await getAllUser.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset): undefined);
+        const users =  await getAllUser.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset): undefined, data.q);
         const getBonus = new GetBySumUserBonus(bonusRepo)
 
         for (const user of users.data) {

@@ -8,7 +8,7 @@ export class GetUserAll {
         this.userRepository = userRepository
     }
 
-    async execute(limit: number = 10, offset: number = 0): Promise<{data: {
+    async execute(limit: number = 10, offset: number = 0, search: string = ''): Promise<{data: {
             id: string,
             phone: string,
             email: string,
@@ -21,7 +21,7 @@ export class GetUserAll {
             updated_at?: Date
         }[], count: number}> {
         console.log(limit, offset)
-        const existingUser = await this.userRepository.findAll(limit, offset)
+        const existingUser = await this.userRepository.findAll(limit, offset, search)
         const users = existingUser.data.map(user => {
             return UserMap.toPersistence(user)
         })

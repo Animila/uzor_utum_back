@@ -8,7 +8,7 @@ export class GetAllShop {
         this.shopRepository = shopRepository;
     }
 
-    async execute(limit: number = 10, offset: number =0): Promise<{
+    async execute(limit: number = 10, offset: number =0, search?: string): Promise<{
         data: {
             id: string
             title: string
@@ -21,7 +21,7 @@ export class GetAllShop {
         }[],
         count: number
     }> {
-        const existingShops = await this.shopRepository.findAll(limit, offset)
+        const existingShops = await this.shopRepository.findAll(limit, offset, search)
         const categories = existingShops.data.map(item => {
             return ShopMap.toPersistence(item)
         })

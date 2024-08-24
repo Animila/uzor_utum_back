@@ -7,6 +7,7 @@ interface CertificateRequest {
         code?: string
         limit: string,
         offset: string
+        q: string
     },
     Body: {
         phone: string

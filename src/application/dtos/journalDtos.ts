@@ -21,7 +21,8 @@ interface NewsRequest {
         popular?: string
         journalId?: string;
         limit: string
-        offset: string
+        offset: string,
+        q: string
     },
     Body: {
         title: string
