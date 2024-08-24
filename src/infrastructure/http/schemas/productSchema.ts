@@ -85,6 +85,8 @@ const getAllProductSchema = {
                 maxPrice: {type: 'string'},
                 sex: { type: 'string' },
                 limit: { type: 'string' },
+                updated_at: {type: 'string'},
+                created_at: {type: 'string'},
                 offset: { type: 'string' },
             },
         },
@@ -107,6 +109,8 @@ const getAllProductSchema = {
                                 description: { type: 'string' },
                                 details: { type: 'string' },
                                 delivery: { type: 'string' },
+                                updated_at: {type: 'string'},
+                                created_at: {type: 'string'},
                                 prob_ids: {
                                     type: 'array',
                                     items: { type: 'string' },
@@ -175,6 +179,8 @@ const getByIdProductSchema = {
                             price: { type: 'number' },
                             sex: { type: 'string' },
                             description: { type: 'string' },
+                            updated_at: {type: 'string'},
+                            created_at: {type: 'string'},
                             details: { type: 'string' },
                             delivery: { type: 'string' },
                             prob_ids: {
@@ -267,6 +273,8 @@ const updateProductSchema = {
                             available: { type: 'number' },
                             category_id: { type: 'string' },
                             material_id: { type: 'string' },
+                            updated_at: {type: 'string'},
+                            created_at: {type: 'string'},
                             prob_ids: {
                                 type: 'array',
                                 items: { type: 'string' },
