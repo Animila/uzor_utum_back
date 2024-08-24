@@ -305,7 +305,7 @@ const editOrderSchema = {
             office: { type: 'string' },
             delivery_at: { type: 'string' },
             shop_id: { type: 'string' },
-            status: { type: 'boolean'},
+            status: { type: 'string'},
             comment: { type: 'string' },
             user_id: {type: 'string'},
             receiver_id: { type: 'string' },
