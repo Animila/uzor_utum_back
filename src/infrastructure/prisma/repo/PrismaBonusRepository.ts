@@ -20,8 +20,12 @@ export class PrismaBonusRepository implements IBonusRepository {
         }
     }
 
-    async findAll( limit: number, offset: number, user_id?: string): Promise<{data: Bonus[], count: number}> {
+    async findAll( limit: number, offset: number, user_id?: string, old?: boolean): Promise<{data: Bonus[], count: number}> {
         try {
+            const orderBy: any = [];
+            if (old) orderBy.push({created_at: 'asc'});
+            else orderBy.push({created_at: 'desc'});
+
             const countData = await this.prisma.bonuses.count({
                 where: {
                     user_id: user_id
@@ -31,6 +35,7 @@ export class PrismaBonusRepository implements IBonusRepository {
                 where: {
                     user_id: user_id
                 },
+                orderBy: orderBy,
                 take: limit,
                 skip: offset * limit
             })

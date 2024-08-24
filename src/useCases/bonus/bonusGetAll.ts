@@ -5,6 +5,7 @@ interface GetByUserBonusSumInput {
     user_id?: string
     limit: number,
     offset: number
+    old?: boolean
 }
 
 export class GetAllBonus {
@@ -25,8 +26,8 @@ export class GetAllBonus {
         }[],
         count: number
     }> {
-        const {user_id, limit = 10, offset = 0} = input;
-        const data = await this.repository.findAll(limit, offset, user_id);
+        const {user_id, limit = 10, offset = 0, old} = input;
+        const data = await this.repository.findAll(limit, offset, user_id, old);
         return {
             data: data.data.map(item =>  BonusMap.toPersistence(item)).filter(item => item != null),
             count: data.count

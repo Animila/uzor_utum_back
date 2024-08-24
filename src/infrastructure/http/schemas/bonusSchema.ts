@@ -50,7 +50,8 @@ const getBonusesSchema = {
         security: [{ApiToken: []}],
         query: {
             limit: {type: 'string'},
-            offset: {type: 'string'}
+            offset: {type: 'string'},
+            old: {type: 'boolean'},
         },
         response: {
             200: {

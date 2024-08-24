@@ -37,9 +37,9 @@ export async function createBonusController(request: FastifyRequest<BonusRequest
 
 export async function getAllBonusController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     try {
-        const {limit = "10", offset = "0" } = request.query as BonusRequest["Query"]
+        const {limit = "10", offset = "0", old = false, user_id } = request.query as BonusRequest["Query"]
         const getData = new GetAllBonus(bonusRepo)
-        const allData = await getData.execute({limit: parseInt(limit), offset: parseInt(offset)})
+        const allData = await getData.execute({limit: parseInt(limit), offset: parseInt(offset), old: old,  user_id: user_id})
         reply.status(200).send({
             success: true,
             data: allData.data,
