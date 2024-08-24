@@ -196,11 +196,34 @@ export async function getAllOrderController(request: FastifyRequest<OrderRequest
             offset,
             status,
             shop_id,
-            send_type_id
+            send_type_id,
+            updated_at,
+            created_at,
+            q
         } = request.query as OrderRequest['Query'];
 
         const getAllOrder = new GetAllOrder(orderRepo);
-        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token, status: status, send_type_id: send_type_id, shop_id: shop_id});
+
+        const createdAt = created_at ? new Date(created_at) : undefined;
+        const updatedAt = updated_at ? new Date(updated_at) : undefined;
+
+        if(createdAt && createdAt.toDateString() === "Invalid Date" || updatedAt && updatedAt.toDateString() === "Invalid Date") {
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    (createdAt && createdAt.toDateString() === "Invalid Date") && {
+                        type: 'created_at',
+                        message: 'Нет created_at'
+                    },
+                    (updatedAt && updatedAt.toDateString() === "Invalid Date") && {
+                        type: 'updated_at',
+                        message: 'Нет updated_at'
+                    }
+                ]
+            }))
+        }
+
+        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token, status: status, send_type_id: send_type_id, shop_id: shop_id, search: q, created_at: createdAt, updated_at: updatedAt});
 
         const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
 

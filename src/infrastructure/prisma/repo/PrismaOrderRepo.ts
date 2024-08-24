@@ -7,14 +7,28 @@ export class PrismaOrderRepo implements IOrderRepository {
 
     private prisma = new PrismaClient();
 
-    async findAll(limit: number, offset: number, token?:string, user_id?:string, shop_id?: string, status?: string, send_type_id?: string): Promise<{data: Order[], count: number}> {
+    async findAll(limit: number, offset: number, token?:string, user_id?:string, shop_id?: string, status?: string[], send_type_id?: string, search?: string, created_at?: Date, updated_at?: Date): Promise<{data: Order[], count: number}> {
         try {
             const where: any = {};
             if (token) where.token = token;
             if (user_id) where.user_id = user_id;
             if (shop_id) where.shop_id = shop_id;
+            if (created_at) where.created_at = created_at;
+            if (updated_at) where.updated_at = updated_at;
             if (send_type_id) where.send_type_id = send_type_id;
-            if (status) where.status = status;
+            if (status && status.length > 0)  where.status = { in: status };
+            if (status && status.length > 0)  where.status = { in: status };
+            if (status && status.length > 0)  where.status = { in: status };
+
+            if (search) {
+                where.OR = [
+                    { address: { contains: search, mode: 'insensitive' } },
+                    { first_name: { contains: search, mode: 'insensitive' } },
+                    { last_name: { contains: search, mode: 'insensitive' } },
+                    { phone: { contains: search, mode: 'insensitive' } },
+                    { email: { contains: search, mode: 'insensitive' } },
+                ];
+            }
 
             const countData = await this.prisma.orders.count({where: where})
             const data = await this.prisma.orders.findMany({where,

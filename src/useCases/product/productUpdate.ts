@@ -61,7 +61,10 @@ export class UpdateProduct {
         if(sexOrError instanceof Error ) {
             throw new Error(JSON.stringify({
                 status: 400,
-                message: 'Пол неверный'
+                message: {
+                    type: 'sex',
+                    message: 'Пол неверный'
+                }
             }))
         }
 

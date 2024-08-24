@@ -11,13 +11,23 @@ export class PrismaTokenRepo implements ITokenRepository {
             if (!userId) {
                 throw new Error(JSON.stringify({
                     status: 400,
-                    message: 'Нет user_id'
+                    message: [
+                        {
+                            type: 'user_id',
+                            message: 'Нет user_id'
+                        }
+                    ]
                 }));
             }
             if (!token) {
                 throw new Error(JSON.stringify({
                     status: 400,
-                    message: 'Нет token'
+                    message: [
+                        {
+                            type: 'token',
+                            message: 'Нет token'
+                        }
+                    ]
                 }));
             }
             const tokenRecord = await this.prisma.tokens.findFirst({

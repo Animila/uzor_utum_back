@@ -3,9 +3,15 @@ const getOrdersSchema = {
         description: 'Получить все заказы',
         tags: ['Order'],
         query: {
+            q: {type: 'string'},
             user_id: {type:'string'},
             token: { type: 'string' },
-            status: { type: 'string' },
+            created_at: {type: 'string'},
+            updated_at: {type: 'string'},
+            status: {
+                type: 'array',
+                items: { type: 'string' },
+            },
             send_type_id: { type: 'string' },
             shop_id: { type: 'string' },
             limit: {type: 'string'},

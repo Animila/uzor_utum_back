@@ -7,9 +7,12 @@ interface OrderRequest {
         token: string,
         shop_id: string,
         send_type_id: string,
-        status: string
+        created_at: string,
+        updated_at: string,
+        status: string[]
         limit: string,
-        offset: string
+        offset: string,
+        q: string
     },
     Body: {
         token: string
