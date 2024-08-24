@@ -40,6 +40,7 @@ import {PromoCodeMap} from "../../mappers/PromoCodeMap";
 import {GetByIdCertificateType} from "../../useCases/certificate/certificateTypeGetById";
 import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/PrismaCertificateTypeRepo";
 import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
+import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -82,7 +83,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             }
             return dataPer
         }))
-        console.log(productsOrError)
 
         await getSendType.execute({id: data.send_type_id})
         await getReceiver.execute({id: data.receiver_id})
@@ -184,6 +184,43 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             success: false,
             message: errors.message
         });
+    }
+}
+
+export async function editOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
+    try {
+        const data = request.body;
+        const { id } = request.params;
+
+        const getOrder = new GetByIdOrder(orderRepo);
+        const order = await getOrder.execute({ id });
+
+        const statusOrError = OrderStatus.create(data.status)
+
+        const errors: Array<{type: string, message: string}> = []
+        statusOrError instanceof Error && errors.push({type: 'status', message: statusOrError.message})
+
+        if(errors.length > 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: errors
+            }))
+
+        order.props.status = statusOrError as OrderStatus
+
+        await orderRepo.save(order)
+        reply.status(200).send({
+            success: true,
+        });
+
+    } catch (error: any) {
+        console.log('Error:', error.message);
+        const errors = JSON.parse(error.message);
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        });
+        return
     }
 }
 

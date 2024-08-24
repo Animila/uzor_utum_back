@@ -288,6 +288,78 @@ const createOrderSchema = {
     }
 };
 
+const editOrderSchema = {
+    schema: {
+        description: 'Редактировать новый заказ',
+        tags: ['Order'],
+        body: {
+            first_name: { type: 'string' },
+            last_name: { type: 'string' },
+            phone: { type: 'string' },
+            email: { type: 'string' },
+            send_type_id: { type: 'string' },
+            address: { type: 'string' },
+            house: {type: 'string'},
+            apartment: { type: 'string' },
+            postal_code: { type: 'number' },
+            office: { type: 'string' },
+            delivery_at: { type: 'string' },
+            shop_id: { type: 'string' },
+            status: { type: 'boolean'},
+            comment: { type: 'string' },
+            user_id: {type: 'string'},
+            receiver_id: { type: 'string' },
+            certificate_id: { type: 'string' },
+            promocode_id: { type: 'string' },
+            add_bonus: { type: 'number' },
+            use_bonus: { type: 'number' },
+            total_amount: {type: 'number'},
+            items: {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    additionalProperties: true
+                }
+            },
+            token: {type: 'string'},
+        },
+        response: {
+            200: {
+                description: 'Успешно',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                }
+            },
+            400: {
+                description: 'Если есть проблемы с данными',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: {
+                        type: 'array',
+                        items: {
+                            type: 'object',
+                            properties: {
+                                type: { type: 'string' },
+                                message: { type: 'string' },
+                            }
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 const deleteOrderSchema = {
     schema: {
         description: 'Удалить заказ',
@@ -319,6 +391,6 @@ export {
     getOrdersSchema,
     getOrderSchema,
     createOrderSchema,
-    deleteOrderSchema
-
+    deleteOrderSchema,
+    editOrderSchema
 }
