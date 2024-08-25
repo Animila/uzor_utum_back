@@ -13,8 +13,8 @@ export class PathSharp {
     }
 
     async upload(file: any, type: string, entity_id: string): Promise<any> {
-        if (!file || !file.data) {
-            throw new Error('Нет данных изображений')
+        if (!file || !file._buf) {
+            throw new Error('Нет данных изображений или файл пустой')
         }
         const currentDate = new Date()
         const formattedDate = format(currentDate, 'yyyy-MM-dd_HH-mm-ss')
@@ -35,7 +35,7 @@ export class PathSharp {
 
         return new Promise((resolve, reject) => {
 
-        sharp(file.data)
+        sharp(file._buf)
             .resize({
                 width: maxWidth,
                 height: maxHeight,

@@ -17,7 +17,7 @@ export const swaggerOptions = {
             }
         ],
         schemes: ['http', 'https'],
-        consumes: ['application/json', 'multipart/form-data'],
+        consumes: ['application/json'],
         produces: ['application/json'],
         securityDefinitions: {
             ApiToken: {

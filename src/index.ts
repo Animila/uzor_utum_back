@@ -3,11 +3,7 @@ import pino from "pino";
 import {rabbit} from "./config/SMTPOptions";
 
 const options: AppOptions = {
-    logger: pino({level: 'info'}),
-    ajv: {
-        // Adds the file plugin to help @fastify/swagger schema generation
-        plugins: [require('@fastify/multipart').ajvFilePlugin]
-    }
+    logger: pino({level: 'info'})
 }
 
 const start = async () => {

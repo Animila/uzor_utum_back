@@ -5,15 +5,19 @@ import {FileMap} from "../../mappers/FileMap";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {DeleteFile} from "../../useCases/file/fileDelete";
 import {GetByIdFile} from "../../useCases/file/fileGetById";
+import path from "path";
+import {createWriteStream} from "node:fs";
 
 const repoFile = new PrismaFileRepo()
 export async function createFile(request: FastifyRequest<FileRouting>, reply: FastifyReply) {
     try {
-        const file =  request.body.files
-        const {entity_id, entity_type, position} = request.body
-        console.log(file)
+        const data = request.body
         const loadFile = new LoadFile(repoFile)
-        const result = await loadFile.execute({file:file, entity_id: entity_id, entity_type: entity_type, position: position})
+
+        console.log(data)
+
+//@ts-ignore
+        const result = await loadFile.execute({file: data.file, entity_id: data.entity_id.value, entity_type: data.entity_type.value, position: parseInt(data.position.value)})
         reply.status(200).send({
             success: true,
             data: FileMap.toPersistence(result)

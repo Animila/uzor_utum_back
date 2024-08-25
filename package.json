@@ -30,7 +30,6 @@
     "class-validator": "^0.14.1",
     "concurrently": "^8.2.2",
     "fastify": "^4.28.1",
-    "fastify-file-upload": "^4.0.0",
     "fastify-graceful-shutdown": "^3.5.3",
     "fastify-plugin": "^4.5.1",
     "nodemailer": "^6.9.14",

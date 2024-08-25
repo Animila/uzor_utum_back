@@ -1,3 +1,4 @@
+
 const loadFileSchema = {
     schema: {
         description: 'Загрузить файл. Для авторизованных. ЛУЧШЕ ГРУЗИТЬ ЧЕРЕЗ formdata, swagger не смог нормально отрендерить',
@@ -8,7 +9,7 @@ const loadFileSchema = {
             properties: {
                 entity_type: { type: 'string' },
                 entity_id: { type: 'string' },
-                files: { type: 'object' },
+                file: { format: "binary" },
                 position: { type: 'number' },
             },
         },
@@ -35,7 +36,8 @@ const loadFileSchema = {
                 }
             }
         }
-    }
+    },
+    // preHandler: upload.single('file')
 };
 
 const updateFileSchema = {

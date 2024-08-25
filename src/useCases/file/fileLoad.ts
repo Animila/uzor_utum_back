@@ -36,7 +36,7 @@ export default class LoadFile {
                 status: 400,
                 message: [
                     {
-                        type: 'files',
+                        type: 'file',
                         message: 'Неподходящий формат (только изображения)'
                     }
                 ]
