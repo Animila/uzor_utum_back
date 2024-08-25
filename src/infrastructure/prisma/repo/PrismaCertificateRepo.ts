@@ -123,4 +123,31 @@ export class PrismaCertificateRepo implements ICertificateRepository{
         }
     }
 
+    async getStats(): Promise<{priceTotal: number, certificateData: any}> {
+        const data = await this.prisma.certificates.findMany({
+            select: {
+                certificate_type: true,
+                accepted: true
+            }
+        });
+
+        const certificateSales = await this.prisma.certificates.groupBy({
+            by: ['delivery_at'], // Группируем по дате доставки сертификатов
+            _count: {
+                id: true, // Подсчитываем количество сертификатов
+            },
+        });
+        console.log(certificateSales)
+
+        let price = 0
+        data.map(item => {
+            price += item.certificate_type.value
+        })
+
+        return {
+            priceTotal: price,
+            certificateData: certificateSales
+        }
+    }
+
 }

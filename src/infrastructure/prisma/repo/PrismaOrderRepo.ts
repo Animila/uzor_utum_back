@@ -17,8 +17,6 @@ export class PrismaOrderRepo implements IOrderRepository {
             if (updated_at) where.updated_at = updated_at;
             if (send_type_id) where.send_type_id = send_type_id;
             if (status && status.length > 0)  where.status = { in: status };
-            if (status && status.length > 0)  where.status = { in: status };
-            if (status && status.length > 0)  where.status = { in: status };
 
             if (search) {
                 where.OR = [
@@ -145,6 +143,38 @@ export class PrismaOrderRepo implements IOrderRepository {
             }));
         } finally {
             this.prisma.$disconnect()
+        }
+    }
+
+    async getStats(): Promise<{
+        count: number,
+        items: any,
+        sales: any
+    }> {
+        try {
+            const data = await this.prisma.orders.aggregate({
+                _count: true,
+            })
+            const sales = await this.prisma.orders.groupBy({
+                by: ['created_at'],
+                _sum: {
+                    total_amount: true,
+                },
+            });
+            const getAllItems = await this.prisma.orders.findMany({
+                select: {
+                    items: true,
+                    total_amount: true
+                }
+            })
+
+            return {
+                count: data._count,
+                items: getAllItems,
+                sales: sales
+            }
+        } finally {
+            await this.prisma.$disconnect();
         }
     }
 }

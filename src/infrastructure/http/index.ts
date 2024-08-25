@@ -23,6 +23,7 @@ import {registerProbRouting} from "./routing/prodRouting";
 import {registerSizeRouting} from "./routing/sizeRouting";
 import {registerFileRouting} from "./routing/fileRouting";
 import {registerReviewRouting} from "./routing/reviewRouting";
+import {registerStatsRouting} from "./routing/statsRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
@@ -56,5 +57,6 @@ export default function registerRoutes(fastify: FastifyInstance) {
     registerShopRouting(fastify)
 
     registerYookassaRouting(fastify)
+    registerStatsRouting(fastify)
 }
 

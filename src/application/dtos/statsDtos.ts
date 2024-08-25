@@ -1,3 +1,8 @@
-interface StatOrder {
-
+interface StatReguest {
+    Query: {
+    }
+    Params: {
+    },
+    Body: {
+    }
 }
