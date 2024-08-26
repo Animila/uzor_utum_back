@@ -125,9 +125,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             }
             totalPrice =  Math.floor(totalPrice - (totalPrice * (promo.getDiscount()/100)))
         }
-        return
-
-
 
         if(data.user_id && data.use_bonus !== 0 && data.use_bonus !== undefined) {
             await getUser.execute({user_id: data.user_id})
