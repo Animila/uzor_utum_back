@@ -59,19 +59,17 @@ const certTypeRepo = new PrismaCertificateTypeRepo()
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
     const addBonus = new CreateBonus(bonusRepo)
-
+    const getSendType = new GetByIdSendType(sendTypeRepo)
+    const getShop = new GetByIdShop(shopRepo)
+    const getReceiver = new GetByIdReceiver(receiverRepo)
+    const getCertificate = new GetByIdCertificate(certRepo)
+    const getPromocode = new GetByIdPromoCode(promoRepo)
+    const getProduct = new GetByIdProducts(productRepo, fileRepo)
+    const getDiscount = new GetByProductIdDiscount(discountRepo)
+    const getCountBonus = new GetBySumUserBonus(bonusRepo)
+    const getUser = new GetUserById(userRep)
 
     try {
-        const getSendType = new GetByIdSendType(sendTypeRepo)
-        const getShop = new GetByIdShop(shopRepo)
-        const getReceiver = new GetByIdReceiver(receiverRepo)
-        const getCertificate = new GetByIdCertificate(certRepo)
-        const getPromocode = new GetByIdPromoCode(promoRepo)
-        const getProduct = new GetByIdProducts(productRepo, fileRepo)
-        const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const getCountBonus = new GetBySumUserBonus(bonusRepo)
-        const getUser = new GetUserById(userRep)
-
         //@ts-ignore
         const productsOrError = await Promise.all(data.items.map(async item => {
             const data = await getProduct.execute({id: item.product_id})
@@ -83,6 +81,8 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             }
             return dataPer
         }))
+
+        console.log(productsOrError)
 
         await getSendType.execute({id: data.send_type_id})
         await getReceiver.execute({id: data.receiver_id})
@@ -327,8 +327,8 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
         const resultR = await getReceiver.execute({id: item.receiver_id})
         item.receiver_data = ReceiverMap.toPersistence(resultR)
 
-        item.payment_data = await getDataPayment(item.payment_id!)
-
+        const data = await getDataPayment(item.payment_id!)
+        item.payment_data = data.data
         reply.status(200).send({
             success: true,
             data: item

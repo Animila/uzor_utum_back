@@ -14,6 +14,7 @@ import {initialPayment} from "../../infrastructure/youkassa/initialPayment";
 import {GetByCodeCertificate} from "../../useCases/certificate/certificateGetByCode";
 import {Guard} from "../../domain/guard";
 import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
+import {scheduleSendEmail} from "../../infrastructure/nodecron/scheduleNotification";
 
 const certRepo = new PrismaCertificateRepo();
 const certTypeRepo = new PrismaCertificateTypeRepo();
@@ -136,6 +137,8 @@ export async function createCertificateController(request: FastifyRequest<Certif
         result.props.orderId = resultPay.data?.payment_id
 
         console.log(result)
+
+
 
         await certRepo.save(result)
 

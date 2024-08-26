@@ -8,6 +8,7 @@ import {rabbit} from "../../config/SMTPOptions";
 import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
+import {scheduleSendEmail} from "../../infrastructure/nodecron/scheduleNotification";
 
 const certRepo = new PrismaCertificateRepo();
 const orderRepo = new PrismaOrderRepo()
@@ -45,11 +46,15 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
             if(dataObject.entity_type === "certificate") {
                 const getCertificate = new GetByIdCertificate(certRepo)
                 const cert = await getCertificate.execute({id: dataObject.entity_id})
-                await rabbit.sendEmail({
-                    text: "Пин-код сертификата: " + cert.getCode().toString(),
-                    subject: 'Пин-код сертификата',
-                    to: cert.getEmail()?.getFull()!
+
+                scheduleSendEmail(cert.getDeliveryAt(), undefined, async () => {
+                    await rabbit.sendEmail({
+                        text: "Пин-код сертификата: " + cert.getCode().toString(),
+                        subject: 'Пин-код сертификата',
+                        to: cert.getEmail()?.getFull()!
+                    })
                 })
+
             }
             if(dataObject.entity_type === "product") {
                 const order = await getOrder.execute({id: dataObject.entity_id})
