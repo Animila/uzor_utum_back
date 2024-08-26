@@ -105,6 +105,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
             } else {
                 const getOrder = new GetByIdOrder(orderRepo)
                 const order = await getOrder.execute({id: dataObject.entity_id})
+
                 // @ts-ignore
                 order.props.status = OrderStatus.create(OrderStatus.getAvailables().CANCELLED)
                 await orderRepo.save(order)

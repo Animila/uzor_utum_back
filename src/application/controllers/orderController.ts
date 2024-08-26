@@ -358,7 +358,11 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
         item.receiver_data = ReceiverMap.toPersistence(resultR)
 
         const data = await getDataPayment(item.payment_id!)
+        console.log(data.success)
         item.payment_data = data.data
+        console.log(item.payment_data)
+
+        console.log(item)
         reply.status(200).send({
             success: true,
             data: item

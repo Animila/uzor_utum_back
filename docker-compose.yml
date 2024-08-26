@@ -1,30 +1,6 @@
 version: '3.9'
 name: 'uzor_utum'
 services:
-  db:
-    image: postgres:alpine3.18
-    volumes:
-      - ./database:/var/lib/postgresql/data
-    container_name: db
-    environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-      - POSTGRES_DB=${DATABASE}
-    ports:
-      - '${DB_PORT}:5432'
-    expose:
-      - ${DB_PORT}
-    healthcheck:
-      test:
-        [ 'CMD-SHELL', 'pg_isready -U ${DB_USER} -d ${DATABASE}' ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 10s
-    restart: always
-    env_file:
-      - .env
-
   rabbitmq:
     image: rabbitmq:3.9-management
     hostname: rabbitmq
@@ -47,30 +23,3 @@ services:
       retries: 3
     env_file:
       - .env
-  api:
-    container_name: api
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - '3000:3000'
-    depends_on:
-      - db
-      - rabbitmq
-    volumes:
-      - .:/app
-      - /app/node_modules
-#  client:
-#    container_name: client
-#    build:
-#      context: ../front/
-#      dockerfile: Dockerfile
-#    ports:
-#      - '4000:4000'
-#    depends_on:
-#      - db
-#      - rabbitmq
-#      - api
-#    volumes:
-#      - ../front/:/app
-#      - /app/node_modules

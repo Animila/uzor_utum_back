@@ -23,19 +23,16 @@ export function registerLikeRouting(fastify: FastifyInstance) {
     fastify.post('/likes', createLikeSchema, async (req: FastifyRequest<LikeRequest>, res: FastifyReply) => {
         await req.jwtVerify()
         // @ts-ignore
-        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await createLikeController(req, res)
     });
     fastify.put('/likes/:id',updateLikeSchema, async (req: FastifyRequest<LikeRequest>, res: FastifyReply) => {
         await req.jwtVerify()
         // @ts-ignore
-        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await updateLikeController(req, res)
     });
     fastify.delete('/likes/:id', deleteLikeSchema, async (req: FastifyRequest<LikeRequest>, res: FastifyReply) => {
         await req.jwtVerify()
         // @ts-ignore
-        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await deleteLikeController(req, res)
 
     });
