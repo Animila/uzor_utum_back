@@ -23,25 +23,18 @@ export class PrismaCertificateRepo implements ICertificateRepository{
 
     async findAll(limit: number, offset: number, certificate_type_id?: string, search?: string): Promise<{data: Certificate[], count: number}> {
         try {
+            const where: any = {};
+            if (certificate_type_id) where.certificate_type_id = certificate_type_id;
+            if (search) where.OR = [
+                { phone: { contains: search, mode: 'insensitive' } },
+                { code: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
+            ]
             const countData = await this.prisma.certificates.count({
-                where: {
-                    certificate_type_id: certificate_type_id,
-                    OR: [
-                        { phone: { contains: search, mode: 'insensitive' } },
-                        { code: { contains: search, mode: 'insensitive' } },
-                        { email: { contains: search, mode: 'insensitive' } },
-                    ]
-                }
+                where: where
             })
             const data = await this.prisma.certificates.findMany({
-                where: {
-                    certificate_type_id: certificate_type_id,
-                    OR: [
-                        { phone: { contains: search, mode: 'insensitive' } },
-                        { code: { contains: search, mode: 'insensitive' } },
-                        { email: { contains: search, mode: 'insensitive' } },
-                    ]
-                },
+                where: where,
                 take: limit,
                 skip: limit * offset
             })
@@ -113,7 +106,8 @@ export class PrismaCertificateRepo implements ICertificateRepository{
         try {
             const result = await this.prisma.certificates.findUnique({
                 where: {
-                    code: code
+                    code: code,
+                    activated: false
                 }
             })
             if (!result) return null
@@ -137,7 +131,6 @@ export class PrismaCertificateRepo implements ICertificateRepository{
                 id: true, // Подсчитываем количество сертификатов
             },
         });
-        console.log(certificateSales)
 
         let price = 0
         data.map(item => {

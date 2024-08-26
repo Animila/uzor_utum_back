@@ -25,9 +25,6 @@ export async function initialPayment(
             "Content-Type": "application/json"
         };
 
-        console.log(auth)
-        console.log(headers)
-
         const now = new Date();
         const minutesToAdd = 1;
         now.setMinutes(now.getMinutes() + minutesToAdd);
@@ -59,17 +56,6 @@ export async function initialPayment(
 
         const response = await axios.post(url, params, { headers });
         const res = response.data;
-        if (res.status === "pending") {
-            console.log("ожидание");
-        }
-        console.log(res)
-        console.log({
-            success: true,
-            data: {
-                payment_id: res.id,
-                payment_url: res.confirmation.confirmation_url
-            }
-        })
 
         return {
             success: true,

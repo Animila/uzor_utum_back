@@ -41,6 +41,8 @@ import {GetByIdCertificateType} from "../../useCases/certificate/certificateType
 import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/PrismaCertificateTypeRepo";
 import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
 import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
+import {bool} from "sharp";
+import {PromoCode} from "../../domain/promocode/promocode";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -58,37 +60,74 @@ const certTypeRepo = new PrismaCertificateTypeRepo()
 
 export async function createOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     const data = request.body;
-    const addBonus = new CreateBonus(bonusRepo)
     const getSendType = new GetByIdSendType(sendTypeRepo)
     const getShop = new GetByIdShop(shopRepo)
     const getReceiver = new GetByIdReceiver(receiverRepo)
     const getCertificate = new GetByIdCertificate(certRepo)
+    const getCertificateType = new GetByIdCertificateType(certTypeRepo)
     const getPromocode = new GetByIdPromoCode(promoRepo)
     const getProduct = new GetByIdProducts(productRepo, fileRepo)
     const getDiscount = new GetByProductIdDiscount(discountRepo)
     const getCountBonus = new GetBySumUserBonus(bonusRepo)
     const getUser = new GetUserById(userRep)
 
+    let totalPrice = 0
+
     try {
+        await getReceiver.execute({id: data.receiver_id})
+        data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
+
         //@ts-ignore
         const productsOrError = await Promise.all(data.items.map(async item => {
             const data = await getProduct.execute({id: item.product_id})
             const dataPer = ProductMap.toPersistence(data)
             try {
                 dataPer.discount = DiscountMap.toPersistence(await getDiscount.execute({product_id: data.getId()}))
+                totalPrice += Math.floor((dataPer.price * ((100 - dataPer.discount.percentage) / 100)) * item.count)
             } catch (e) {
+                totalPrice += Math.floor(dataPer.price * item.count)
                 console.log(e)
             }
             return dataPer
         }))
 
-        console.log(productsOrError)
+        const typeSend = await getSendType.execute({id: data.send_type_id})
+        totalPrice += typeSend.getPrice()
 
-        await getSendType.execute({id: data.send_type_id})
-        await getReceiver.execute({id: data.receiver_id})
-        data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
-        data.certificate_id ? await getCertificate.execute({id: data.certificate_id}) : undefined
-        data.promocode_id ? await getPromocode.execute({id: data.promocode_id}) : undefined
+        if(data.certificate_id) {
+            const cart = await getCertificate.execute({id: data.certificate_id})
+            if(cart.getActivated()) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: [
+                        {
+                            type: 'certificate_id',
+                            message: 'Сертификат уже активирован'
+                        }
+                    ]
+                }))
+            }
+            const cartType = await getCertificateType.execute({id: cart.getCertificateTypeId()})
+            totalPrice -= cartType.getValue()
+        }
+        if(data.promocode_id) {
+            const promo = await getPromocode.execute({id: data.promocode_id, user_id: data.user_id, email: data.email, phone: data.phone})
+            if(promo instanceof Boolean || !promo || !(promo instanceof PromoCode)) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: [
+                        {
+                            type: 'promocode_id',
+                            message: 'Промокод уже использовался данным пользователем'
+                        }
+                    ]
+                }))
+            }
+            totalPrice =  Math.floor(totalPrice - (totalPrice * (promo.getDiscount()/100)))
+        }
+        return
+
+
 
         if(data.user_id && data.use_bonus !== 0 && data.use_bonus !== undefined) {
             await getUser.execute({user_id: data.user_id})
@@ -104,15 +143,11 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
                     ]
                 }));
             }
-            data.total_amount = data.total_amount - data.use_bonus
-            await addBonus.execute({
-                user_id: data.user_id,
-                created_at: new Date(),
-                count: data.use_bonus,
-                description: `Оплата заказа`,
-                type: 'minus'
-            })
+            totalPrice = totalPrice - data.use_bonus
         }
+        data.add_bonus = Math.floor(totalPrice / 100 * 5)
+        data.total_amount = totalPrice
+
 
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -125,7 +160,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
     }
 
     try {
-        console.log(data)
         const createOrder = new CreateOrder(orderRepo);
         const order = await createOrder.execute(data);
 
@@ -134,8 +168,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             //@ts-ignore
             const results = await Promise.all(data.items.map(async item => {
                 const res = await deleteCart.execute({id: item.id})
-
-                console.log('3 ',res)
             }))
         }
         // создать платеж
@@ -158,18 +190,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         order.props.paymentId = resultPay.data?.payment_id
 
         await orderRepo.save(order)
-
-        const resultCheck = Guard.againstNullOrUndefined(order.getUserId(), "user_id")
-        if(resultCheck.succeeded) {
-            await addBonus.execute({
-                user_id: order.getUserId()!,
-                created_at: new Date(),
-                count: data.add_bonus,
-                description: `Пополнение за заказ`,
-                type: 'plus'
-            })
-
-        }
 
         reply.status(200).send({
             success: true,
@@ -317,8 +337,19 @@ export async function getByIdOrderController(request: FastifyRequest<OrderReques
         }
 
         if(item.promocode_id !== undefined) {
-            const result = await getPromo.execute({id: item.promocode_id})
-            item.promocode_data = PromoCodeMap.toPersistence(result)
+            const promo = await getPromo.execute({id: item.promocode_id})
+            if(promo instanceof Boolean || !promo || !(promo instanceof PromoCode)) {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: [
+                        {
+                            type: 'promocode_id',
+                            message: 'Промокод уже использовался данным пользователем'
+                        }
+                    ]
+                }))
+            }
+            item.promocode_data = PromoCodeMap.toPersistence(promo)
         }
 
         const resultST = await getSendType.execute({id: item.send_type_id})

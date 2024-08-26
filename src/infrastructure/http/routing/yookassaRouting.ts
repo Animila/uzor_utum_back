@@ -8,7 +8,6 @@ export function registerYookassaRouting(fastify: FastifyInstance) {
             hide: true,
         }
     }, async (req: FastifyRequest, res: FastifyReply) => {
-        console.log('POST 45678')
         await getPaymentStatus(req, res)
     });
 }

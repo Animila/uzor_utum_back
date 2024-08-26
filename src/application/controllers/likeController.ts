@@ -33,7 +33,6 @@ export async function getAllLikeController(request: FastifyRequest<LikeRequest>,
             limit = "10",
             offset = "0", } = request.query as LikeRequest["Query"]
 
-        console.log(offset)
 
         const getAllData = new GetAllLike(likeRepo)
         const getNews = new GetByIdNews(newsRepo, fileRepo)

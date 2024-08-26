@@ -2,6 +2,9 @@ interface PromoCodeRequest {
     Query: {
         limit: string,
         offset: string,
+        email: string,
+        phone: string,
+        user_id: string,
     }
     Params: {
         id: string

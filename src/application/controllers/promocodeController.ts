@@ -7,6 +7,7 @@ import {UpdatePromoCode} from "../../useCases/promocode/promocodeUpdate";
 import {DeletePromoCode} from "../../useCases/promocode/promocodeDelete";
 import {CreatePromoCode} from "../../useCases/promocode/promocodeCreate";
 import {GetByCodePromoCode} from "../../useCases/promocode/promocodeGetCode";
+import {PromoCode} from "../../domain/promocode/promocode";
 
 const promoCodeRepo = new PrismaPromoCodeRepo()
 
@@ -62,6 +63,18 @@ export async function getByIdPromoCodeController(request: FastifyRequest<PromoCo
         const { id } = request.params;
         const getData = new GetByIdPromoCode(promoCodeRepo);
         const data = await getData.execute({ id });
+        if(data instanceof Boolean || !data || !(data instanceof PromoCode)) {
+            reply.status(400).status(200).send({
+                success: false,
+                message: [
+                    {
+                        type: 'promocode_id',
+                        message: 'Промокод уже использовался данным пользователем'
+                    }
+                ]
+            });
+            return
+        }
         reply.status(200).send({
             success: true,
             data: PromoCodeMap.toPersistence(data)
@@ -130,8 +143,21 @@ export async function deletePromoCodeController(request: FastifyRequest<PromoCod
 export async function getByCodePromoCodeController(request: FastifyRequest<PromoCodeRequest>, reply: FastifyReply) {
     try {
         const { code } = request.body;
+        const query = request.query as PromoCodeRequest['Query']
         const getData = new GetByCodePromoCode(promoCodeRepo);
-        const data = await getData.execute({ code });
+        const data = await getData.execute({ code, user_id: query.user_id, email: query.email, phone: query.phone });
+        if(data instanceof Boolean || !data || !(data instanceof PromoCode)) {
+            reply.status(400).status(200).send({
+                success: false,
+                message: [
+                    {
+                        type: 'promocode_id',
+                        message: 'Промокод уже использовался данным пользователем'
+                    }
+                ]
+            });
+            return
+        }
         reply.status(200).send({
             success: true,
             data: PromoCodeMap.toPersistence(data)

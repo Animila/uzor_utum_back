@@ -126,6 +126,7 @@ export async function createCertificateController(request: FastifyRequest<Certif
             result.getId(),
             certType.getValue().toString())
 
+
         if(!resultPay.success) {
             await certRepo.delete(result.getId())
             reply.status(500).send({
@@ -135,10 +136,6 @@ export async function createCertificateController(request: FastifyRequest<Certif
         }
 
         result.props.orderId = resultPay.data?.payment_id
-
-        console.log(result)
-
-
 
         await certRepo.save(result)
 

@@ -24,16 +24,7 @@ export async function getAllCategoryController(request: FastifyRequest<CategoryR
             const res = await getFiles.execute({limit: 10, offset: 0, entity_id: category.id, entity_type: 'category'})
             category.images = res.data
         }
-        console.log({
-            success: true,
-            data: categories.data,
-            pagination: {
-                totalItems: categories.count,
-                totalPages: Math.ceil(categories.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
-        })
+
         reply.status(200).send({
             success: true,
             data: categories.data,

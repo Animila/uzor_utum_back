@@ -86,7 +86,6 @@ export class OrderMap {
         created_at: Date,
         updated_at: Date
     } {
-        console.log('ROOOOOOOOOOOOOOOR ', data)
         return {
             id: data.getId(),
             first_name: data.getFirstName(),

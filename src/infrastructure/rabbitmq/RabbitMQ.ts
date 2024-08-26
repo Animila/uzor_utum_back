@@ -44,7 +44,6 @@ class RabbitMQ {
             try {
                 const bufferData = Buffer.from(data?.content!);
                 const dataMail: { subject: string, to: string, text: string } = JSON.parse(bufferData.toString());
-                console.log('Received data: ', dataMail);
                 const checkEmail = Email.create(dataMail.to);
                 if (checkEmail instanceof Error) {
                     console.log('Invalid email format');

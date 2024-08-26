@@ -102,7 +102,8 @@ export class PrismaBonusRepository implements IBonusRepository {
                     count: true
                 },
                 where: {
-                    type: 'plus'
+                    type: 'plus',
+                    user_id: user_id ? user_id : undefined,
                 }
             })
             const min_data = await this.prisma.bonuses.aggregate({
@@ -110,13 +111,11 @@ export class PrismaBonusRepository implements IBonusRepository {
                     count: true
                 },
                 where: {
-                    type: 'minus'
+                    type: 'minus',
+                    user_id: user_id ? user_id : undefined,
                 }
             })
-            console.log('plus: ' + pos_data._sum.count)
-            console.log('minus: ' + min_data._sum.count)
             const result = (pos_data._sum.count || 0) - (min_data._sum.count || 0)
-            console.log('sum: ' + result)
             return result > 0 ? result : 0
         } finally {
             await this.prisma.$disconnect();

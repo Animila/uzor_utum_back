@@ -16,7 +16,6 @@ export class PrismaCategoryRepo implements ICategoryRepository {
                 skip: limit * offset
             })
             const result = data.map(category => CategoryMap.toDomain(category)).filter(category => category != null)
-            console.log(data)
             return {
                 data: result,
                 count: countData

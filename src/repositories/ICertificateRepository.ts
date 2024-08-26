@@ -1,4 +1,5 @@
 import { Certificate } from "../domain/certificate/certificate";
+import {PromoCode} from "../domain/promocode/promocode";
 
 export interface ICertificateRepository {
     save(certificate: Certificate): Promise<Certificate | null>;

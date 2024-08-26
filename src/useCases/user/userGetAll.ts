@@ -20,7 +20,6 @@ export class GetUserAll {
             created_at: Date,
             updated_at?: Date
         }[], count: number}> {
-        console.log(limit, offset)
         const existingUser = await this.userRepository.findAll(limit, offset, search)
         const users = existingUser.data.map(user => {
             return UserMap.toPersistence(user)

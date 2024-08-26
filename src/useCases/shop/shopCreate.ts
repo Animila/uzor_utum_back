@@ -23,7 +23,6 @@ export class CreateShop {
 
     async execute(input: CreateShopInput): Promise<Shop> {
         const {address, latitude, longitude, email, times, phones, title} = input
-        console.log(times)
         const attributes = Times.create(times as ITimes);
         const emailOrError = Email.create(email)
         const phonesOrError = Phones.create(phones)
@@ -49,7 +48,6 @@ export class CreateShop {
             phones: phonesOrError as Phones,
             times: attributes
         })
-        console.log(token)
         await this.shopRepository.save(token)
         return token
     }

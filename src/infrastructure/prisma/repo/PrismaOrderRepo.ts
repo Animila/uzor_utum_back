@@ -57,7 +57,6 @@ export class PrismaOrderRepo implements IOrderRepository {
     async save(data: Order): Promise<Order | null> {
         try {
             const dataPer = OrderMap.toPersistence(data)
-            console.log('RRRRRRRRRRRRRRRRRRRRRRRRRRR ', dataPer)
             const newUser = await this.prisma.orders.upsert({
                 where: {id: dataPer.id},
                 create: {

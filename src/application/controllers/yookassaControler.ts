@@ -9,17 +9,19 @@ import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo"
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 import {scheduleSendEmail} from "../../infrastructure/nodecron/scheduleNotification";
+import {CreateBonus} from "../../useCases/bonus/bonusCreate";
+import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 
 const certRepo = new PrismaCertificateRepo();
 const orderRepo = new PrismaOrderRepo()
+const bonusRepo = new PrismaBonusRepository()
 
 export async function getPaymentStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
+        const getCertificate = new GetByIdCertificate(certRepo)
         const getOrder = new GetByIdOrder(orderRepo)
 
         const data: any = request.body
-        console.log('Вход', data.event)
-        console.log('Дата', data.object)
         if(data.event === "payment.waiting_for_capture") {
             try {
                 if(data.object.metadata.entity_type === "product") {
@@ -43,8 +45,8 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
         }
         if(data.event === "payment.succeeded") {
             const dataObject = data.object.metadata
+            const addBonus = new CreateBonus(bonusRepo)
             if(dataObject.entity_type === "certificate") {
-                const getCertificate = new GetByIdCertificate(certRepo)
                 const cert = await getCertificate.execute({id: dataObject.entity_id})
 
                 scheduleSendEmail(cert.getDeliveryAt(), undefined, async () => {
@@ -58,10 +60,33 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
             }
             if(dataObject.entity_type === "product") {
                 const order = await getOrder.execute({id: dataObject.entity_id})
+                if(order.getCertificateId() !== undefined) {
+                    const cert = await getCertificate.execute({id: order.getCertificateId()!})
+                    cert.props.activated = true
+                    await certRepo.save(cert)
+                }
                 // @ts-ignore
                 order.props.status = OrderStatus.create(OrderStatus.getAvailables().PAIDING)
                 await orderRepo.save(order)
                 const id = order.getId().split('-');
+
+
+                if(order.getUserId() !== undefined) {
+                    await addBonus.execute({
+                        user_id: order.getUserId()!,
+                        created_at: new Date(),
+                        count: order.getUseBonus(),
+                        description: `Оплата заказа №${id[id.length - 1]}`,
+                        type: 'minus'
+                    })
+                    await addBonus.execute({
+                        user_id: order.getUserId()!,
+                        created_at: new Date(),
+                        count: order.getAddBonus(),
+                        description: `Зачисление оплаты за заказ №${id[id.length - 1]}`,
+                        type: 'plus'
+                    })
+                }
 
                 await rabbit.sendEmail({
                     text: `Заказ №${id[id.length - 1]} на сумму ${order.getTotalAmount()} оплачен и скоро будет отправлен`,

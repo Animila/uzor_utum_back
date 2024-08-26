@@ -48,6 +48,38 @@ export class PrismaPromoCodeRepo implements IPromocodeRepository {
         }
     }
 
+    async usedAsPromoCode(id: string, user_id?: string, email?: string, phone?: string): Promise<boolean|PromoCode> {
+        try {
+            const data = await this.prisma.promocodes.findFirst({
+                where: {
+                    id: id,
+                    orders: {
+                        some: {
+                            OR: [
+                                { user_id: user_id }, // Проверяем, был ли использован пользователем
+                                { email: email },     // Проверяем, был ли использован с указанным email
+                                { phone: phone }      // Проверяем, был ли использован с указанным телефоном
+                            ]
+                        }
+                    }
+                },
+                include: {
+                    orders: true // Включаем информацию о связанных заказах
+                }
+            });
+            console.log(data)
+            if(!data) return false
+            // Проверка, если промокод уже использовался
+            const hasUsedPromo = data.orders.some(order => order.promocode_id === id);
+            if (hasUsedPromo) return false
+
+            const res =  PromoCodeMap.toDomain(data);
+            return res ? res : false
+        } finally {
+            await this.prisma.$disconnect();
+        }
+    }
+
     async delete(id: string): Promise<boolean> {
         try {
             await this.prisma.promocodes.delete({ where: { id: id } })

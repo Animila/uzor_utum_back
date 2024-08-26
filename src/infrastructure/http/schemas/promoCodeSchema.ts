@@ -51,6 +51,10 @@ const getPromoCodesSchema = {
         description: 'Получить список всех промокодов. Доступно для модераторов и админов',
         tags: ['PromoCode'],
         security: [{ApiToken: []}],
+        query: {
+            limit: {type: 'string'},
+            offset: {type: 'string'}
+        },
         response: {
             200: {
                 description: 'Успешно получены',
@@ -140,8 +144,9 @@ const checkPromoCodeSchema = {
         description: 'Проверить промокод',
         tags: ['PromoCode'],
         query: {
-            limit: {type: 'string'},
-            offset: {type: 'string'}
+            email: {type: 'string'},
+            phone: {type: 'string'},
+            user_id: {type: 'string'},
         },
         body: {
             code: { type: 'string' },

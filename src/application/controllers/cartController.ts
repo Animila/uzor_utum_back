@@ -79,7 +79,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
 
             const itemPer = ItemCartMap.toPersistence(item)
             itemPer.product = existingProduct ? ProductMap.toPersistence(existingProduct) : undefined
-            itemPer.discount = discountProduct ? DiscountMap.toPersistence(discountProduct) : undefined
+            itemPer.product.discount = discountProduct ? DiscountMap.toPersistence(discountProduct) : undefined
 
             try {
                 const getSize = new GetByIdSize(sizeRepo)
