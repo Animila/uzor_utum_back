@@ -156,7 +156,6 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             success: false,
             message: errors.message
         });
-        return
     }
 
     try {
@@ -171,11 +170,11 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             }))
         }
         // создать платеж
-
+        const idl = order.getId().split('-');
         const resultPay = await initialPayment(
             "product",
             order.getId(),
-            `Оплата заказа №${order.getId()}`,
+            `Оплата заказа №${idl[idl.length - 1]}`,
             order.getId(),
             data.total_amount.toString())
 
