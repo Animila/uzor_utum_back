@@ -50,6 +50,7 @@ export class ProductMap {
         images?: any
         created_at: Date
         updated_at: Date
+        review?: any
     } {
         return {
             id: data.getId(),

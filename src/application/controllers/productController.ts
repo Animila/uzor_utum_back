@@ -180,12 +180,16 @@ export async function getByIdProductController(request: FastifyRequest<ProductRe
         const getDiscount = new GetByProductIdDiscount(discountRepo)
         const productPer = ProductMap.toPersistence(product)
         const getFiles = new GetAllFile(fileRepo)
+        const getReview = new PrismaReviewRepo()
         try {
             const result = await getDiscount.execute({product_id: product.getId()})
             productPer.discount = DiscountMap.toPersistence(result)
         } catch (err) {}
         const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
         productPer.images = dataFile.data
+        const resReview = await getReview.getReviewStats(productPer.id)
+        console.log(resReview)
+        productPer.review = resReview
         reply.status(200).send({
             success: true,
             data: productPer
