@@ -4,7 +4,6 @@ import {swaggerOptions, swaggerUIOptions} from "./config/swaggerOptions";
 import {rabbit } from "./config/SMTPOptions";
 import multipart from '@fastify/multipart'
 import path from "path";
-import fs from "fs";
 import * as util from "node:util";
 import {pipeline} from "node:stream";
 const pump = util.promisify(pipeline)
