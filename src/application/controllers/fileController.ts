@@ -5,8 +5,6 @@ import {FileMap} from "../../mappers/FileMap";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {DeleteFile} from "../../useCases/file/fileDelete";
 import {GetByIdFile} from "../../useCases/file/fileGetById";
-import path from "path";
-import {createWriteStream} from "node:fs";
 
 const repoFile = new PrismaFileRepo()
 export async function createFile(request: FastifyRequest<FileRouting>, reply: FastifyReply) {

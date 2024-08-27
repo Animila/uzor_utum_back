@@ -24,7 +24,7 @@ async function buildApp(options: AppOptions = {}) {
     await fastify.register(multipart, {
         attachFieldsToBody: true,
         limits: {
-            fileSize: 1024 * 1024 * 100,
+            fileSize: 1024 * 1024 * 1024 * 100,
             files: 1,
             fieldNameSize: 100
         }

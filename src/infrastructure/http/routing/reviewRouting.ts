@@ -1,5 +1,9 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
-import {createReviewController, getAllReviewsController} from "../../../application/controllers/reviewController";
+import {
+    createReviewController,
+    deleteReviewController,
+    getAllReviewsController
+} from "../../../application/controllers/reviewController";
 import {createReviewSchema, getAllReviewSchema} from "../schemas/reviewSchemas";
 
 export function registerReviewRouting(fastify: FastifyInstance) {
@@ -18,7 +22,9 @@ export function registerReviewRouting(fastify: FastifyInstance) {
     // fastify.put('/reviews/:id',async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
     // })
     //
-    // fastify.delete('/reviews/:id',  async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
-    // })
+    fastify.delete('/reviews/:id',  async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {
+        await req.jwtVerify()
+        await deleteReviewController(req, res)
+    })
 
 }

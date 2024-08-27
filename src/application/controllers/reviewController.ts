@@ -74,3 +74,20 @@ export async function createReviewController(request: FastifyRequest<ReviewReque
         })
     }
 }
+
+export async function deleteReviewController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
+    try {
+        const {id} = request.params
+        await reviewRepo.delete(id)
+        reply.status(200).send({
+            success: true,
+        });
+    } catch (error: any) {
+        console.log('345678', error.message)
+        const errors = JSON.parse(error.message)
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        })
+    }
+}
