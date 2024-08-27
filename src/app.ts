@@ -21,7 +21,14 @@ declare module 'fastify' {
 async function buildApp(options: AppOptions = {}) {
     await rabbit.connectQueue()
     const fastify = Fastify(options)
-    await fastify.register(multipart, { attachFieldsToBody: true })
+    await fastify.register(multipart, {
+        attachFieldsToBody: true,
+        limits: {
+            fileSize: 1024 * 1024 * 100,
+            files: 1,
+            fieldNameSize: 100
+        }
+    })
     await fastify.register(require("@fastify/swagger"), swaggerOptions)
     await fastify.register(require("@fastify/swagger-ui"), swaggerUIOptions)
     await fastify.register(require('fastify-graceful-shutdown'))

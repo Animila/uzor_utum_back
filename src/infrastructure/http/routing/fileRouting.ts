@@ -3,9 +3,11 @@ import {deleteFileSchema, getFilesSchema, loadFileSchema, updateFileSchema} from
 import {createFile, deleteFile, getFiles, updateFile} from "../../../application/controllers/fileController";
 import {createWriteStream} from "node:fs";
 import path from "path";
+import {hide} from "concurrently/dist/src/defaults";
 
 export function registerFileRouting(fastify: FastifyInstance) {
-    fastify.post('/file/upload', loadFileSchema, async (req: FastifyRequest<FileRouting>, res: FastifyReply) => {
+    //@ts-ignore
+    fastify.post('/file/upload', {schema: {hide: true}}, async (req: FastifyRequest<FileRouting>, res: FastifyReply) => {
         await createFile(req, res)
     });
     fastify.put('/file/:id',updateFileSchema, async (req: FastifyRequest<FileRouting>, res: FastifyReply) => {
