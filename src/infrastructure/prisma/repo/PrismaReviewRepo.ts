@@ -92,4 +92,51 @@ export class PrismaReviewRepo implements IReviewRepository {
             await this.prisma.$disconnect();
         }
     }
+
+    async getReviewStats(productId: string) {
+        try {
+            const allReviewsCount = await this.prisma.reviews.count({
+                where: { product_id: productId },
+            });
+
+            const ratingsCount = await this.prisma.reviews.groupBy({
+                by: ['rating'],
+                where: { product_id: productId },
+                _count: { rating: true },
+            });
+
+            const totalRatingSum = await this.prisma.reviews.aggregate({
+                where: { product_id: productId },
+                _sum: { rating: true },
+            });
+
+            // Организуем количество по рейтингу (1-5)
+            const ratings = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0,
+                5: 0,
+            };
+
+            ratingsCount.forEach((group) => {
+                //@ts-ignore
+                ratings[group.rating] = group._count.rating;
+            });
+
+            // Рассчитываем общий рейтинг (округляем до целого числа)
+            const averageRating = allReviewsCount > 0
+                //@ts-ignore
+                ? Math.round(totalRatingSum._sum.rating / allReviewsCount)
+                : 0;
+
+            return {
+                totalReviews: allReviewsCount,
+                ratings,
+                averageRating,
+            };
+        } finally {
+            await this.prisma.$disconnect();
+        }
+    }
 }

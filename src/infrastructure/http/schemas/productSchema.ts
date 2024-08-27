@@ -133,6 +133,10 @@ const getAllProductSchema = {
                                         type: 'object',
                                         additionalProperties: true
                                     }
+                                },
+                                review: {
+                                    type: 'object',
+                                    additionalProperties: true
                                 }
                             },
                             required: ['id', 'title']
@@ -205,6 +209,10 @@ const getByIdProductSchema = {
                                     type: 'object',
                                     additionalProperties: true
                                 }
+                            },
+                            review: {
+                                type: 'object',
+                                additionalProperties: true
                             }
                         },
                     }

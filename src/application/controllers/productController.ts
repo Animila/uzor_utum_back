@@ -21,6 +21,7 @@ import {GetByIdSize} from "../../useCases/product/size";
 import {GetByIdDecorate} from "../../useCases/product/decorate";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {PrismaReviewRepo} from "../../infrastructure/prisma/repo/PrismaReviewRepo";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
@@ -134,11 +135,15 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             limit: parseInt(limit),
             offset: parseInt(offset)
         });
+        const getReview = new PrismaReviewRepo()
 
         const productsWithDiscount = await Promise.all(products.data.map(async (product) => {
             try {
                 const discountResult = await getDiscount.execute({ product_id: product.id });
                 product.discount = DiscountMap.toPersistence(discountResult);
+                const resReview = await getReview.getReviewStats(product.id)
+                console.log(resReview)
+                product.review = resReview
             } catch (error) {
                 console.log(error);
             }

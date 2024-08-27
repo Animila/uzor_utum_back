@@ -50,6 +50,7 @@ export class GetAllProducts {
             material_id: string,
             created_at: Date,
             updated_at: Date,
+            review?: any
         }[],
         count: number
     }> {
