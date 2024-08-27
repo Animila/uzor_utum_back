@@ -11,6 +11,8 @@ import {ProductMap} from "../../mappers/ProductMap";
 import {GetByIdOrder} from "../../useCases/order/orderGetById";
 import {PrismaOrderRepo} from "../../infrastructure/prisma/repo/PrismaOrderRepo";
 import {OrderMap} from "../../mappers/OrderMap";
+import {Review} from "../../domain/review/review";
+import {createFile} from "./fileController";
 
 const reviewRepo = new PrismaReviewRepo()
 const fileRepo = new PrismaFileRepo()
@@ -64,6 +66,48 @@ export async function createReviewController(request: FastifyRequest<ReviewReque
         reply.status(200).send({
             success: true,
             data: ReviewMap.toPersistence(all)
+        });
+    } catch (error: any) {
+        console.log('345678', error.message)
+        const errors = JSON.parse(error.message)
+        reply.status(errors.status).send({
+            success: false,
+            message: errors.message
+        })
+    }
+}
+
+export async function editReviewController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
+    try {
+        const {id} = request.params
+        const {product_id, name, rating, text, order_id, url} = request.body
+
+        const getCert = new PrismaReviewRepo()
+
+        const data = await getCert.findById(id)
+        if(!data) {
+            throw new Error(JSON.stringify({
+                status: 404,
+                message: 'Отзыв не найден'
+            }))
+        }
+
+        const newReview = new Review({
+            url: url || data.getUrl(),
+            name: name || data.getName(),
+            rating: rating || data.getRating(),
+            text: text || data.getText(),
+            createdAt: data.getCreatedAt(),
+            publishedAt: new Date(),
+            productId: product_id || data.getProductId(),
+            orderId: order_id || data.getOrderId(),
+        }, id)
+
+        await getCert.save(newReview)
+
+        reply.status(200).send({
+            success: true,
+            data: ReviewMap.toPersistence(newReview)
         });
     } catch (error: any) {
         console.log('345678', error.message)

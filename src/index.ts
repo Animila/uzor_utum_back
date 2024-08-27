@@ -4,7 +4,7 @@ import {rabbit} from "./config/SMTPOptions";
 
 const options: AppOptions = {
     logger: pino({level: 'info'}),
-    bodyLimit: 1024 * 1024 * 100
+    bodyLimit: 1024 * 1024 * 1024 * 100
 }
 
 const start = async () => {
