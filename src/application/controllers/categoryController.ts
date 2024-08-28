@@ -18,23 +18,54 @@ const fileRepo = new PrismaFileRepo();
 export async function getAllCategoryController(request: FastifyRequest<CategoryRequest>, reply: FastifyReply) {
     try {
         const data = request.query as CategoryRequest['Query']
-        const getAllCategory = new GetAllCategory(categoryRepo)
-        const categories =  await getAllCategory.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
-        const getFiles = new GetAllFile(fileRepo)
-        for (const category of categories.data) {
-            const res = await getFiles.execute({limit: 10, offset: 0, entity_id: category.id, entity_type: 'category'})
-            category.images = res.data
+
+        const cacheKey = `categories:${data.limit}:${data.offset}`;
+        let categoriesRes: {
+            data: {
+                id: string,
+                title: string,
+                images?: any
+            }[],
+            pagination: any
+        }
+
+        //@ts-ignore
+        let categoriesCache = await redis.get(cacheKey);
+
+        if (!categoriesCache) {
+            const getAllCategory = new GetAllCategory(categoryRepo)
+            const categories = await getAllCategory.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
+            const getFiles = new GetAllFile(fileRepo)
+            for (const category of categories.data) {
+                const res = await getFiles.execute({
+                    limit: 10,
+                    offset: 0,
+                    entity_id: category.id,
+                    entity_type: 'category'
+                })
+                category.images = res.data
+            }
+
+            categoriesRes = {
+                data: categories.data,
+                pagination: {
+                    totalItems: categories.count,
+                    totalPages: Math.ceil(categories.count / (data.limit ? parseInt(data.limit) : 10)),
+                    currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                    limit: data.limit ? parseInt(data.limit) : 10
+                }
+
+            }
+
+            await redis.set(cacheKey, JSON.stringify(categoriesRes), 'EX', 3600); // Время жизни кэша в секундах
+        } else {
+            categoriesRes = JSON.parse(categoriesCache);
         }
 
         reply.status(200).send({
             success: true,
-            data: categories.data,
-            pagination: {
-                totalItems: categories.count,
-                totalPages: Math.ceil(categories.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
+            data: categoriesRes.data,
+            pagination: categoriesRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -49,15 +80,27 @@ export async function getAllCategoryController(request: FastifyRequest<CategoryR
 export async function getByIdCategoryController(request: FastifyRequest<CategoryRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getCategory = new GetByIdCategory(categoryRepo)
-        const category =  await getCategory.execute({id: id});
-        const categoryPer = CategoryMap.toPersistence(category)
-        const getFiles = new GetAllFile(fileRepo)
-        const data = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
-        categoryPer.images = data.data
+        const cacheKey = `category:${id}`;
+        let categoryRes;
+
+        //@ts-ignore
+        let categoryCache = await redis.get(cacheKey);
+
+        if (!categoryCache) {
+            const getCategory = new GetByIdCategory(categoryRepo)
+            const category = await getCategory.execute({id: id});
+            const categoryPer = CategoryMap.toPersistence(category)
+            const getFiles = new GetAllFile(fileRepo)
+            const data = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
+            categoryPer.images = data.data
+
+            categoryRes = categoryPer
+        } else {
+            categoryRes = JSON.parse(categoryCache)
+        }
         reply.status(200).send({
             success: true,
-            data: categoryPer
+            data: categoryRes
         });
     } catch (error: any) {
         console.log('345678', error.message)
