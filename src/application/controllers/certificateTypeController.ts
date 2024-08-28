@@ -14,17 +14,36 @@ const certRepo = new PrismaCertificateTypeRepo();
 export async function getAllCertificateTypeController(request: FastifyRequest<CertificateTypeRequest>, reply: FastifyReply) {
     try {
         const {offset, limit} = request.query as CertificateTypeRequest['Query']
-        const getAllCertificateType = new GetAllCertificateType(certRepo)
-        const results =  await getAllCertificateType.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0});
+        const cacheKey = `certType:${limit}:${offset}`;
+        let certTypeRes;
+
+        //@ts-ignore
+        let certTypeCache = await redis.get(cacheKey);
+
+        if (!certTypeCache) {
+            const getAllCertificateType = new GetAllCertificateType(certRepo)
+            const results = await getAllCertificateType.execute({
+                limit: !!limit ? parseInt(limit) : 10,
+                offset: !!offset ? parseInt(offset) : 0
+            });
+            certTypeRes = {
+                data: results.data,
+                pagination: {
+                    totalItems: results.count,
+                    totalPages: Math.ceil(results.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(certTypeRes), 'EX', 3600);
+        }  else {
+            certTypeRes = JSON.parse(certTypeCache)
+        }
+
         reply.status(200).send({
             success: true,
-            data: results.data,
-            pagination: {
-                totalItems: results.count,
-                totalPages: Math.ceil(results.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: certTypeRes.data,
+            pagination: certTypeRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -39,12 +58,24 @@ export async function getAllCertificateTypeController(request: FastifyRequest<Ce
 export async function getByIdCertificateTypeController(request: FastifyRequest<CertificateTypeRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getCertificateType = new GetByIdCertificateType(certRepo)
-        const data =  await getCertificateType.execute({id: id});
+        const cacheKey = `certType:${id}`;
+        let certTypeRes;
 
+        //@ts-ignore
+        let certTypeCache = await redis.get(cacheKey);
+
+        if (!certTypeCache) {
+            const getCertificateType = new GetByIdCertificateType(certRepo)
+            const data = await getCertificateType.execute({id: id});
+            certTypeRes = CertificateTypeMap.toPersistence(data)
+            await redis.set(cacheKey, JSON.stringify(certTypeRes), 'EX', 3600);
+
+        } else {
+            certTypeRes = JSON.parse(certTypeCache)
+        }
         reply.status(200).send({
             success: true,
-            data: CertificateTypeMap.toPersistence(data)
+            data: certTypeRes
         });
     } catch (error: any) {
         console.log('345678', error.message)

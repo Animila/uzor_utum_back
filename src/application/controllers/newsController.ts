@@ -66,25 +66,44 @@ export async function addViewNewsController(request: FastifyRequest<NewsRequest>
 export async function getAllNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     try {
         const {old, popular, journalId, limit, offset, q} = request.query as NewsRequest['Query']
-        const getAllData = new GetAllNews(repo)
-        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0,limit: !!limit ? parseInt(limit) : 10, journal_id: journalId, old: old === 'true', popular: popular === 'true', search: q});
+        const cacheKey = `news:${old}:${popular}:${journalId}:${limit}:${offset}`;
+        let newsRes: {
+            data: any,
+            pagination: any
+        }
 
-        const getFiles = new GetAllFile(fileRepo)
+        //@ts-ignore
+        let newsCache = await redis.get(cacheKey);
 
-        await Promise.all(resultAll.data.map(async (dataPer) => {
-            const data = await getFiles.execute({limit: 10, offset: 0, entity_type: 'news', entity_id: dataPer.id});
-            dataPer.images = data.data
-        }))
+        if (!newsCache) {
+            const getAllData = new GetAllNews(repo)
+            const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0,limit: !!limit ? parseInt(limit) : 10, journal_id: journalId, old: old === 'true', popular: popular === 'true', search: q});
+
+            const getFiles = new GetAllFile(fileRepo)
+
+            await Promise.all(resultAll.data.map(async (dataPer) => {
+                const data = await getFiles.execute({limit: 10, offset: 0, entity_type: 'news', entity_id: dataPer.id});
+                dataPer.images = data.data
+            }))
+            newsRes = {
+                data: resultAll.data,
+                pagination: {
+                    totalItems: resultAll.count,
+                    totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(newsRes), 'EX', 3600);
+        } else {
+            newsRes = JSON.parse(newsCache)
+        }
 
         reply.status(200).send({
             success: true,
-            data: resultAll.data,
-            pagination: {
-                totalItems: resultAll.count,
-                totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: newsRes.data,
+            pagination: newsRes.pagination
+
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -99,13 +118,24 @@ export async function getAllNewsController(request: FastifyRequest<NewsRequest>,
 export async function getByIdNewsController(request: FastifyRequest<NewsRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getData = new GetByIdNews(repo, fileRepo);
-        const data = await getData.execute({ id });
+        const cacheKey = `news:${id}`;
+        let newsRes;
 
-        const dataPer = NewsMap.toPersistence(data)
+        //@ts-ignore
+        let newsCache = await redis.get(cacheKey);
+
+        if (!newsCache) {
+            const getData = new GetByIdNews(repo, fileRepo);
+            const data = await getData.execute({id});
+            newsRes = NewsMap.toPersistence(data)
+            await redis.set(cacheKey, JSON.stringify(newsRes), 'EX', 3600);
+        } else {
+            newsRes = JSON.parse(newsCache)
+        }
+
         reply.status(200).send({
             success: true,
-            data: dataPer
+            data: newsRes
         });
     } catch (error: any) {
         console.log('Error:', error.message);

@@ -6,23 +6,40 @@ import {CreateShop} from "../../useCases/shop/shopCreate";
 import {UpdateShop} from "../../useCases/shop/shopUpdate";
 import {DeleteShop} from "../../useCases/shop/shopDelete";
 import {GetAllShop} from "../../useCases/shop/shopGetAll";
+import {redis} from "../../infrastructure/redis/redis";
 
 const shopRepo = new PrismaShopRepo();
 
 export async function getAllShopController(request: FastifyRequest<ShopRequest>, reply: FastifyReply) {
     try {
         const {limit, offset, q} = request.query as ShopRequest['Query']
-        const getAllShop = new GetAllShop(shopRepo)
-        const shops =  await getAllShop.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, q);
+        const cacheKey = `shops:${limit}:${offset}`;
+        let shopsRes;
+
+        //@ts-ignore
+        let shopsCache = await redis.get(cacheKey);
+
+        if (!shopsCache) {
+            const getAllShop = new GetAllShop(shopRepo)
+            const shops = await getAllShop.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, q);
+            shopsRes = {
+                data: shops.data,
+                pagination: {
+                    totalItems: shops.count,
+                    totalPages: Math.ceil(shops.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(shopsRes), 'EX', 3600);
+
+        } else {
+            shopsRes = JSON.parse(shopsCache)
+        }
         reply.status(200).send({
             success: true,
-            data: shops.data,
-            pagination: {
-                totalItems: shops.count,
-                totalPages: Math.ceil(shops.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: shopsRes.data,
+            pagination: shopsRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -37,12 +54,24 @@ export async function getAllShopController(request: FastifyRequest<ShopRequest>,
 export async function getByIdShopController(request: FastifyRequest<ShopRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getShop = new GetByIdShop(shopRepo)
-        const shop =  await getShop.execute({id: id});
+        const cacheKey = `shop:${id}`;
+        let shopRes;
+
+        //@ts-ignore
+        let shopCache = await redis.get(cacheKey);
+
+        if (!shopCache) {
+            const getShop = new GetByIdShop(shopRepo)
+            const shop =  await getShop.execute({id: id});
+            shopRes = ShopMap.toPersistence(shop)
+            await redis.set(cacheKey, JSON.stringify(shopRes), 'EX', 3600);
+        } else {
+            shopRes = JSON.parse(shopCache)
+        }
 
         reply.status(200).send({
             success: true,
-            data: ShopMap.toPersistence(shop)
+            data: shopRes
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -70,7 +99,7 @@ export async function createShopController(request: FastifyRequest<ShopRequest>,
             times: data.times
         });
 
-
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -103,6 +132,7 @@ export async function updateShopController(request: FastifyRequest<ShopRequest>,
             times: data.times
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: ShopMap.toPersistence(shop)
@@ -123,6 +153,7 @@ export async function deleteShopController(request: FastifyRequest<ShopRequest>,
         const delShop = new DeleteShop(shopRepo)
         const data = await delShop.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

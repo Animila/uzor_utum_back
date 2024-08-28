@@ -50,6 +50,7 @@ export async function getAllMaterialController(request: FastifyRequest<MaterialR
                     limit: data.limit ? parseInt(data.limit) : 10
                 }
             }
+            await redis.set(cacheKey, JSON.stringify(materialsRes), 'EX', 3600);
         } else {
             materialsRes = JSON.parse(materialsCache)
         }

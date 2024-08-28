@@ -18,22 +18,38 @@ const fileRepo = new PrismaFileRepo();
 export async function getAllProbController(request: FastifyRequest<ProbRequest>, reply: FastifyReply) {
     try {
         const data = request.query as ProbRequest['Query']
-        const getAllProb = new GetAllProb(materialRepo)
-        const probs =  await getAllProb.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
-        const getFiles = new GetAllFile(fileRepo)
-        for(const proba of probs.data) {
-            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: proba.id, entity_type: 'proba'})
-            proba.images = data.data
+        const cacheKey = `probs:${data.limit}:${data.offset}`;
+        let probsRes;
+
+        //@ts-ignore
+        let probsCache = await redis.get(cacheKey);
+
+        if (!probsCache) {
+            const getAllProb = new GetAllProb(materialRepo)
+            const probs =  await getAllProb.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
+            const getFiles = new GetAllFile(fileRepo)
+            for(const proba of probs.data) {
+                const data = await getFiles.execute({limit: 10, offset: 0, entity_id: proba.id, entity_type: 'proba'})
+                proba.images = data.data
+            }
+            probsRes = {
+                data: probs.data,
+                pagination: {
+                    totalItems: probs.count,
+                    totalPages: Math.ceil(probs.count / (data.limit ? parseInt(data.limit) : 10)),
+                    currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                    limit: data.limit ? parseInt(data.limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(probsRes), 'EX', 3600);
+        } else {
+            probsRes = JSON.parse(probsCache)
         }
+
         reply.status(200).send({
             success: true,
-            data: probs.data,
-            pagination: {
-                totalItems: probs.count,
-                totalPages: Math.ceil(probs.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
+            data: probsRes.data,
+            pagination: probsRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -48,15 +64,27 @@ export async function getAllProbController(request: FastifyRequest<ProbRequest>,
 export async function getByIdProbController(request: FastifyRequest<ProbRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getProb = new GetByIdProb(materialRepo)
-        const prob =  await getProb.execute({id: id});
-        const probPer = ProbMap.toPersistence(prob)
-        const getFiles = new GetAllFile(fileRepo)
-        const dataFile = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
-        probPer.images = dataFile.data
+        const cacheKey = `prob:${id}`;
+        let probRes;
+
+        //@ts-ignore
+        let probCache = await redis.get(cacheKey);
+
+        if (!probCache) {
+            const getProb = new GetByIdProb(materialRepo)
+            const prob = await getProb.execute({id: id});
+            const probPer = ProbMap.toPersistence(prob)
+            const getFiles = new GetAllFile(fileRepo)
+            const dataFile = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
+            probPer.images = dataFile.data
+            probRes = probPer
+            await redis.set(cacheKey, JSON.stringify(probPer), 'EX', 3600);
+        } else {
+          probRes = JSON.parse(probCache)
+        }
         reply.status(200).send({
             success: true,
-            data: probPer
+            data: probRes
         });
     } catch (error: any) {
         console.log('345678', error.message)

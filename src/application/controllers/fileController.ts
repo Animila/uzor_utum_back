@@ -62,17 +62,37 @@ export async function getFiles(request: FastifyRequest<FileRouting>, reply: Fast
     try {
         const data = request.query as FileRouting['Query']
         const {entity_id, entity_type} = request.params
-        const loadFile = new GetAllFile(repoFile)
-        const result = await loadFile.execute({entity_type, entity_id, offset: data.offset ? parseInt(data.offset) : undefined, limit: data.limit ? parseInt(data.limit) : undefined})
+        const cacheKey = `files:${entity_id}:${entity_type};${data.limit}:${data.offset}`;
+        let filesRes;
+
+        //@ts-ignore
+        let filesCache = await redis.get(cacheKey);
+
+        if (!filesCache) {
+            const loadFile = new GetAllFile(repoFile)
+            const result = await loadFile.execute({
+                entity_type,
+                entity_id,
+                offset: data.offset ? parseInt(data.offset) : undefined,
+                limit: data.limit ? parseInt(data.limit) : undefined
+            })
+            filesRes = {
+                data: result.data,
+                pagination: {
+                    totalItems: result.count,
+                    totalPages: Math.ceil(result.count / (data.limit ? parseInt(data.limit) : 10)),
+                    currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                    limit: data.limit ? parseInt(data.limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(filesRes), 'EX', 3600);
+        } else {
+            filesRes = JSON.parse(filesCache)
+        }
         reply.status(200).send({
             success: true,
-            data: result.data,
-            pagination: {
-                totalItems: result.count,
-                totalPages: Math.ceil(result.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
+            data: filesRes.data,
+            pagination: filesRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)

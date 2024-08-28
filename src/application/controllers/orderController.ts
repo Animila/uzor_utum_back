@@ -258,40 +258,66 @@ export async function getAllOrderController(request: FastifyRequest<OrderRequest
             q
         } = request.query as OrderRequest['Query'];
 
-        const getAllOrder = new GetAllOrder(orderRepo);
+        const cacheKey = `orders:${limit}:${offset};${user_id}:${token}:${status}:${shop_id}:${send_type_id}:${updated_at}:${created_at}`;
+        let ordersRes;
 
-        const createdAt = created_at ? new Date(created_at) : undefined;
-        const updatedAt = updated_at ? new Date(updated_at) : undefined;
+        //@ts-ignore
+        let ordersCache = await redis.get(cacheKey);
 
-        if(createdAt && createdAt.toDateString() === "Invalid Date" || updatedAt && updatedAt.toDateString() === "Invalid Date") {
-            throw new Error(JSON.stringify({
-                status: 400,
-                message: [
-                    (createdAt && createdAt.toDateString() === "Invalid Date") && {
-                        type: 'created_at',
-                        message: 'Нет created_at'
-                    },
-                    (updatedAt && updatedAt.toDateString() === "Invalid Date") && {
-                        type: 'updated_at',
-                        message: 'Нет updated_at'
-                    }
-                ]
-            }))
+        if (!ordersCache) {
+
+            const getAllOrder = new GetAllOrder(orderRepo);
+
+            const createdAt = created_at ? new Date(created_at) : undefined;
+            const updatedAt = updated_at ? new Date(updated_at) : undefined;
+
+            if (createdAt && createdAt.toDateString() === "Invalid Date" || updatedAt && updatedAt.toDateString() === "Invalid Date") {
+                throw new Error(JSON.stringify({
+                    status: 400,
+                    message: [
+                        (createdAt && createdAt.toDateString() === "Invalid Date") && {
+                            type: 'created_at',
+                            message: 'Нет created_at'
+                        },
+                        (updatedAt && updatedAt.toDateString() === "Invalid Date") && {
+                            type: 'updated_at',
+                            message: 'Нет updated_at'
+                        }
+                    ]
+                }))
+            }
+
+            const products = await getAllOrder.execute({
+                limit: !!limit ? parseInt(limit) : 10,
+                offset: !!offset ? parseInt(offset) : 0,
+                user_id: user_id,
+                token: token,
+                status: status,
+                send_type_id: send_type_id,
+                shop_id: shop_id,
+                search: q,
+                created_at: createdAt,
+                updated_at: updatedAt
+            });
+
+            const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
+            ordersRes = {
+                data: filterOrder,
+                pagination: {
+                    totalItems: products.count,
+                    totalPages: Math.ceil(products.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(ordersRes), 'EX', 3600);
+        } else {
+            ordersRes = JSON.parse(ordersCache)
         }
-
-        const products = await getAllOrder.execute({limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0, user_id: user_id, token: token, status: status, send_type_id: send_type_id, shop_id: shop_id, search: q, created_at: createdAt, updated_at: updatedAt});
-
-        const filterOrder = products.data.map(item => OrderMap.toPersistence(item)).filter(item => item != null)
-
         reply.status(200).send({
             success: true,
-            data: filterOrder,
-            pagination: {
-                totalItems: products.count,
-                totalPages: Math.ceil(products.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: ordersRes.data,
+            pagination: ordersRes.pagination
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -306,66 +332,74 @@ export async function getAllOrderController(request: FastifyRequest<OrderRequest
 export async function getByIdOrderController(request: FastifyRequest<OrderRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getOrder = new GetByIdOrder(orderRepo);
-        const product = await getOrder.execute({ id });
+        const cacheKey = `order:${id}`;
+        let orderRes;
 
-        const getUser = new GetUserById(userRep)
-        const getSendType = new GetByIdSendType(sendTypeRepo)
-        const getReceiver = new GetByIdReceiver(receiverRepo)
-        const getShop = new GetByIdShop(shopRepo)
-        const getCert = new GetByIdCertificate(certRepo)
-        const getPromo = new GetByIdPromoCode(promoRepo)
-        const getCertType = new GetByIdCertificateType(certTypeRepo)
+        //@ts-ignore
+        let orderCache = await redis.get(cacheKey);
 
-        const item = OrderMap.toPersistence(product)
-        if(item.user_id !== undefined) {
-            const result = await getUser.execute({user_id: item.user_id})
-            item.user_data = UserMap.toPersistence(result)
-        }
+        if (!orderCache) {
+            const getOrder = new GetByIdOrder(orderRepo);
+            const product = await getOrder.execute({id});
 
-        if(item.shop_id !== undefined) {
-            const result = await getShop.execute({id: item.shop_id})
-            item.shop_data = ShopMap.toPersistence(result)
-        }
+            const getUser = new GetUserById(userRep)
+            const getSendType = new GetByIdSendType(sendTypeRepo)
+            const getReceiver = new GetByIdReceiver(receiverRepo)
+            const getShop = new GetByIdShop(shopRepo)
+            const getCert = new GetByIdCertificate(certRepo)
+            const getPromo = new GetByIdPromoCode(promoRepo)
+            const getCertType = new GetByIdCertificateType(certTypeRepo)
 
-        if(item.certificate_id !== undefined) {
-            const result = await getCert.execute({id: item.certificate_id})
-            const res = await getCertType.execute({id: result.getCertificateTypeId()})
-            item.certificate_data = CertificateMap.toPersistence(result)
-            item.certificate_data.type = CertificateTypeMap.toPersistence(res)
-        }
-
-        if(item.promocode_id !== undefined) {
-            const promo = await getPromo.execute({id: item.promocode_id})
-            if(promo instanceof Boolean || !promo || !(promo instanceof PromoCode)) {
-                throw new Error(JSON.stringify({
-                    status: 400,
-                    message: [
-                        {
-                            type: 'promocode_id',
-                            message: 'Промокод уже использовался данным пользователем'
-                        }
-                    ]
-                }))
+            const item = OrderMap.toPersistence(product)
+            if (item.user_id !== undefined) {
+                const result = await getUser.execute({user_id: item.user_id})
+                item.user_data = UserMap.toPersistence(result)
             }
-            item.promocode_data = PromoCodeMap.toPersistence(promo)
+
+            if (item.shop_id !== undefined) {
+                const result = await getShop.execute({id: item.shop_id})
+                item.shop_data = ShopMap.toPersistence(result)
+            }
+
+            if (item.certificate_id !== undefined) {
+                const result = await getCert.execute({id: item.certificate_id})
+                const res = await getCertType.execute({id: result.getCertificateTypeId()})
+                item.certificate_data = CertificateMap.toPersistence(result)
+                item.certificate_data.type = CertificateTypeMap.toPersistence(res)
+            }
+
+            if (item.promocode_id !== undefined) {
+                const promo = await getPromo.execute({id: item.promocode_id})
+                if (promo instanceof Boolean || !promo || !(promo instanceof PromoCode)) {
+                    throw new Error(JSON.stringify({
+                        status: 400,
+                        message: [
+                            {
+                                type: 'promocode_id',
+                                message: 'Промокод уже использовался данным пользователем'
+                            }
+                        ]
+                    }))
+                }
+                item.promocode_data = PromoCodeMap.toPersistence(promo)
+            }
+
+            const resultST = await getSendType.execute({id: item.send_type_id})
+            item.send_type_data = SendTypeMap.toPersistence(resultST)
+
+            const resultR = await getReceiver.execute({id: item.receiver_id})
+            item.receiver_data = ReceiverMap.toPersistence(resultR)
+
+            const data = await getDataPayment(item.payment_id!)
+            item.payment_data = data.data
+            orderRes = item
+            await redis.set(cacheKey, JSON.stringify(orderRes), 'EX', 3600);
+        } else {
+            orderRes = JSON.parse(orderCache)
         }
-
-        const resultST = await getSendType.execute({id: item.send_type_id})
-        item.send_type_data = SendTypeMap.toPersistence(resultST)
-
-        const resultR = await getReceiver.execute({id: item.receiver_id})
-        item.receiver_data = ReceiverMap.toPersistence(resultR)
-
-        const data = await getDataPayment(item.payment_id!)
-        console.log(data.success)
-        item.payment_data = data.data
-        console.log(item.payment_data)
-
-        console.log(item)
         reply.status(200).send({
             success: true,
-            data: item
+            data: orderRes
         });
     } catch (error: any) {
         console.log('Error:', error.message);

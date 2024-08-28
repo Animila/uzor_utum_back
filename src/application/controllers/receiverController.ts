@@ -8,23 +8,40 @@ import {
     GetByIdReceiver,
     UpdateReceiver
 } from "../../useCases/order/receiver";
+import {redis} from "../../infrastructure/redis/redis";
 
 const receiverRepo = new PrismaReceiverRepo();
 
 export async function getAllReceiverController(request: FastifyRequest<ReceiverRequest>, reply: FastifyReply) {
     try {
         const {token, limit, offset} = request.query as ReceiverRequest['Query']
-        const getAllReceiver = new GetAllReceiver(receiverRepo)
-        const receivers =  await getAllReceiver.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, token);
+        const cacheKey = `receivers:${limit}:${offset}`;
+        let receiverRes;
+
+        //@ts-ignore
+        let receiverCache = await redis.get(cacheKey);
+
+        if (!receiverCache) {
+            const getAllReceiver = new GetAllReceiver(receiverRepo)
+            const receivers = await getAllReceiver.execute(!!limit ? parseInt(limit) : 10, !!offset ? parseInt(offset) : 0, token);
+            receiverRes = {
+                data: receivers.data,
+                pagination: {
+                    totalItems: receivers.count,
+                    totalPages: Math.ceil(receivers.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(receiverCache), 'EX', 3600);
+        } else {
+            receiverRes = JSON.parse(receiverCache)
+        }
+
         reply.status(200).send({
             success: true,
-            data: receivers.data,
-            pagination: {
-                totalItems: receivers.count,
-                totalPages: Math.ceil(receivers.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: receiverRes.data,
+            pagination: receiverRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -39,12 +56,23 @@ export async function getAllReceiverController(request: FastifyRequest<ReceiverR
 export async function getByIdReceiverController(request: FastifyRequest<ReceiverRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getReceiver = new GetByIdReceiver(receiverRepo)
-        const receiver =  await getReceiver.execute({id: id});
+        const cacheKey = `receiver:${id}`;
+        let receiverRes;
 
+        //@ts-ignore
+        let receiverCache = await redis.get(cacheKey);
+
+        if (!receiverCache) {
+            const getReceiver = new GetByIdReceiver(receiverRepo)
+            const receiver =  await getReceiver.execute({id: id});
+            receiverRes = ReceiverMap.toPersistence(receiver)
+            await redis.set(cacheKey, JSON.stringify(receiverRes), 'EX', 3600);
+        }  else {
+            receiverRes = JSON.parse(receiverCache)
+        }
         reply.status(200).send({
             success: true,
-            data: ReceiverMap.toPersistence(receiver)
+            data: receiverRes
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -68,6 +96,7 @@ export async function createReceiverController(request: FastifyRequest<ReceiverR
             full_name: data.full_name
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -95,7 +124,7 @@ export async function updateReceiverController(request: FastifyRequest<ReceiverR
             full_name: data.full_name,
             phone: data.phone
         });
-
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: ReceiverMap.toPersistence(receiver)
@@ -115,7 +144,7 @@ export async function deleteReceiverController(request: FastifyRequest<ReceiverR
         const {id} = request.params
         const delReceiver = new DeleteReceiver(receiverRepo)
         const data = await delReceiver.execute({id: id})
-
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
