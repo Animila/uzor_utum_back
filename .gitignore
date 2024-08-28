@@ -6,3 +6,4 @@ rmq
 .env
 nginx
 storage/*/
+redis
