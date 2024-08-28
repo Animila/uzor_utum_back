@@ -49,6 +49,9 @@ export async function getAllController(request: FastifyRequest<UserRequest>, rep
 export async function getByIdController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
         const {user_id} = request.params
+
+        // @ts-ignore
+        if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const getUser = new GetUserById(userRepo)
         const getReview = new GetAllReview(reviewRepo)
 
@@ -80,8 +83,14 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
         const data = request.body || {};
         if(data.role) {
             // @ts-ignore
-            if(request.user.data.role != Roles.admin) return res.status(403).send('Только админам')
+            if(request.user.data.role != Roles.admin) return reply.status(403).send('Not authorized')
         }
+        //@ts-ignore
+        if(request.user.data.role != Roles.admin) {
+            //@ts-ignore
+            if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
+        }
+
         const updateUser = new UpdateUser(userRepo)
         const user = await updateUser.execute({
             id: user_id,
@@ -114,9 +123,10 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
 export async function deleteController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
         const {user_id} = request.params
+        //@ts-ignore
+        if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const delUser = new DeleteUserById(userRepo)
         const data = await delUser.execute({user_id: user_id})
-
         reply.status(200).send({
             success: true,
             data: {

@@ -15,19 +15,20 @@ import {
 
 export function registerBonusRouting(fastify: FastifyInstance) {
     fastify.get('/bonuses', getBonusesSchema, async (req: FastifyRequest<BonusRequest>, res: FastifyReply) => {
-        // await req.jwtVerify()
-        // // @ts-ignore
-        // if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
+        await req.jwtVerify()
+        // @ts-ignore
+        if(req.user.data.role != Roles.admin) return res.status(403).send('Not authorized')
         await getAllBonusController(req, res)
     });
 
     fastify.get('/bonuses/user/sum/:user_id', getUserSumBonusesSchema, async (req: FastifyRequest<BonusRequest>, res: FastifyReply) => {
+        await req.jwtVerify()
         // бонусы юзера
         await getByUserSumBonusController(req, res)
     });
 
     fastify.get('/bonuses/user/:user_id', getUserBonusesSchema, async (req: FastifyRequest<BonusRequest>, res: FastifyReply) => {
-        // бонусы юзера
+        await req.jwtVerify()
         await getBonusesUserController(req, res)
     });
 

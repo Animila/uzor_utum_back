@@ -5,6 +5,7 @@ import {
     getAllReviewsController
 } from "../../../application/controllers/reviewController";
 import {createReviewSchema, getAllReviewSchema} from "../schemas/reviewSchemas";
+import {Roles} from "../../../domain/user/valueObjects/role";
 
 export function registerReviewRouting(fastify: FastifyInstance) {
     fastify.get('/reviews', getAllReviewSchema, async (req: FastifyRequest<ReviewRequest>, res: FastifyReply) => {

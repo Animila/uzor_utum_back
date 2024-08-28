@@ -40,6 +40,8 @@ export async function createBonusController(request: FastifyRequest<BonusRequest
 export async function getAllBonusController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     try {
         const {limit = "10", offset = "0", old = false, user_id } = request.query as BonusRequest["Query"]
+        //@ts-ignore
+        if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const getData = new GetAllBonus(bonusRepo)
         const allData = await getData.execute({limit: parseInt(limit), offset: parseInt(offset), old: old,  user_id: user_id})
 
@@ -97,6 +99,8 @@ export async function getBonusesUserController(request: FastifyRequest<BonusRequ
     try {
         const { user_id } = request.params
         const {limit = "10", offset = "0" } = request.query as BonusRequest["Query"]
+        //@ts-ignore
+        if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const getData = new GetAllBonus(bonusRepo)
         const allData = await getData.execute({user_id, limit: !!limit ? parseInt(limit) : 10, offset: !!offset ? parseInt(offset) : 0})
 
