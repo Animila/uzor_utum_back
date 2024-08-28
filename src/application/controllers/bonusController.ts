@@ -7,6 +7,7 @@ import {GetAllBonus} from "../../useCases/bonus/bonusGetAll";
 import {UpdateBonus} from "../../useCases/bonus/bonusUpdate";
 import {GetByIdBonus} from "../../useCases/bonus/bonusGetId";
 import {DeleteBonus} from "../../useCases/bonus/bonusDelete";
+import {redis} from "../../infrastructure/redis/redis";
 
 const bonusRepo = new PrismaBonusRepository()
 
@@ -21,6 +22,7 @@ export async function createBonusController(request: FastifyRequest<BonusRequest
             created_at: data.created_at,
             user_id: data.user_id,
         });
+        await redis.flushdb()
         reply.status(201).send({
             success: true,
             data: BonusMap.toPersistence(result)
@@ -149,11 +151,13 @@ export async function updateBonusController(request: FastifyRequest<BonusRequest
             count: data.count,
             user_id: data.user_id,
         });
+        await redis.flushdb()
 
         reply.status(200).send({
             success: true,
             data: BonusMap.toPersistence(result)
         });
+
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -169,6 +173,7 @@ export async function deleteBonusController(request: FastifyRequest<BonusRequest
         const { id } = request.params;
         const delData = new DeleteBonus(bonusRepo);
         const data = await delData.execute({ id });
+        await redis.flushdb()
 
         reply.status(200).send({
             success: true,

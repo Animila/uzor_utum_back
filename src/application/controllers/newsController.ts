@@ -10,6 +10,7 @@ import {AddViewNews} from "../../useCases/news/newsAddView";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {News} from "../../domain/news/news";
+import {redis} from "../../infrastructure/redis/redis";
 
 const repo = new PrismaNewsRepo()
 const fileRepo = new PrismaFileRepo();
@@ -26,6 +27,7 @@ export async function createNewsController(request: FastifyRequest<NewsRequest>,
             views: data.views,
             journal_id: data.journal_id
         })
+        await redis.flushdb()
         return reply.status(201).send({
             success: true,
             data: NewsMap.toPersistence(result)
@@ -46,6 +48,7 @@ export async function addViewNewsController(request: FastifyRequest<NewsRequest>
     try {
         const getData = new AddViewNews(repo)
         const result = await getData.execute({id})
+        await redis.flushdb()
         return reply.status(201).send({
             success: true,
         })
@@ -131,6 +134,7 @@ export async function updateNewsController(request: FastifyRequest<NewsRequest>,
 
         const dataPer = NewsMap.toPersistence(product)
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: dataPer
@@ -151,6 +155,7 @@ export async function deleteNewsController(request: FastifyRequest<NewsRequest>,
         const deleteData = new DeleteNews(repo);
         const data = await deleteData.execute({ id });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

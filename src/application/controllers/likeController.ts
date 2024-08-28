@@ -16,6 +16,7 @@ import {ProductMap} from "../../mappers/ProductMap";
 import {GetByIdReview} from "../../useCases/review/reviewById";
 import {PrismaReviewRepo} from "../../infrastructure/prisma/repo/PrismaReviewRepo";
 import {ReviewMap} from "../../mappers/ReviewMap";
+import {redis} from "../../infrastructure/redis/redis";
 
 const likeRepo = new PrismaLikeRepo();
 const newsRepo = new PrismaNewsRepo()
@@ -137,6 +138,7 @@ export async function createLikeController(request: FastifyRequest<LikeRequest>,
             user_id: data.user_id
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -166,6 +168,7 @@ export async function updateLikeController(request: FastifyRequest<LikeRequest>,
             type: data.type,
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: LikeMap.toPersistence(result)
@@ -186,6 +189,7 @@ export async function deleteLikeController(request: FastifyRequest<LikeRequest>,
         const deleteData = new DeleteLike(likeRepo)
         const result = await deleteData.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

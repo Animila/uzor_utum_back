@@ -57,6 +57,7 @@ export async function createProductController(request: FastifyRequest<ProductReq
             await getDecor.execute({id: item});
         }
 
+
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -81,6 +82,7 @@ export async function createProductController(request: FastifyRequest<ProductReq
             }))
         const createProduct = new CreateProduct(productRepo, fileRepo);
         const product = await createProduct.execute(data);
+        await redis.flushdb()
         reply.status(201).send({
             success: true,
             data: ProductMap.toPersistence(product)
@@ -144,7 +146,6 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
 
         //@ts-ignore
         let productsCache = await redis.get(cacheKey);
-        console.log('cache: ', productsCache)
 
         if (!productsCache) {
             const minPriceInt = minPrice ? parseInt(minPrice) : undefined
@@ -224,24 +225,36 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
 export async function getByIdProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getProduct = new GetByIdProducts(productRepo, fileRepo);
-        const product = await getProduct.execute({ id });
-        const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const productPer = ProductMap.toPersistence(product)
-        const getFiles = new GetAllFile(fileRepo)
-        const getReview = new PrismaReviewRepo()
-        try {
-            const result = await getDiscount.execute({product_id: product.getId()})
-            productPer.discount = DiscountMap.toPersistence(result)
-        } catch (err) {}
-        const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
-        productPer.images = dataFile.data
-        const resReview = await getReview.getReviewStats(productPer.id)
-        console.log(resReview)
-        productPer.review = resReview
+        const cacheKey = `product:${id}`;
+
+        //@ts-ignore
+        let productCache = await redis.get(cacheKey);
+        let productRes;
+
+        if (!productCache) {
+            const getProduct = new GetByIdProducts(productRepo, fileRepo);
+            const product = await getProduct.execute({ id });
+            const getDiscount = new GetByProductIdDiscount(discountRepo)
+            const productPer = ProductMap.toPersistence(product)
+            const getFiles = new GetAllFile(fileRepo)
+            const getReview = new PrismaReviewRepo()
+            try {
+                const result = await getDiscount.execute({product_id: product.getId()})
+                productPer.discount = DiscountMap.toPersistence(result)
+            } catch (err) {}
+            const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
+            productPer.images = dataFile.data
+            const resReview = await getReview.getReviewStats(productPer.id)
+            console.log(resReview)
+            productPer.review = resReview
+            productRes = productPer
+            await redis.set(cacheKey, JSON.stringify(productRes), 'EX', 3600); // Время жизни кэша в секундах
+        } else {
+            productRes = JSON.parse(productCache)
+        }
         reply.status(200).send({
             success: true,
-            data: productPer
+            data: productRes
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -291,6 +304,7 @@ export async function updateProductController(request: FastifyRequest<ProductReq
         const getFiles = new GetAllFile(fileRepo)
         const dataFile = await getFiles.execute({entity_id: product.getId(), entity_type: 'product'})
         productPer.images = dataFile.data
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: productPer
@@ -311,6 +325,7 @@ export async function deleteProductController(request: FastifyRequest<ProductReq
         const delProduct = new DeleteProduct(productRepo);
         const data = await delProduct.execute({ id });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

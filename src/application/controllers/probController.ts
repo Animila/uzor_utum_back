@@ -10,6 +10,7 @@ import {
 import {ProbMap} from "../../mappers/ProbMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {redis} from "../../infrastructure/redis/redis";
 
 const materialRepo = new PrismaProbRepo();
 const fileRepo = new PrismaFileRepo();
@@ -74,6 +75,7 @@ export async function createProbController(request: FastifyRequest<ProbRequest>,
         const createService = new CreateProb(materialRepo)
         const result =  await createService.execute({title: data.title!});
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -103,6 +105,7 @@ export async function updateProbController(request: FastifyRequest<ProbRequest>,
         const getFiles = new GetAllFile(fileRepo)
         const dataFile = await getFiles.execute({entity_type: 'proba', entity_id: prob.getId()})
         probPer.images = dataFile.data
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: probPer
@@ -123,6 +126,7 @@ export async function deleteProbController(request: FastifyRequest<ProbRequest>,
         const delProb = new DeleteProb(materialRepo)
         const data = await delProb.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

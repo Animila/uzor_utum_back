@@ -10,6 +10,7 @@ import {
 import {CategoryMap} from "../../mappers/CategoryMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {redis} from "../../infrastructure/redis/redis";
 
 const categoryRepo = new PrismaCategoryRepo();
 const fileRepo = new PrismaFileRepo();
@@ -75,6 +76,7 @@ export async function createCategoryController(request: FastifyRequest<CategoryR
 
         const createCategory = new CreateCategory(categoryRepo)
         const result =  await createCategory.execute({title: data.title!});
+        await redis.flushdb()
 
         reply.status(200).send({
             success: true,
@@ -82,6 +84,7 @@ export async function createCategoryController(request: FastifyRequest<CategoryR
                 id: result.getId(),
             }
         });
+
     } catch (error: any) {
         console.log('345678', error.message)
         const errors = JSON.parse(error.message)
@@ -105,6 +108,7 @@ export async function updateCategoryController(request: FastifyRequest<CategoryR
         const getFiles = new GetAllFile(fileRepo)
         const dataFile = await getFiles.execute({entity_id: category.getId(), entity_type: 'category'})
         categoryPer.images = dataFile.data
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: categoryPer
@@ -125,6 +129,7 @@ export async function deleteCategoryController(request: FastifyRequest<CategoryR
         const delCategory = new DeleteCategory(categoryRepo)
         const data = await delCategory.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

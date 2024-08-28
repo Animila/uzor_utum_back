@@ -5,6 +5,7 @@ import {FileMap} from "../../mappers/FileMap";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {DeleteFile} from "../../useCases/file/fileDelete";
 import {GetByIdFile} from "../../useCases/file/fileGetById";
+import {redis} from "../../infrastructure/redis/redis";
 
 const repoFile = new PrismaFileRepo()
 export async function createFile(request: FastifyRequest<FileRouting>, reply: FastifyReply) {
@@ -16,6 +17,7 @@ export async function createFile(request: FastifyRequest<FileRouting>, reply: Fa
 
 //@ts-ignore
         const result = await loadFile.execute({file: data.file, entity_id: data.entity_id.value, entity_type: data.entity_type.value, position: parseInt(data.position.value)})
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: FileMap.toPersistence(result)
@@ -41,6 +43,7 @@ export async function updateFile(request: FastifyRequest<FileRouting>, reply: Fa
 
         await repoFile.save(result)
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: FileMap.toPersistence(result)
@@ -86,6 +89,7 @@ export async function deleteFile(request: FastifyRequest<FileRouting>, reply: Fa
         const {id} = request.params
         const delFile = new DeleteFile(repoFile)
         const result = await delFile.execute({id})
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: result

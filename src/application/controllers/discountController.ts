@@ -9,6 +9,7 @@ import {GetByProductIdDiscount} from "../../useCases/discount/discountGetByProdu
 import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
 import {GetByIdProducts} from "../../useCases/product/productGetById";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {redis} from "../../infrastructure/redis/redis";
 
 const repository = new PrismaDiscountRepo()
 const prodRepo = new PrismaProductRepo()
@@ -43,6 +44,7 @@ export async function createDiscountController(request: FastifyRequest<DiscountR
             end_date: endDate
         });
 
+        await redis.flushdb()
         reply.status(201).send({
             success: true,
             data: DiscountMap.toPersistence(result)
@@ -111,6 +113,7 @@ export async function updateDiscountController(request: FastifyRequest<DiscountR
             end_date: data.end_date
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: DiscountMap.toPersistence(result)
@@ -131,6 +134,7 @@ export async function deleteDiscountController(request: FastifyRequest<DiscountR
         const delData = new DeleteDiscount(repository);
         const data = await delData.execute({ id });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

@@ -43,6 +43,7 @@ import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
 import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 import {bool} from "sharp";
 import {PromoCode} from "../../domain/promocode/promocode";
+import {redis} from "../../infrastructure/redis/redis";
 
 const sendTypeRepo = new PrismaSendTypeRepo()
 const shopRepo = new PrismaShopRepo()
@@ -187,6 +188,7 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
 
         await orderRepo.save(order)
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -225,6 +227,7 @@ export async function editOrderController(request: FastifyRequest<OrderRequest>,
         order.props.status = statusOrError as OrderStatus
 
         await orderRepo.save(order)
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
         });
@@ -380,6 +383,7 @@ export async function deleteOrderController(request: FastifyRequest<OrderRequest
         const delOrder = new DeleteOrder(orderRepo);
         const data = await delOrder.execute({ id });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

@@ -31,6 +31,7 @@ import {DecorateMap} from "../../mappers/DecorateMap";
 import {ProbMap} from "../../mappers/ProbMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {DiscountMap} from "../../mappers/DiscountMap";
+import {redis} from "../../infrastructure/redis/redis";
 
 const cartRepo = new PrismaCartRepository()
 const userRepo = new PrismaUserRepo()
@@ -196,6 +197,7 @@ export async function addItemToCartController(request: FastifyRequest<ItemCartRe
         existingProduct.props.available -= count
         await productRepo.save(existingProduct)
         await cartRepo.save(existingCart)
+        await redis.flushdb()
 
         reply.status(201).send({
             success: true,
@@ -311,6 +313,12 @@ export async function changeItemCartController(request: FastifyRequest<ItemCartR
         if(result) {
             await cartRepo.save(existingCart)
         }
+        await redis.flushdb()
+
+        reply.send({
+            success: true,
+            data: newItem
+        });
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
@@ -345,6 +353,7 @@ export async function deleteItemCartController(request: FastifyRequest<ItemCartR
 
         await cartRepo.save(existingCart)
         await productRepo.save(existingProduct)
+        await redis.flushdb()
 
         reply.status(200).send({
             success: true,

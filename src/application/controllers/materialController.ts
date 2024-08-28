@@ -10,6 +10,7 @@ import {
 import {MaterialMap} from "../../mappers/MaterialMap";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
+import {redis} from "../../infrastructure/redis/redis";
 
 const materialRepo = new PrismaMaterialRepo();
 const fileRepo = new PrismaFileRepo();
@@ -75,6 +76,7 @@ export async function createMaterialController(request: FastifyRequest<MaterialR
         const createService = new CreateMaterial(materialRepo)
         const result =  await createService.execute({title: data.title!});
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -104,6 +106,7 @@ export async function updateMaterialController(request: FastifyRequest<MaterialR
         const getFiles = new GetAllFile(fileRepo)
         const dataFile = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
         matPer.images = dataFile.data
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: matPer
@@ -124,6 +127,7 @@ export async function deleteMaterialController(request: FastifyRequest<MaterialR
         const delMaterial = new DeleteMaterial(materialRepo)
         const data = await delMaterial.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

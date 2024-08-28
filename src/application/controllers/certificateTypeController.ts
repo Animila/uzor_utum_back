@@ -7,6 +7,7 @@ import {GetByIdCertificateType} from "../../useCases/certificate/certificateType
 import {CreateCertificateType} from "../../useCases/certificate/certificateTypeCreate";
 import {DeleteCertificateType} from "../../useCases/certificate/certificateTypeDelete";
 import {UpdateCertificateType} from "../../useCases/certificate/certificateTypeUpdate";
+import {redis} from "../../infrastructure/redis/redis";
 
 const certRepo = new PrismaCertificateTypeRepo();
 
@@ -65,6 +66,7 @@ export async function createCertificateTypeController(request: FastifyRequest<Ce
             description: data.description,
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -92,6 +94,7 @@ export async function updateCertificateTypeController(request: FastifyRequest<Ce
             description: data.description
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: CertificateTypeMap.toPersistence(material)
@@ -112,6 +115,7 @@ export async function deleteCertificateTypeController(request: FastifyRequest<Ce
         const delCertificateType = new DeleteCertificateType(certRepo)
         const data = await delCertificateType.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

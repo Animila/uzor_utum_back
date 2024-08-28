@@ -2,6 +2,7 @@ import {FastifyReply, FastifyRequest} from "fastify";
 import {CreateJournal, DeleteJournal, GetAllJournal, GetByIdJournal, UpdateJournal} from "../../useCases/news/journal";
 import {PrismaJournalRepo} from "../../infrastructure/prisma/repo/PrismaJournalRepo";
 import {JournalMap} from "../../mappers/JournalMap";
+import {redis} from "../../infrastructure/redis/redis";
 
 const journalRepo = new PrismaJournalRepo()
 export async function createJournalController(request: FastifyRequest<JournalRequest>, reply: FastifyReply) {
@@ -10,6 +11,7 @@ export async function createJournalController(request: FastifyRequest<JournalReq
     try {
         const createData = new CreateJournal(journalRepo)
         const result = await createData.execute({title: data.title})
+        await redis.flushdb()
         return reply.status(201).send({
             success: true,
             data: JournalMap.toPersistence(result)
@@ -79,6 +81,7 @@ export async function updateJournalController(request: FastifyRequest<JournalReq
             title: data.title
         });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: JournalMap.toPersistence(product)
@@ -99,6 +102,7 @@ export async function deleteJournalController(request: FastifyRequest<JournalReq
         const deleteData = new DeleteJournal(journalRepo);
         const data = await deleteData.execute({ id });
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

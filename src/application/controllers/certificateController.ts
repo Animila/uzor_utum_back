@@ -15,6 +15,7 @@ import {GetByCodeCertificate} from "../../useCases/certificate/certificateGetByC
 import {Guard} from "../../domain/guard";
 import {CertificateTypeMap} from "../../mappers/CertificateTypeMap";
 import {scheduleSendEmail} from "../../infrastructure/nodecron/scheduleNotification";
+import {redis} from "../../infrastructure/redis/redis";
 
 const certRepo = new PrismaCertificateRepo();
 const certTypeRepo = new PrismaCertificateTypeRepo();
@@ -139,6 +140,7 @@ export async function createCertificateController(request: FastifyRequest<Certif
 
         await certRepo.save(result)
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -162,6 +164,7 @@ export async function deleteCertificateController(request: FastifyRequest<Certif
         const delCertificate = new DeleteCertificate(certRepo)
         const data = await delCertificate.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {

@@ -10,6 +10,7 @@ import {
 import {DecorateMap} from "../../mappers/DecorateMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
+import {redis} from "../../infrastructure/redis/redis";
 
 const materialRepo = new PrismaDecorateRepo();
 const fileRepo = new PrismaFileRepo();
@@ -74,6 +75,7 @@ export async function createDecorateController(request: FastifyRequest<DecorateR
         const createService = new CreateDecorate(materialRepo)
         const result =  await createService.execute({title: data.title!});
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
@@ -103,6 +105,7 @@ export async function updateDecorateController(request: FastifyRequest<DecorateR
         const getFiles = new GetAllFile(fileRepo)
         const dataFile = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
         decorPer.images = dataFile.data
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: decorPer
@@ -123,6 +126,7 @@ export async function deleteDecorateController(request: FastifyRequest<DecorateR
         const delDecorate = new DeleteDecorate(materialRepo)
         const data = await delDecorate.execute({id: id})
 
+        await redis.flushdb()
         reply.status(200).send({
             success: true,
             data: {
