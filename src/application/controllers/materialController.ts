@@ -18,23 +18,45 @@ const fileRepo = new PrismaFileRepo();
 export async function getAllMaterialController(request: FastifyRequest<MaterialRequest>, reply: FastifyReply) {
     try {
         const data = request.query as MaterialRequest['Query']
-        const getAllMaterial = new GetAllMaterial(materialRepo)
-        const materials =  await getAllMaterial.execute(data.limit ? parseInt(data.limit): undefined, data.offset ? parseInt(data.offset) : undefined);
-        const getFiles = new GetAllFile(fileRepo)
+        const cacheKey = `materials:${data.limit}:${data.offset}`;
+        let materialsRes: {
+            data: any,
+            pagination: any
+        }
 
-        for(const material of materials.data) {
-            const data = await getFiles.execute({limit: 10, offset: 0, entity_type: 'material', entity_id: material.id});
-            material.images = data.data
+        //@ts-ignore
+        let materialsCache = await redis.get(cacheKey);
+
+        if (!materialsCache) {
+            const getAllMaterial = new GetAllMaterial(materialRepo)
+            const materials = await getAllMaterial.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
+            const getFiles = new GetAllFile(fileRepo)
+
+            for (const material of materials.data) {
+                const data = await getFiles.execute({
+                    limit: 10,
+                    offset: 0,
+                    entity_type: 'material',
+                    entity_id: material.id
+                });
+                material.images = data.data
+            }
+            materialsRes = {
+                data: materials.data,
+                pagination: {
+                    totalItems: materials.count,
+                    totalPages: Math.ceil(materials.count / (data.limit ? parseInt(data.limit) : 10)),
+                    currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                    limit: data.limit ? parseInt(data.limit) : 10
+                }
+            }
+        } else {
+            materialsRes = JSON.parse(materialsCache)
         }
         reply.status(200).send({
             success: true,
-            data: materials.data,
-            pagination: {
-                totalItems: materials.count,
-                totalPages: Math.ceil(materials.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
+            data: materialsRes.data,
+            pagination: materialsRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -49,15 +71,27 @@ export async function getAllMaterialController(request: FastifyRequest<MaterialR
 export async function getByIdMaterialController(request: FastifyRequest<MaterialRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getMaterial = new GetByIdMaterial(materialRepo)
-        const material =  await getMaterial.execute({id: id});
-        const matPer = MaterialMap.toPersistence(material)
-        const getFiles = new GetAllFile(fileRepo)
-        const dataFile = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
-        matPer.images = dataFile.data
+        const cacheKey = `material:${id}`;
+        let materialRes;
+
+        //@ts-ignore
+        let materialCache = await redis.get(cacheKey);
+
+        if (!materialCache) {
+            const getMaterial = new GetByIdMaterial(materialRepo)
+            const material = await getMaterial.execute({id: id});
+            const matPer = MaterialMap.toPersistence(material)
+            const getFiles = new GetAllFile(fileRepo)
+            const dataFile = await getFiles.execute({entity_type: 'material', entity_id: material.getId()});
+            matPer.images = dataFile.data
+            materialRes = matPer
+            await redis.set(cacheKey, JSON.stringify(materialRes), 'EX', 3600);
+        } else {
+            materialRes = JSON.parse(materialCache)
+        }
         reply.status(200).send({
             success: true,
-            data: matPer
+            data: materialRes
         });
     } catch (error: any) {
         console.log('345678', error.message)

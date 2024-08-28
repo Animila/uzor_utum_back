@@ -57,7 +57,7 @@ export async function getAllCategoryController(request: FastifyRequest<CategoryR
 
             }
 
-            await redis.set(cacheKey, JSON.stringify(categoriesRes), 'EX', 3600); // Время жизни кэша в секундах
+            await redis.set(cacheKey, JSON.stringify(categoriesRes), 'EX', 3600);
         } else {
             categoriesRes = JSON.parse(categoriesCache);
         }
@@ -95,6 +95,7 @@ export async function getByIdCategoryController(request: FastifyRequest<Category
             categoryPer.images = data.data
 
             categoryRes = categoryPer
+            await redis.set(cacheKey, JSON.stringify(categoryRes), 'EX', 3600);
         } else {
             categoryRes = JSON.parse(categoryCache)
         }

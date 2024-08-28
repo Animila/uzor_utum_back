@@ -30,17 +30,35 @@ export async function createJournalController(request: FastifyRequest<JournalReq
 export async function getAllJournalController(request: FastifyRequest<JournalRequest>, reply: FastifyReply) {
     try {
         const {offset, limit} = request.query as JournalRequest['Query']
-        const getAllData = new GetAllJournal(journalRepo)
-        const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0, limit: !!limit ? parseInt(limit) : 10});
+        const cacheKey = `journals:${limit}:${offset}`;
+        let journalsRes: {
+            data: any,
+            pagination: any
+        }
+
+        //@ts-ignore
+        let journalsCache = await redis.get(cacheKey);
+
+        if (!journalsCache) {
+            const getAllData = new GetAllJournal(journalRepo)
+            const resultAll = await getAllData.execute({offset: !!offset ? parseInt(offset) : 0, limit: !!limit ? parseInt(limit) : 10});
+            journalsRes = {
+                data: resultAll.data,
+                pagination: {
+                    totalItems: resultAll.count,
+                    totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(journalsRes), 'EX', 3600); // Время жизни кэша в секундах
+        } else {
+            journalsRes = JSON.parse(journalsCache)
+        }
         reply.status(200).send({
             success: true,
-            data: resultAll.data,
-            pagination: {
-                totalItems: resultAll.count,
-                totalPages: Math.ceil(resultAll.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
+            data: journalsRes.data,
+            pagination: journalsRes.pagination
         });
     } catch (error: any) {
         console.log('Error:', error.message);
@@ -55,11 +73,23 @@ export async function getAllJournalController(request: FastifyRequest<JournalReq
 export async function getByIdJournalController(request: FastifyRequest<JournalRequest>, reply: FastifyReply) {
     try {
         const { id } = request.params;
-        const getData = new GetByIdJournal(journalRepo);
-        const data = await getData.execute({ id });
+        const cacheKey = `journal:${id}`;
+        let journalRes;
+
+        //@ts-ignore
+        let journalCache = await redis.get(cacheKey);
+
+        if (!journalCache) {
+            const getData = new GetByIdJournal(journalRepo);
+            const data = await getData.execute({id});
+            journalRes = JournalMap.toPersistence(data)
+            await redis.set(cacheKey, JSON.stringify(journalRes), 'EX', 3600);
+        } else {
+            journalRes = JSON.parse(journalCache);
+        }
         reply.status(200).send({
             success: true,
-            data: JournalMap.toPersistence(data)
+            data: journalRes
         });
     } catch (error: any) {
         console.log('Error:', error.message);

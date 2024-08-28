@@ -18,22 +18,45 @@ const fileRepo = new PrismaFileRepo();
 export async function getAllDecorateController(request: FastifyRequest, reply: FastifyReply) {
     try {
         const data = request.query as DecorateRequest['Query']
-        const getAllDecorate = new GetAllDecorate(materialRepo)
-        const decors =  await getAllDecorate.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
-        const getFiles = new GetAllFile(fileRepo)
-        for(const decor of decors.data) {
-            const data = await getFiles.execute({limit: 10, offset: 0, entity_id: decor.id, entity_type: 'decorate'})
-            decor.images = data.data
+        const cacheKey = `decorates:${data.limit}:${data.offset}`;
+        let decoratesRes: {
+            data: any,
+            pagination: any
+        }
+
+        //@ts-ignore
+        let decoratesCache = await redis.get(cacheKey);
+
+        if (!decoratesCache) {
+            const getAllDecorate = new GetAllDecorate(materialRepo)
+            const decors = await getAllDecorate.execute(data.limit ? parseInt(data.limit) : undefined, data.offset ? parseInt(data.offset) : undefined);
+            const getFiles = new GetAllFile(fileRepo)
+            for (const decor of decors.data) {
+                const data = await getFiles.execute({
+                    limit: 10,
+                    offset: 0,
+                    entity_id: decor.id,
+                    entity_type: 'decorate'
+                })
+                decor.images = data.data
+            }
+            decoratesRes = {
+                data: decors.data,
+                pagination: {
+                    totalItems: decors.count,
+                    totalPages: Math.ceil(decors.count / (data.limit ? parseInt(data.limit) : 10)),
+                    currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
+                    limit: data.limit ? parseInt(data.limit) : 10
+                }
+            }
+            await redis.set(cacheKey, JSON.stringify(decoratesRes), 'EX', 3600); // Время жизни кэша в секундах
+        } else {
+            decoratesRes = JSON.parse(decoratesCache)
         }
         reply.status(200).send({
             success: true,
-            data: decors.data,
-            pagination: {
-                totalItems: decors.count,
-                totalPages: Math.ceil(decors.count / (data.limit ? parseInt(data.limit) : 10)),
-                currentPage: (data.offset ? parseInt(data.offset) : 0) + 1,
-                limit: data.limit ? parseInt(data.limit) : 10
-            }
+            data: decoratesRes.data,
+            pagination: decoratesRes.pagination
         });
     } catch (error: any) {
         console.log('345678', error.message)
@@ -48,15 +71,28 @@ export async function getAllDecorateController(request: FastifyRequest, reply: F
 export async function getByIdDecorateController(request: FastifyRequest<DecorateRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const getDecorate = new GetByIdDecorate(materialRepo)
-        const decor =  await getDecorate.execute({id: id});
-        const decorPer = DecorateMap.toPersistence(decor)
-        const getFiles = new GetAllFile(fileRepo)
-        const dataFile = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
-        decorPer.images = dataFile.data
+        const cacheKey = `decorate:${id}`;
+        let decorateRes;
+
+        //@ts-ignore
+        let decorateCache = await redis.get(cacheKey);
+
+        if (!decorateCache) {
+            const getDecorate = new GetByIdDecorate(materialRepo)
+            const decor = await getDecorate.execute({id: id});
+            const decorPer = DecorateMap.toPersistence(decor)
+            const getFiles = new GetAllFile(fileRepo)
+            const dataFile = await getFiles.execute({entity_id: decor.getId(), entity_type: 'decorate'})
+            decorPer.images = dataFile.data
+
+            decorateRes = decorPer
+            await redis.set(cacheKey, JSON.stringify(decorateRes), 'EX', 3600);
+        } else {
+            decorateRes = JSON.parse(decorateCache)
+        }
         reply.status(200).send({
             success: true,
-            data: decorPer
+            data: decorateRes
         });
     } catch (error: any) {
         console.log('345678', error.message)
