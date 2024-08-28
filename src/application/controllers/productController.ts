@@ -1,5 +1,5 @@
 import {PrismaProductRepo} from "../../infrastructure/prisma/repo/PrismaProductRepo";
-import {FastifyReply, FastifyRequest} from "fastify";
+import fastify, {FastifyReply, FastifyRequest} from "fastify";
 import {ProductMap} from "../../mappers/ProductMap";
 import {CreateProduct} from "../../useCases/product/productCreate";
 import {PrismaCategoryRepo} from "../../infrastructure/prisma/repo/PrismaCategoryRepo";
@@ -22,6 +22,7 @@ import {GetByIdDecorate} from "../../useCases/product/decorate";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {PrismaReviewRepo} from "../../infrastructure/prisma/repo/PrismaReviewRepo";
+import {redis} from "../../infrastructure/redis/redis";
 
 const productRepo = new PrismaProductRepo();
 const categoryRepo = new PrismaCategoryRepo();
@@ -112,54 +113,102 @@ export async function getAllProductController(request: FastifyRequest<ProductReq
             offset = "0",
             discount_at
         } = request.query as ProductRequest['Query'];
-        const minPriceInt = minPrice ? parseInt(minPrice) : undefined
-        const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
-        const decorIdsArray = decorationIds ? decorationIds[0].split(',') : undefined;
-        const sizeIdsArray = sizeIds ? sizeIds[0].split(',') : undefined;
-        const probIdsArray = probIds ? probIds[0].split(',') : undefined;
-        const getAllProduct = new GetAllProducts(productRepo, fileRepo);
-        const getDiscount = new GetByProductIdDiscount(discountRepo)
-        const products = await getAllProduct.execute({
-            categoryId,
-            materialId,
-            sizeIds: sizeIdsArray,
-            decorationIds: decorIdsArray,
-            discount_at: discount_at,
-            probIds: probIdsArray,
-            sortBy,
-            order,
-            search: q,
-            maxPrice: maxPriceInt,
-            minPrice: minPriceInt,
-            sex: sex,
-            limit: parseInt(limit),
-            offset: parseInt(offset)
-        });
-        const getReview = new PrismaReviewRepo()
 
-        const productsWithDiscount = await Promise.all(products.data.map(async (product) => {
-            try {
-                const discountResult = await getDiscount.execute({ product_id: product.id });
-                product.discount = DiscountMap.toPersistence(discountResult);
-                const resReview = await getReview.getReviewStats(product.id)
-                console.log(resReview)
-                product.review = resReview
-            } catch (error) {
-                console.log(error);
+        let productsRes: {
+            data: {
+                id: string,
+                title: string,
+                article: string,
+                price: number,
+                images?: any
+                sex: string,
+                description: string,
+                details: string,
+                delivery: string,
+                prob_ids: string[];
+                discount_at?: boolean,
+                decoration_ids: string[];
+                size_ids: string[];
+                discount?: any,
+                available: number,
+                category_id: string,
+                material_id: string,
+                created_at: Date,
+                updated_at: Date,
+                review?: any
+            }[],
+            pagination: any
+        }
+
+        const cacheKey = `products:${categoryId}:${materialId}:${sizeIds}:${decorationIds}:${probIds}:${sortBy}:${order}:${q}:${minPrice}:${sex}:${maxPrice}:${limit}:${offset}:${discount_at}`;
+
+        //@ts-ignore
+        let productsCache = await redis.get(cacheKey);
+        console.log('cache: ', productsCache)
+
+        if (!productsCache) {
+            const minPriceInt = minPrice ? parseInt(minPrice) : undefined
+            const maxPriceInt = maxPrice ? parseInt(maxPrice) : undefined
+            const decorIdsArray = decorationIds ? decorationIds[0].split(',') : undefined;
+            const sizeIdsArray = sizeIds ? sizeIds[0].split(',') : undefined;
+            const probIdsArray = probIds ? probIds[0].split(',') : undefined;
+            const getAllProduct = new GetAllProducts(productRepo, fileRepo);
+            const getDiscount = new GetByProductIdDiscount(discountRepo)
+            const products = await getAllProduct.execute({
+                categoryId,
+                materialId,
+                sizeIds: sizeIdsArray,
+                decorationIds: decorIdsArray,
+                discount_at: discount_at,
+                probIds: probIdsArray,
+                sortBy,
+                order,
+                search: q,
+                maxPrice: maxPriceInt,
+                minPrice: minPriceInt,
+                sex: sex,
+                limit: parseInt(limit),
+                offset: parseInt(offset)
+            });
+            const getReview = new PrismaReviewRepo()
+
+            const productsWithDiscount = await Promise.all(products.data.map(async (product) => {
+                try {
+                    const discountResult = await getDiscount.execute({ product_id: product.id });
+                    product.discount = DiscountMap.toPersistence(discountResult);
+                    const resReview = await getReview.getReviewStats(product.id)
+                    console.log(resReview)
+                    product.review = resReview
+                } catch (error) {
+                    console.log(error);
+                }
+                return product;
+            }));
+
+            // Кэширование результата
+
+            // @ts-ignore
+            productsRes = {
+                data: productsWithDiscount,
+                pagination: {
+                    totalItems: products.count,
+                    totalPages: Math.ceil(products.count / (limit ? parseInt(limit) : 10)),
+                    currentPage: (offset ? parseInt(offset) : 0) + 1,
+                    limit: limit ? parseInt(limit) : 10
+                }
             }
-            return product;
-        }));
+            //@ts-ignore
+            await redis.set(cacheKey, JSON.stringify(productsRes), 'EX', 3600); // Время жизни кэша в секундах
+        } else {
+            productsRes = JSON.parse(productsCache);
+        }
 
+        console.log(productsRes)
 
         reply.status(200).send({
             success: true,
-            data: productsWithDiscount,
-            pagination: {
-                totalItems: products.count,
-                totalPages: Math.ceil(products.count / (limit ? parseInt(limit) : 10)),
-                currentPage: (offset ? parseInt(offset) : 0) + 1,
-                limit: limit ? parseInt(limit) : 10
-            }
+            data: productsRes.data,
+            pagination: productsRes.pagination
 
         });
     } catch (error: any) {

@@ -1,4 +1,4 @@
-import {FastifyReply, FastifyRequest} from "fastify";
+import fastify, { FastifyReply, FastifyRequest} from "fastify";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
 import {CreateBonus} from "../../useCases/bonus/bonusCreate";
 import {BonusMap} from "../../mappers/BonusMap";
@@ -40,16 +40,47 @@ export async function getAllBonusController(request: FastifyRequest<BonusRequest
         const {limit = "10", offset = "0", old = false, user_id } = request.query as BonusRequest["Query"]
         const getData = new GetAllBonus(bonusRepo)
         const allData = await getData.execute({limit: parseInt(limit), offset: parseInt(offset), old: old,  user_id: user_id})
-        reply.status(200).send({
-            success: true,
-            data: allData.data,
-            pagination: {
-                totalItems: allData.count,
-                totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
-                currentPage: (!!offset ? parseInt(offset) : 0) + 1,
-                limit: !!limit ? parseInt(limit) : 10
-            }
-        });
+
+        const cacheKey = `bonuses_${limit}_${offset}_${old}_${user_id}`;
+        //@ts-ignore
+        let bonuses = await fastify.redis.get(cacheKey);
+
+        if (!bonuses) {
+            const getData = new GetAllBonus(bonusRepo);
+            const allData = await getData.execute({
+                limit: parseInt(limit),
+                offset: parseInt(offset),
+                old: old,
+                user_id: user_id,
+            });
+
+            bonuses = JSON.stringify(allData.data);
+            //@ts-ignore
+            await fastify.redis.set(cacheKey, bonuses, "EX", 3600); // Кэшируем на 1 час
+
+
+            reply.status(200).send({
+                success: true,
+                data: bonuses,
+                pagination: {
+                    totalItems: allData.count,
+                    totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            });
+        } else {
+            reply.status(200).send({
+                success: true,
+                data: JSON.parse(bonuses),
+                pagination: {
+                    totalItems: allData.count,
+                    totalPages: Math.ceil(allData.count / (!!limit ? parseInt(limit) : 10)),
+                    currentPage: (!!offset ? parseInt(offset) : 0) + 1,
+                    limit: !!limit ? parseInt(limit) : 10
+                }
+            });
+        }
     } catch (error: any) {
         console.log('Error:', error.message);
         const errors = JSON.parse(error.message);
