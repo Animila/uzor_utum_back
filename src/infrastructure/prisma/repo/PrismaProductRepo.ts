@@ -130,12 +130,17 @@ export class PrismaProductRepo implements IProductRepository {
             })
             if(!newUser) return null
             return ProductMap.toDomain(newUser)
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            console.log(error.meta.target[0] === 'article')
             throw new Error(JSON.stringify({
-                status: 500,
-                message: 'Ошибка с базой данных'
-            }));
+                status: 400,
+                message: [
+                    error.meta.target[0] === 'article' && {
+                        type: 'article',
+                        message: 'Такой артикль уже есть'
+                    }
+                ]
+            }))
         } finally {
             this.prisma.$disconnect()
         }

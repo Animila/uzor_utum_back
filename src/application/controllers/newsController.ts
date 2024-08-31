@@ -9,7 +9,6 @@ import {DeleteNews} from "../../useCases/news/newsDelete";
 import {AddViewNews} from "../../useCases/news/newsAddView";
 import {GetAllFile} from "../../useCases/file/fileGetAll";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
-import {News} from "../../domain/news/news";
 import {redis} from "../../infrastructure/redis/redis";
 
 const repo = new PrismaNewsRepo()

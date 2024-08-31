@@ -64,7 +64,7 @@ export async function getByIdPromoCodeController(request: FastifyRequest<PromoCo
         const getData = new GetByIdPromoCode(promoCodeRepo);
         const data = await getData.execute({ id });
         if(data instanceof Boolean || !data || !(data instanceof PromoCode)) {
-            reply.status(400).status(200).send({
+            reply.status(400).send({
                 success: false,
                 message: [
                     {
@@ -147,7 +147,7 @@ export async function getByCodePromoCodeController(request: FastifyRequest<Promo
         const getData = new GetByCodePromoCode(promoCodeRepo);
         const data = await getData.execute({ code, user_id: query.user_id, email: query.email, phone: query.phone });
         if(data instanceof Boolean || !data || !(data instanceof PromoCode)) {
-            reply.status(400).status(200).send({
+            reply.status(400).send({
                 success: false,
                 message: [
                     {

@@ -37,15 +37,43 @@ const fileRepo = new PrismaFileRepo()
 export async function createProductController(request: FastifyRequest<ProductRequest>, reply: FastifyReply) {
     const data = request.body;
 
-    try {
-        const getCategory = new GetByIdCategory(categoryRepo)
-        const getMaterial = new GetByIdMaterial(materialRepo)
-        const getProba = new GetByIdProb(probRepo)
-        const getSize = new GetByIdSize(sizeRepo)
-        const getDecor = new GetByIdDecorate(decorRepo)
+    const getCategory = new GetByIdCategory(categoryRepo)
+    const getMaterial = new GetByIdMaterial(materialRepo)
+    const getProba = new GetByIdProb(probRepo)
+    const getSize = new GetByIdSize(sizeRepo)
+    const getDecor = new GetByIdDecorate(decorRepo)
 
+    try {
         await getCategory.execute({id: data.category_id})
+    } catch (error) {
+        console.log()
+        reply.status(400).send({
+            success: false,
+            message: [
+                {
+                    type: 'category_id',
+                    message: 'Категория не выбрана или не найдена'
+                }
+            ]
+        });
+    }
+
+    try {
         await getMaterial.execute({id: data.material_id})
+    } catch (error) {
+        console.log()
+        reply.status(400).send({
+            success: false,
+            message: [
+                {
+                    type: 'material_id',
+                    message: 'Материал не выбран или не найден'
+                }
+            ]
+        });
+    }
+
+    try {
 
         for (const item of data.prob_ids) {
             await getProba.execute({id: item});
@@ -80,6 +108,75 @@ export async function createProductController(request: FastifyRequest<ProductReq
                     }
                 ]
             }))
+
+        if(data.price <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'price',
+                        message: 'Не должно быть меньше или равно нулю'
+                    }
+                ]
+            }))
+
+
+        if(data.description.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'description',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+        if(data.details.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'details',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+        if(data.delivery.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'delivery',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+
+        if(data.title.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'title',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+        if(data.article.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'article',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
         const createProduct = new CreateProduct(productRepo, fileRepo);
         const product = await createProduct.execute(data);
         await redis.flushdb()
@@ -88,8 +185,12 @@ export async function createProductController(request: FastifyRequest<ProductReq
             data: ProductMap.toPersistence(product)
         });
     } catch (error: any) {
-        console.log('Error:', error.message);
+
         const errors = JSON.parse(error.message);
+        console.log({
+            success: false,
+            message: errors.message
+        })
         reply.status(errors.status).send({
             success: false,
             message: errors.message
