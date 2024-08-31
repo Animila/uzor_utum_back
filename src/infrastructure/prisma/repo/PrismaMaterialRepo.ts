@@ -60,11 +60,16 @@ export class PrismaMaterialRepo implements IMaterialRepository {
             })
             if(!newUser) return null
             return MaterialMap.toDomain(newUser)
-        } catch (error) {
-            console.log(error)
+        } catch (error: any) {
+            console.log(error.meta.target[0] === 'title')
             throw new Error(JSON.stringify({
-                status: 500,
-                message: 'Ошибка с базой данных'
+                status: 400,
+                message: [
+                    error.meta.target[0] === 'title' &&     {
+                        type: 'title',
+                        message: 'такое название уже есть'
+                    }
+                ]
             }));
         } finally {
             await this.prisma.$disconnect();
