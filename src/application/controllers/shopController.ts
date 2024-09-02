@@ -88,6 +88,39 @@ export async function createShopController(request: FastifyRequest<ShopRequest>,
     try {
         const data = request.body;
 
+        if(data.title.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'title',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+        if(data.email.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'email',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
+        if(data.address.length <= 0)
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'address',
+                        message: 'Не должно быть пустым'
+                    }
+                ]
+            }))
+
         const createShop = new CreateShop(shopRepo)
         const result =  await createShop.execute({
             title: data.title,

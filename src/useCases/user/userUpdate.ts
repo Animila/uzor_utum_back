@@ -65,6 +65,8 @@ export class UpdateUser {
                 role: roleOrError as Role || existingUser.getRole(),
                 createdAt: existingUser.getCreatedAt(),
                 updatedAt: new Date(),
+                activatedAt: existingUser.getActivatedAs(),
+                lastOnlineAt: new Date(),
                 acceptedAt: existingUser.getAcceptedAs(),
             },
             existingUser.getId()

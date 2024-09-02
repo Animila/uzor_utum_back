@@ -20,6 +20,10 @@ export class UserMap {
             createdAt: raw.created_at,
             updatedAt: raw.updated_at || undefined,
             acceptedAt: raw.accepted_at,
+            //@ts-ignore
+            activatedAt: raw.activated_at,
+            //@ts-ignore
+            lastOnlineAt: raw.last_online_at,
             role: roleOrError
         }, raw.id)
 
@@ -36,6 +40,8 @@ export class UserMap {
         role: string
         accepted_at: boolean
         bonus?: number
+        last_online_at: Date,
+        activated_at: boolean
         created_at: Date
         updated_at?: Date
     } {
@@ -48,7 +54,9 @@ export class UserMap {
             role: data.getRole().getValue(),
             accepted_at: data.getAcceptedAs(),
             created_at: data.getCreatedAt(),
-            updated_at: data.getUpdatedAt()
+            updated_at: data.getUpdatedAt(),
+            activated_at: data.getActivatedAs(),
+            last_online_at: data.getLastOnlineAt()
         }
     }
 }

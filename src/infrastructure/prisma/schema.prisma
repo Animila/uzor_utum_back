@@ -15,7 +15,9 @@ model users {
 	first_name  String
 	last_name   String
 	accepted_at Boolean   @default(false)
+	activated_at Boolean @default(false)
 	created_at  DateTime  @default(now())
+	last_online_at DateTime @default(now())
 	updated_at  DateTime? @default(now())
 	role        Roles     @default(user)
 	tokens      tokens[]

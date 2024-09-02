@@ -45,6 +45,8 @@ export class CreateUser {
             phone: phoneOrError as Phone,
             createdAt: new Date(),
             updatedAt: new Date(),
+            activatedAt: false,
+            lastOnlineAt: new Date(),
             acceptedAt: true,
             role: roleOrError as Role
         });

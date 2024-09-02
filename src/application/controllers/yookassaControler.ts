@@ -72,7 +72,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
 
 
                 if(order.getUserId() !== undefined) {
-                    if(order.getUseBonus() > 0)
+                    if(order.getUseBonus() !== 0) {
                         await addBonus.execute({
                             user_id: order.getUserId()!,
                             created_at: new Date(),
@@ -80,11 +80,13 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
                             description: `Оплата заказа №${id[id.length - 1]}`,
                             type: 'minus'
                         })
+                    }
+
                     await addBonus.execute({
                         user_id: order.getUserId()!,
                         created_at: new Date(),
                         count: order.getAddBonus(),
-                        description: `Зачисл ение оплаты за заказ №${id[id.length - 1]}`,
+                        description: `Зачисление оплаты за заказ №${id[id.length - 1]}`,
                         type: 'plus'
                     })
                 }

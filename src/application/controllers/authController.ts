@@ -76,6 +76,11 @@ export async function verifyController(request: FastifyRequest<AuthRequest>, rep
         const user_id =  await updateToken.execute({token: code});
         const user = await getUser.execute({user_id: user_id})
 
+        user.props.activatedAt = true
+        user.props.lastOnlineAt = new Date()
+
+        await userRepo.save(user)
+
         const token = fastify.jwt.sign({
             data: {
                 user_id: user_id,

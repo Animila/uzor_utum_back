@@ -90,8 +90,10 @@ export class PrismaUserRepo implements IUserRepository {
                     role: dataPer.role as Roles,
                     created_at: dataPer.created_at,
                     updated_at: dataPer.updated_at,
-                    accepted_at: dataPer.accepted_at
-
+                    accepted_at: dataPer.accepted_at,
+                    //@ts-ignore
+                    last_online_at: dataPer.last_online_at,
+                    activated_at: dataPer.activated_at,
                 },
                 update: {
                     id: dataPer.id,
@@ -102,7 +104,10 @@ export class PrismaUserRepo implements IUserRepository {
                     role: dataPer.role as Roles,
                     created_at: dataPer.created_at,
                     updated_at: dataPer.updated_at,
-                    accepted_at: dataPer.accepted_at
+                    accepted_at: dataPer.accepted_at,
+                    //@ts-ignore
+                    last_online_at: dataPer.last_online_at,
+                    activated_at: dataPer.activated_at,
                 }
             })
             if(!newUser) return null

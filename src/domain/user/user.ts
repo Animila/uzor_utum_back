@@ -10,6 +10,8 @@ interface IUser {
     firstName: string;
     lastName: string;
     acceptedAt: boolean;
+    activatedAt: boolean;
+    lastOnlineAt: Date
     createdAt: Date;
     updatedAt?: Date;
 }
@@ -36,6 +38,10 @@ export class User {
     getLastName(): string { return this.props.lastName; }
 
     getAcceptedAs(): boolean { return this.props.acceptedAt }
+
+    getActivatedAs(): boolean { return this.props.activatedAt }
+
+    getLastOnlineAt(): Date { return this.props.lastOnlineAt }
 
     getCreatedAt(): Date { return this.props.createdAt }
 

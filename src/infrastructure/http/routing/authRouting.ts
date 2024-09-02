@@ -5,6 +5,7 @@ import {
 } from "../../../application/controllers/authController";
 import {checkAuth, loginSchema, registerSchema, verifySchema} from "../schemas/authSchemas";
 import {success} from "concurrently/dist/src/defaults";
+import {PrismaUserRepo} from "../../prisma/repo/PrismaUserRepo";
 
 export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.post('/auth/register', registerSchema, registerController);
@@ -15,6 +16,18 @@ export function registerAuthRoutes(fastify: FastifyInstance) {
     fastify.get('/auth/check', checkAuth,async (request: FastifyRequest<AuthRequest>, reply: FastifyReply) => {
         await request.jwtVerify()
         const data = request.user
+
+        const userRepo = new PrismaUserRepo()
+
+        //@ts-ignore
+        const userFind = await userRepo.findById(data.data.user_id)
+
+        if(!userFind) return reply.status(403).send('Not authorized')
+
+        userFind.props.lastOnlineAt = new Date()
+
+        await userRepo.save(userFind)
+
         reply.send({
             success: true,
             // @ts-ignore
