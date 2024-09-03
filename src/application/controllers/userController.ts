@@ -49,7 +49,7 @@ export async function getAllController(request: FastifyRequest<UserRequest>, rep
 export async function getByIdController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
         const {user_id} = request.params
-
+        await request.jwtVerify()
         // @ts-ignore
         if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const getUser = new GetUserById(userRepo)
@@ -81,15 +81,14 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
     try {
         const {user_id} = request.params
         const data = request.body || {};
+        await request.jwtVerify()
         if(data.role) {
             // @ts-ignore
             if(request.user.data.role != Roles.admin) return reply.status(403).send('Not authorized')
         }
         //@ts-ignore
-        if(request.user.data.role != Roles.admin) {
-            //@ts-ignore
-            if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
-        }
+        if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
+
 
         const updateUser = new UpdateUser(userRepo)
         const user = await updateUser.execute({
@@ -123,6 +122,7 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
 export async function deleteController(request: FastifyRequest<UserRequest>, reply: FastifyReply) {
     try {
         const {user_id} = request.params
+        await request.jwtVerify()
         //@ts-ignore
         if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const delUser = new DeleteUserById(userRepo)

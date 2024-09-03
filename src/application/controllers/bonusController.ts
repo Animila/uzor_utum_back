@@ -41,6 +41,7 @@ export async function createBonusController(request: FastifyRequest<BonusRequest
 export async function getAllBonusController(request: FastifyRequest<BonusRequest>, reply: FastifyReply) {
     try {
         const {limit = "10", offset = "0", old = false, user_id } = request.query as BonusRequest["Query"]
+        await request.jwtVerify()
         //@ts-ignore
         if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
         const getData = new GetAllBonus(bonusRepo)
