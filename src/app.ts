@@ -42,7 +42,7 @@ async function buildApp(options: AppOptions = {}) {
         prefix: '/public/',
     })
     await fastify.register(require('@fastify/cors'), {
-        origin: [process.env.LOCALHOST || '', process.env.WEBSITE || ''], // разрешить запросы с localhost:4000
+        origin: [process.env.LOCALHOST || '', process.env.WEBSITE || '', process.env.ADMIN || ''], // разрешить запросы с localhost:4000
         methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'], // разрешить все основные методы
         credentials: true
     })
