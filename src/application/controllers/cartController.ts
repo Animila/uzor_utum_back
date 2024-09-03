@@ -32,6 +32,7 @@ import {ProbMap} from "../../mappers/ProbMap";
 import {PrismaFileRepo} from "../../infrastructure/prisma/repo/PrismaFileRepo";
 import {DiscountMap} from "../../mappers/DiscountMap";
 import {redis} from "../../infrastructure/redis/redis";
+import {Roles} from "../../domain/user/valueObjects/role";
 
 const cartRepo = new PrismaCartRepository()
 const userRepo = new PrismaUserRepo()
@@ -50,7 +51,7 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const checkUser = Guard.againstNullOrUndefined(user_id, 'user_id')
 
         //@ts-ignore
-        if(request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
+        if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
 
         if(checkUser.succeeded) {
             var getUser = new GetUserById(userRepo)
