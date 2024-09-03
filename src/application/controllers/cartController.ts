@@ -50,8 +50,10 @@ export async function checkCartController(request: FastifyRequest<CartRequest>, 
         const {user_id, token, limit, offset} = request.query as CartRequest['Query']
         const checkUser = Guard.againstNullOrUndefined(user_id, 'user_id')
 
-        //@ts-ignore
-        if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
+        if(user_id) {
+            //@ts-ignore
+            if(request.user.data.role !== Roles.admin && request.user.data.user_id !== user_id) return reply.status(403).send('Not authorized')
+        }
 
         if(checkUser.succeeded) {
             var getUser = new GetUserById(userRepo)
