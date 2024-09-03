@@ -38,16 +38,6 @@ export class FFMPEGVideo {
         fs.writeFileSync(tempInputPath, file._buf);
 
         return new Promise((resolve, reject) => {
-            ffmpeg.ffprobe(tempInputPath, (err, metadata) => {
-                if (err) {
-                    console.error('Ошибка получения метаданных видео: ' + err.message);
-                    reject(new Error('Ошибка получения метаданных видео: ' + err.message));
-                } else {
-                    console.log('Метаданные видео:', metadata);
-                    // продолжение обработки
-                }
-            });
-
             ffmpeg(tempInputPath)
                 .outputOptions([
                     '-vf', 'scale=1080:720:force_original_aspect_ratio=decrease',
