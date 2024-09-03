@@ -341,3 +341,4 @@ model reviews {
 	product_id    String
 	product       products  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+

@@ -13,9 +13,7 @@ export async function createFile(request: FastifyRequest<FileRouting>, reply: Fa
         const data = request.body
         const loadFile = new LoadFile(repoFile)
 
-        console.log(data)
-
-//@ts-ignore
+        //@ts-ignore
         const result = await loadFile.execute({file: data.file, entity_id: data.entity_id.value, entity_type: data.entity_type.value, position: parseInt(data.position.value)})
         await redis.flushdb()
         reply.status(200).send({

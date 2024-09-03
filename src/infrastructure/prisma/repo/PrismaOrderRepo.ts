@@ -30,6 +30,9 @@ export class PrismaOrderRepo implements IOrderRepository {
 
             const countData = await this.prisma.orders.count({where: where})
             const data = await this.prisma.orders.findMany({where,
+                orderBy: {
+                    created_at: 'desc'
+                },
                 take: limit,
                 skip: limit * offset});
             const result =  data.map(item => OrderMap.toDomain(item)).filter(product => product != null);
