@@ -7,7 +7,6 @@ interface CreateReviewInput {
     product_id: string
     text: string
     order_id: string
-    url: string
 }
 
 export class CreateReview {
@@ -18,7 +17,7 @@ export class CreateReview {
     }
 
     async execute(input: CreateReviewInput): Promise<Review> {
-        const { product_id, rating, text, order_id, name, url} = input;
+        const { product_id, rating, text, order_id, name} = input;
 
         const review = new Review({
             orderId: order_id,
@@ -27,7 +26,6 @@ export class CreateReview {
             rating: rating,
             text: text,
             name: name,
-            url: url,
             createdAt: new Date(),
         })
 

@@ -4,7 +4,9 @@ import path from "path";
 import fs from "fs";
 import sharp from "sharp";
 import {IFileRepo} from "../../repositories/IFileRepository";
-import ffmpeg from "fluent-ffmpeg";
+import ffmpeg from 'fluent-ffmpeg';
+const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
+ffmpeg.setFfmpegPath(ffmpegPath);
 
 export class FFMPEGVideo {
     private fileRepo: IFileRepo

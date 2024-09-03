@@ -22,8 +22,8 @@ const orderRepo = new PrismaOrderRepo()
 
 export async function getAllReviewsController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
     try {
-        const {user_id, old, url, popular, product_id, offset, limit} = request.query as ReviewRequest["Query"]
-        const cacheKey = `reviews:${user_id}:${old}:${url}:${popular}:${product_id}:${limit}:${offset}`;
+        const {user_id, old, popular, product_id, offset, limit} = request.query as ReviewRequest["Query"]
+        const cacheKey = `reviews:${user_id}:${old}:${popular}:${product_id}:${limit}:${offset}`;
         let reviewsRes;
 
         //@ts-ignore
@@ -81,10 +81,10 @@ export async function getAllReviewsController(request: FastifyRequest<ReviewRequ
 
 export async function createReviewController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
     try {
-        const {product_id, name, rating, text, order_id, url} = request.body
+        const {product_id, name, rating, text, order_id} = request.body
 
         const createReview = new CreateReview(reviewRepo)
-        const all =  await createReview.execute({text, name, rating, product_id, order_id, url});
+        const all =  await createReview.execute({text, name, rating, product_id, order_id});
         await redis.flushdb()
         reply.status(200).send({
             success: true,
@@ -103,7 +103,7 @@ export async function createReviewController(request: FastifyRequest<ReviewReque
 export async function editReviewController(request: FastifyRequest<ReviewRequest>, reply: FastifyReply) {
     try {
         const {id} = request.params
-        const {product_id, name, rating, text, order_id, url} = request.body
+        const {product_id, name, rating, text, order_id} = request.body
 
         const getCert = new PrismaReviewRepo()
 
@@ -116,7 +116,6 @@ export async function editReviewController(request: FastifyRequest<ReviewRequest
         }
 
         const newReview = new Review({
-            url: url || data.getUrl(),
             name: name || data.getName(),
             rating: rating || data.getRating(),
             text: text || data.getText(),

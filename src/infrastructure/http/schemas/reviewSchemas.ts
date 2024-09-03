@@ -31,7 +31,6 @@ const getAllReviewSchema = {
                                     }
                                 },
                                 name: {type: 'string'},
-                                url: {type: 'string'},
                                 rating: {type: 'number'},
                                 text: {type: 'string'},
                                 created_at: {type: 'string'},
@@ -79,7 +78,6 @@ const createReviewSchema = {
         description: 'Создать отзыв',
         tags: ['Review'],
         body: {
-            url: {type: 'string'},
             product_id: {type: 'string'},
             name: {type: 'string'},
             rating: {type: 'number'},
@@ -97,7 +95,6 @@ const createReviewSchema = {
                         properties: {
                             id: {type: 'string'},
                             name: {type: 'string'},
-                            url: {type: 'string'},
                             rating: {type: 'number'},
                             text: {type: 'string'},
                             created_at: {type: 'string'},

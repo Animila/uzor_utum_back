@@ -1,7 +1,6 @@
 import {generateUUID} from "../../infrastructure/uuid/generate";
 
 interface IReview {
-    url: string
     name: string
     rating: number
     text: string
@@ -22,8 +21,6 @@ export class Review {
     }
 
     getId(): string { return this._id }
-
-    getUrl(): string { return this.props.url }
 
     getName(): string { return this.props.name }
 

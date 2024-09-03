@@ -21,7 +21,6 @@ export class GetAllReview {
         data: {
             id: string,
             name: string,
-            url: string,
             rating: number,
             text: string,
             created_at: Date,

@@ -5,7 +5,6 @@ export class ReviewMap {
     public static toDomain(raw: PersistenceData): Review | null {
         const result = new Review({
             name: raw.name,
-            url: raw.url,
             rating: raw.rating,
             text: raw.text,
             createdAt: raw.created_at,
@@ -20,7 +19,6 @@ export class ReviewMap {
     public static toPersistence(data: Review): {
         id: string,
         name: string,
-        url: string,
         rating: number,
         text: string,
         created_at: Date,
@@ -31,7 +29,6 @@ export class ReviewMap {
         return {
             id: data.getId(),
             name: data.getName(),
-            url: data.getUrl(),
             rating: data.getRating(),
             text: data.getText(),
             created_at: data.getCreatedAt(),

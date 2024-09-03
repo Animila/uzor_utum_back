@@ -328,7 +328,6 @@ model files {
 
 model reviews {
 	id            String    @id @default(cuid())
-	url						String		@unique
 	name					String
 	text					String
 	rating        Int
@@ -341,4 +340,3 @@ model reviews {
 	product_id    String
 	product       products  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
-

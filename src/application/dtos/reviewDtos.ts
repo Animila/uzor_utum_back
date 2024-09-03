@@ -3,7 +3,6 @@ interface ReviewRequest {
         id: string
     }
     Query: {
-        url: string
         product_id: string
         old: boolean
         popular: boolean
@@ -17,6 +16,5 @@ interface ReviewRequest {
         rating: number
         text: string
         order_id: string
-        url: string
     }
 }
