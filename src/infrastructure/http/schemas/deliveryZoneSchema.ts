@@ -9,7 +9,17 @@ const createDeliveryZoneSchema = {
             properties: {
                 title: { type: 'string' },
                 description: { type: 'string' },
-                polygon: { type: 'object', additionalProperties: true },
+                polygon: {
+                    type: 'array',
+                    items: {
+                        type: 'array',
+                        items: {
+                            type: 'number'
+                        },
+                        minItems: 2,
+                        maxItems: 2
+                    }
+                },
                 price: {type: 'number'}
             },
         },
@@ -25,7 +35,17 @@ const createDeliveryZoneSchema = {
                             id: {type: 'string'},
                             title: { type: 'string' },
                             description: { type: 'string' },
-                            polygon: { type: 'object', additionalProperties: true },
+                            polygon: {
+                                type: 'array',
+                                items: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'number'
+                                    },
+                                    minItems: 2,
+                                    maxItems: 2
+                                }
+                            },
                             price: {type: 'number'}
                         }
 
@@ -66,7 +86,17 @@ const getAllDeliveryZoneSchema = {
                                 id: { type: 'string' },
                                 title: { type: 'string' },
                                 description: { type: 'string' },
-                                polygon: { type: 'object', additionalProperties: true },
+                                polygon: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'array',
+                                        items: {
+                                            type: 'number'
+                                        },
+                                        minItems: 2,
+                                        maxItems: 2
+                                    }
+                                },
                                 price: {type: 'number'}
                             }
                         }
@@ -117,7 +147,17 @@ const getDeliveryZoneSchema = {
                             id: { type: 'string' },
                             title: { type: 'string' },
                             description: { type: 'string' },
-                            polygon: { type: 'object', additionalProperties: true },
+                            polygon: {
+                                type: 'array',
+                                items: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'number'
+                                    },
+                                    minItems: 2,
+                                    maxItems: 2
+                                }
+                            },
                             price: {type: 'number'}
                         }
                     }
@@ -148,7 +188,17 @@ const updateDeliveryZoneSchema = {
             properties: {
                 title: { type: 'string' },
                 description: { type: 'string' },
-                polygon: { type: 'object', additionalProperties: true },
+                polygon: {
+                    type: 'array',
+                    items: {
+                        type: 'array',
+                        items: {
+                            type: 'number'
+                        },
+                        minItems: 2,
+                        maxItems: 2
+                    }
+                },
                 price: {type: 'number'}
             },
         },
@@ -164,7 +214,17 @@ const updateDeliveryZoneSchema = {
                             id: { type: 'string' },
                             title: { type: 'string' },
                             description: { type: 'string' },
-                            polygon: { type: 'object', additionalProperties: true },
+                            polygon: {
+                                type: 'array',
+                                items: {
+                                    type: 'array',
+                                    items: {
+                                        type: 'number'
+                                    },
+                                    minItems: 2,
+                                    maxItems: 2
+                                }
+                            },
                             price: {type: 'number'}
                         }
                     }
@@ -210,10 +270,45 @@ const deleteDeliveryZoneSchema = {
     }
 };
 
+const checkGeoSchema = {
+    schema: {
+        description: 'Получить цену',
+        tags: ['DeliveryZone'],
+        parameters: {
+            longitude: { type: 'string' },
+            latitude: { type: 'string' },
+        },
+        response: {
+            200: {
+                description: 'Успешное выполнение',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    data: {
+                        type: 'object',
+                        properties: {
+                            price: {type: 'number'}
+                        }
+                    }
+                }
+            },
+            500: {
+                description: 'Если все взорвалось',
+                type: 'object',
+                properties: {
+                    success: { type: 'boolean' },
+                    message: { type: 'string' },
+                }
+            }
+        }
+    }
+};
+
 export {
     getAllDeliveryZoneSchema,
     getDeliveryZoneSchema,
     createDeliveryZoneSchema,
     updateDeliveryZoneSchema,
-    deleteDeliveryZoneSchema
+    deleteDeliveryZoneSchema,
+    checkGeoSchema
 }

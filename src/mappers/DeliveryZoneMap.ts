@@ -8,7 +8,7 @@ export class DeliveryZoneMap {
         const result = new DeliveryZone({
             title: raw.title,
             description: raw.description,
-            polygon: raw.polygon as JsonValue,
+            polygon: raw.polygon as number[][],
             price: raw.price
         }, raw.id)
         if(!result) return null
@@ -19,7 +19,7 @@ export class DeliveryZoneMap {
         id: string,
         title: string,
         description: string,
-        polygon: JSON
+        polygon: number[][]
         price: number
     } {
         return {

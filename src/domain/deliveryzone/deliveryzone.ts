@@ -3,11 +3,14 @@ import {generateUUID} from "../../infrastructure/uuid/generate";
 interface IDeliveryZone {
     title: string
     description: string
-    polygon: JSON
+    polygon: number[][];
     price: number
 }
 
 export class DeliveryZone {
+    zone() {
+        throw new Error("Method not implemented.");
+    }
     protected readonly _id: string
     public readonly props: IDeliveryZone
 
@@ -19,7 +22,7 @@ export class DeliveryZone {
     getId(): string { return this._id }
     getTitle(): string { return this.props.title }
     getDescription(): string { return this.props.description }
-    getPolygon(): JSON { return this.props.polygon }
+    getPolygon(): number[][] { return this.props.polygon }
     getPrice(): number { return this.props.price }
 
 }

@@ -5,7 +5,7 @@ interface UpdateDeliveryZoneInput {
     id: string,
     title: string
     description: string
-    polygon: JSON
+    polygon: number[][]
     price: number
 }
 

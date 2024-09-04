@@ -1,11 +1,13 @@
 import {FastifyInstance, FastifyReply, FastifyRequest} from "fastify";
 import {Roles} from "../../../domain/user/valueObjects/role";
 import {
+    checkgeoCheckController,
     createDeliveryZoneController, deleteDeliveryZoneController,
     getAllDeliveryZoneController,
     getByIdDeliveryZoneController, updateDeliveryZoneController
 } from "../../../application/controllers/deliveryZoneController";
 import {
+    checkGeoSchema,
     createDeliveryZoneSchema, deleteDeliveryZoneSchema,
     getAllDeliveryZoneSchema,
     getDeliveryZoneSchema,
@@ -19,6 +21,9 @@ export function registerDeliveryZoneRouting(fastify: FastifyInstance) {
     });
     fastify.get('/delivery_zone/:id',getDeliveryZoneSchema, async (req: FastifyRequest<DeliveryZoneRequest>, res: FastifyReply) => {
         await getByIdDeliveryZoneController(req, res)
+    });
+    fastify.get('/delivery/geo/:longitude/:latitude',checkGeoSchema, async (req: FastifyRequest<DeliveryZoneRequest>, res: FastifyReply) => {
+        await checkgeoCheckController(req, res)
     });
     fastify.post('/delivery_zone',createDeliveryZoneSchema, async (req: FastifyRequest<DeliveryZoneRequest>, res: FastifyReply) => {
         await req.jwtVerify()

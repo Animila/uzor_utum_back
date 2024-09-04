@@ -5,11 +5,13 @@
     }
     Params: {
         id: string
+        longitude: string
+        latitude: string
     },
     Body: {
         title: string
         description: string
-        polygon: JSON
+        polygon: number[][]
         price: number
     }
 }

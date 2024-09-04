@@ -4,7 +4,7 @@ import {DeliveryZone} from "../../domain/deliveryzone/deliveryzone";
 interface CreateDeliveryZoneInput {
     title: string
     description: string
-    polygon: JSON
+    polygon: number[][]
     price: number
 }
 

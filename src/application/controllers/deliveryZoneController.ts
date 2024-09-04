@@ -7,6 +7,8 @@ import {GetByIdDeliveryZone} from "../../useCases/deliveryzone/deliveryZoneGetBy
 import {CreateDeliveryZone} from "../../useCases/deliveryzone/deliveryZoneCreate";
 import {UpdateDeliveryZone} from "../../useCases/deliveryzone/deliveryZoneUpdate";
 import {DeleteDeliveryZone} from "../../useCases/deliveryzone/deliveryZoneDelete";
+import * as turf from "@turf/turf";
+import * as repl from "node:repl";
 
 const DeliveryZoneRepo = new PrismaDeliveryZoneRepo();
 
@@ -121,6 +123,8 @@ export async function createDeliveryZoneController(request: FastifyRequest<Deliv
                 ]
             }))
 
+        console.log('234')
+
         const createDeliveryZone = new CreateDeliveryZone(DeliveryZoneRepo)
         const result =  await createDeliveryZone.execute({
             title: data.title,
@@ -195,4 +199,52 @@ export async function deleteDeliveryZoneController(request: FastifyRequest<Deliv
             message: errors.message
         })
     }
+}
+
+export async function checkgeoCheckController(request: FastifyRequest<DeliveryZoneRequest>, reply: FastifyReply) {
+        const { longitude, latitude } = request.params;
+        const getAllDeliveryZone = new GetAllDeliveryZone(DeliveryZoneRepo)
+
+        if (!longitude || !latitude) {
+            reply.status(400).send({ success: false,
+                message: [
+                    !longitude && {
+                        type: 'longitude',
+                        message: "Долгота обязательна"
+                    },
+                    !latitude && {
+                        type: 'latitude',
+                        message: "Широта обязательна"
+                    }
+                ]});
+            return;
+        }
+
+        try {
+            const allZones = await getAllDeliveryZone.execute(100, 0); // Загрузите все зоны
+            const point = turf.point([parseFloat(longitude), parseFloat(latitude)]);
+
+
+            console.log(allZones)
+            console.log(point)
+
+            for (const zone of allZones.data) {
+                // Добавляем первую точку в конец массива, чтобы замкнуть полигон
+                const closedPolygon = [...zone.polygon, zone.polygon[0]];
+                const polygon = turf.polygon([closedPolygon]);
+
+                if (turf.booleanPointInPolygon(point, polygon)) {
+                    reply.status(200).send({
+                        success: true,
+                        data: { price: zone.price }
+                    });
+                    return;
+                }
+            }
+
+            reply.status(404).send({ message: "Зона не найдена" });
+        } catch (error: any) {
+            console.log(error)
+            reply.status(500).send({ message: "Ошибка сервера", error: error.message });
+        }
 }
