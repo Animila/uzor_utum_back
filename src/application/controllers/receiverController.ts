@@ -33,10 +33,11 @@ export async function getAllReceiverController(request: FastifyRequest<ReceiverR
                     limit: !!limit ? parseInt(limit) : 10
                 }
             }
-            await redis.set(cacheKey, JSON.stringify(receiverCache), 'EX', 3600);
+            await redis.set(cacheKey, JSON.stringify(receiverRes), 'EX', 3600);
         } else {
             receiverRes = JSON.parse(receiverCache)
         }
+
 
         reply.status(200).send({
             success: true,
