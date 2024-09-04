@@ -32,7 +32,7 @@ export async function registerController(request: FastifyRequest<AuthRequest>, r
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('authControllerRegister: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -59,7 +59,7 @@ export async function loginController(request: FastifyRequest<AuthRequest>, repl
             data: UserMap.toPersistence(newUser)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('authControllerLogin: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -94,7 +94,7 @@ export async function verifyController(request: FastifyRequest<AuthRequest>, rep
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('authControllerVerify: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

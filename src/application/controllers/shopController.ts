@@ -42,7 +42,7 @@ export async function getAllShopController(request: FastifyRequest<ShopRequest>,
             pagination: shopsRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('shopControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -74,7 +74,7 @@ export async function getByIdShopController(request: FastifyRequest<ShopRequest>
             data: shopRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('shopControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -140,7 +140,7 @@ export async function createShopController(request: FastifyRequest<ShopRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('shopControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -171,7 +171,7 @@ export async function updateShopController(request: FastifyRequest<ShopRequest>,
             data: ShopMap.toPersistence(shop)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('shopControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -194,7 +194,7 @@ export async function deleteShopController(request: FastifyRequest<ShopRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('shopControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

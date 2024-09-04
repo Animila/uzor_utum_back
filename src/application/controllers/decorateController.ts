@@ -59,7 +59,7 @@ export async function getAllDecorateController(request: FastifyRequest, reply: F
             pagination: decoratesRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('decorateControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -95,7 +95,7 @@ export async function getByIdDecorateController(request: FastifyRequest<Decorate
             data: decorateRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('decorateControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -119,7 +119,7 @@ export async function createDecorateController(request: FastifyRequest<DecorateR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('decorateControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -147,7 +147,7 @@ export async function updateDecorateController(request: FastifyRequest<DecorateR
             data: decorPer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('decorateControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -170,7 +170,7 @@ export async function deleteDecorateController(request: FastifyRequest<DecorateR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('decorateControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

@@ -21,7 +21,7 @@ export async function createFile(request: FastifyRequest<FileRouting>, reply: Fa
             data: FileMap.toPersistence(result)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('fileControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -47,7 +47,7 @@ export async function updateFile(request: FastifyRequest<FileRouting>, reply: Fa
             data: FileMap.toPersistence(result)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('fileControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -93,7 +93,7 @@ export async function getFiles(request: FastifyRequest<FileRouting>, reply: Fast
             pagination: filesRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('fileControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -113,7 +113,7 @@ export async function deleteFile(request: FastifyRequest<FileRouting>, reply: Fa
             data: result
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('fileControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

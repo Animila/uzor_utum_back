@@ -56,7 +56,7 @@ export async function getAllSizeController(request: FastifyRequest<SizeRequest>,
             pagination: sizeRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sizeControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -91,7 +91,7 @@ export async function getByIdSizeController(request: FastifyRequest<SizeRequest>
             data: sizeRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sizeControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -115,7 +115,7 @@ export async function createSizeController(request: FastifyRequest<SizeRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sizeControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -143,7 +143,7 @@ export async function updateSizeController(request: FastifyRequest<SizeRequest>,
             data: sizePer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sizeControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -166,7 +166,7 @@ export async function deleteSizeController(request: FastifyRequest<SizeRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sizeControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

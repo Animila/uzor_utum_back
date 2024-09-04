@@ -52,7 +52,7 @@ export async function getAllProbController(request: FastifyRequest<ProbRequest>,
             pagination: probsRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('probControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -87,7 +87,7 @@ export async function getByIdProbController(request: FastifyRequest<ProbRequest>
             data: probRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('probControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -111,7 +111,7 @@ export async function createProbController(request: FastifyRequest<ProbRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('probControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -139,7 +139,7 @@ export async function updateProbController(request: FastifyRequest<ProbRequest>,
             data: probPer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('probControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -162,7 +162,7 @@ export async function deleteProbController(request: FastifyRequest<ProbRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('probControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

@@ -16,7 +16,6 @@ export class FFMPEGVideo {
     }
 
     async upload(file: any, type: string, entity_id: string): Promise<any> {
-        console.log('345678', file._buf)
         if (!file || !file._buf) {
             throw new Error('Нет данных изображений или файл пустой')
         }

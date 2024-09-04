@@ -37,7 +37,7 @@ export async function getAllController(request: FastifyRequest<UserRequest>, rep
             }
         });
     } catch (error: any) {
-        console.log('userControllerGetAll', error.message)
+        console.log('userControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -68,7 +68,7 @@ export async function getByIdController(request: FastifyRequest<UserRequest>, re
             data: userPer
         });
     } catch (error: any) {
-        console.log('userControllerGetId', error.message)
+        console.log('userControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -110,7 +110,7 @@ export async function updateController(request: FastifyRequest<UserRequest>, rep
             data: userPer
         });
     } catch (error: any) {
-        console.log('userControllerUpdate', error.message)
+        console.log('userControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -134,7 +134,7 @@ export async function deleteController(request: FastifyRequest<UserRequest>, rep
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('userControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

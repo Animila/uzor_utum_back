@@ -44,7 +44,7 @@ export async function getAllReceiverController(request: FastifyRequest<ReceiverR
             pagination: receiverRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('receiverControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -75,7 +75,7 @@ export async function getByIdReceiverController(request: FastifyRequest<Receiver
             data: receiverRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('receiverControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -104,7 +104,7 @@ export async function createReceiverController(request: FastifyRequest<ReceiverR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('receiverControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -130,7 +130,7 @@ export async function updateReceiverController(request: FastifyRequest<ReceiverR
             data: ReceiverMap.toPersistence(receiver)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('receiverControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -152,7 +152,7 @@ export async function deleteReceiverController(request: FastifyRequest<ReceiverR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('receiverControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

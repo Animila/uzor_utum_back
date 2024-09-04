@@ -116,6 +116,6 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
         }
 
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('youkassaController: ', error.message)
     }
 }

@@ -37,7 +37,7 @@ export async function getAllCertificateController(request: FastifyRequest<Certif
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -70,7 +70,7 @@ export async function getByCodeCertificateController(request: FastifyRequest<Cer
             data: dataPer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateControllerGetCode: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -90,7 +90,7 @@ export async function getByIdCertificateController(request: FastifyRequest<Certi
             data: CertificateMap.toPersistence(data)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -148,7 +148,7 @@ export async function createCertificateController(request: FastifyRequest<Certif
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -172,7 +172,7 @@ export async function deleteCertificateController(request: FastifyRequest<Certif
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

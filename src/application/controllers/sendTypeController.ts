@@ -43,7 +43,7 @@ export async function getAllSendTypeController(request: FastifyRequest<SendTypeR
             pagination: sendTypeRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sendTypeControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -75,7 +75,7 @@ export async function getByIdSendTypeController(request: FastifyRequest<SendType
             data: sendTypeRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sendTypeControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -104,7 +104,7 @@ export async function createSendTypeController(request: FastifyRequest<SendTypeR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sendTypeControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -131,7 +131,7 @@ export async function updateSendTypeController(request: FastifyRequest<SendTypeR
             data: SendTypeMap.toPersistence(sendType)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sendTypeControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -154,7 +154,7 @@ export async function deleteSendTypeController(request: FastifyRequest<SendTypeR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('sendTypeControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

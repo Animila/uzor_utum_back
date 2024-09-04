@@ -68,7 +68,7 @@ export async function getAllCategoryController(request: FastifyRequest<CategoryR
             pagination: categoriesRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('categoryControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -104,7 +104,7 @@ export async function getByIdCategoryController(request: FastifyRequest<Category
             data: categoryRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('categoryControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -130,7 +130,7 @@ export async function createCategoryController(request: FastifyRequest<CategoryR
         });
 
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('categoryControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -158,7 +158,7 @@ export async function updateCategoryController(request: FastifyRequest<CategoryR
             data: categoryPer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('categoryControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -181,7 +181,7 @@ export async function deleteCategoryController(request: FastifyRequest<CategoryR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('categoryControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

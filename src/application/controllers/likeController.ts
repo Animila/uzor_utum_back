@@ -76,7 +76,7 @@ export async function getAllLikeController(request: FastifyRequest<LikeRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('likeControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -116,7 +116,7 @@ export async function getByIdLikeController(request: FastifyRequest<LikeRequest>
             data: result
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('likeControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -146,7 +146,7 @@ export async function createLikeController(request: FastifyRequest<LikeRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('likeControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -174,7 +174,7 @@ export async function updateLikeController(request: FastifyRequest<LikeRequest>,
             data: LikeMap.toPersistence(result)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('likeControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -197,7 +197,7 @@ export async function deleteLikeController(request: FastifyRequest<LikeRequest>,
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('likeControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

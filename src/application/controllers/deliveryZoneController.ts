@@ -44,7 +44,7 @@ export async function getAllDeliveryZoneController(request: FastifyRequest<Deliv
             pagination: DeliveryZonesRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('delZoneControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -76,7 +76,7 @@ export async function getByIdDeliveryZoneController(request: FastifyRequest<Deli
             data: DeliveryZoneRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('delZoneControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -141,7 +141,7 @@ export async function createDeliveryZoneController(request: FastifyRequest<Deliv
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('delZoneControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -169,7 +169,7 @@ export async function updateDeliveryZoneController(request: FastifyRequest<Deliv
             data: DeliveryZoneMap.toPersistence(DeliveryZone)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('delZoneControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -192,7 +192,7 @@ export async function deleteDeliveryZoneController(request: FastifyRequest<Deliv
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('delZoneControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

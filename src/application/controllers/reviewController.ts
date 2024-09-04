@@ -70,7 +70,7 @@ export async function getAllReviewsController(request: FastifyRequest<ReviewRequ
             pagination: reviewsRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('reviewControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -91,7 +91,7 @@ export async function createReviewController(request: FastifyRequest<ReviewReque
             data: ReviewMap.toPersistence(all)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('reviewControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -132,7 +132,7 @@ export async function editReviewController(request: FastifyRequest<ReviewRequest
             data: ReviewMap.toPersistence(newReview)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('reviewControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -150,7 +150,7 @@ export async function deleteReviewController(request: FastifyRequest<ReviewReque
             success: true,
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('reviewControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

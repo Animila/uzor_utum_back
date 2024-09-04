@@ -46,7 +46,7 @@ export async function getAllCertificateTypeController(request: FastifyRequest<Ce
             pagination: certTypeRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateTypeControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -78,7 +78,7 @@ export async function getByIdCertificateTypeController(request: FastifyRequest<C
             data: certTypeRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateTypeControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -105,7 +105,7 @@ export async function createCertificateTypeController(request: FastifyRequest<Ce
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateTypeControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -131,7 +131,7 @@ export async function updateCertificateTypeController(request: FastifyRequest<Ce
             data: CertificateTypeMap.toPersistence(material)
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateTypeControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -154,7 +154,7 @@ export async function deleteCertificateTypeController(request: FastifyRequest<Ce
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('certificateTypeControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,

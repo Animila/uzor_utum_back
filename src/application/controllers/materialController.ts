@@ -60,7 +60,7 @@ export async function getAllMaterialController(request: FastifyRequest<MaterialR
             pagination: materialsRes.pagination
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('materialControllerGetAll: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -95,7 +95,7 @@ export async function getByIdMaterialController(request: FastifyRequest<Material
             data: materialRes
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('materialControllerGetId: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -119,7 +119,7 @@ export async function createMaterialController(request: FastifyRequest<MaterialR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('materialControllerCreate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -147,7 +147,7 @@ export async function updateMaterialController(request: FastifyRequest<MaterialR
             data: matPer
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('materialControllerUpdate: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
@@ -170,7 +170,7 @@ export async function deleteMaterialController(request: FastifyRequest<MaterialR
             }
         });
     } catch (error: any) {
-        console.log('345678', error.message)
+        console.log('materialControllerDelete: ', error.message)
         const errors = JSON.parse(error.message)
         reply.status(errors.status).send({
             success: false,
