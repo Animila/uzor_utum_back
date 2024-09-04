@@ -340,3 +340,12 @@ model reviews {
 	product_id    String
 	product       products  @relation(fields: [product_id], references: [id], onDelete: Cascade)
 }
+
+
+model delivery_zones {
+	id           String   @id @default(cuid())
+	title        String
+	description  String
+	polygon      Json
+	price        Int
+}

@@ -24,6 +24,7 @@ import {registerSizeRouting} from "./routing/sizeRouting";
 import {registerFileRouting} from "./routing/fileRouting";
 import {registerReviewRouting} from "./routing/reviewRouting";
 import {registerStatsRouting} from "./routing/statsRouting";
+import {registerDeliveryZoneRouting} from "./routing/deliveryZoneRouting";
 
 export default function registerRoutes(fastify: FastifyInstance) {
     registerAuthRoutes(fastify)
@@ -55,6 +56,7 @@ export default function registerRoutes(fastify: FastifyInstance) {
 
 
     registerShopRouting(fastify)
+    registerDeliveryZoneRouting(fastify)
 
     registerYookassaRouting(fastify)
     registerStatsRouting(fastify)
