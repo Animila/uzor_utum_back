@@ -157,18 +157,9 @@ const deleteFileSchema = {
                 properties: {
                     success: { type: 'boolean' },
                     data: {
-                        type: 'array',
-                        items: {
-                            type: 'object',
-                            properties: {
-                                id: { type: 'string' },
-                                entity_type: { type: 'string' },
-                                entity_id: { type: 'string' },
-                                name: { type: 'string' },
-                                type_file: { type: 'string' },
-                                path: { type: 'string' },
-                                position: {type: 'number'}
-                            }
+                        type: 'object',
+                        properties: {
+                            success: { type: 'boolean' },
                         }
                     }
                 }

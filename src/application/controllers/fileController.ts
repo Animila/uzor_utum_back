@@ -108,9 +108,15 @@ export async function deleteFile(request: FastifyRequest<FileRouting>, reply: Fa
         const delFile = new DeleteFile(repoFile)
         const result = await delFile.execute({id})
         await redis.flushdb()
-        reply.status(200).send({
+        console.log({
             success: true,
             data: result
+        })
+        reply.status(200).send({
+            success: true,
+            data: {
+                success: result
+            }
         });
     } catch (error: any) {
         console.log('fileControllerDelete: ', error.message)
