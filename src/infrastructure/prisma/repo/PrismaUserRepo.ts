@@ -135,4 +135,28 @@ export class PrismaUserRepo implements IUserRepository {
             await this.prisma.$disconnect();
         }
     }
+
+    async getStats(): Promise<{ count_week: number }> {
+        try {
+            const result = await this.prisma.users.aggregate({
+                _count: {
+                    id: true
+                },
+                where: {
+                    last_online_at: {
+                        gte: new Date(new Date().setDate(new Date().getDate() - 7)) // Начало недели
+                    }
+                }
+            });
+
+            return { count_week: result._count.id };
+        } catch (error) {
+            throw new Error(JSON.stringify({
+                status: 500, // Изменил статус на 500, так как это ошибка сервера
+                message: 'Произошла ошибка при получении данных'
+            }));
+        } finally {
+            await this.prisma.$disconnect();
+        }
+    }
 }

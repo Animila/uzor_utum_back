@@ -1,20 +1,24 @@
 import {IOrderRepository} from "../../repositories/IOrderRepository";
 import {ICertificateRepository} from "../../repositories/ICertificateRepository";
+import {IUserRepository} from "../../repositories/IUserRepository";
 
 
 export class GetOrderStats {
     private repository: IOrderRepository;
     private certificateRepo: ICertificateRepository;
+    private userRepo: IUserRepository;
 
-    constructor(repository: IOrderRepository, certificateRepo: ICertificateRepository) {
+    constructor(repository: IOrderRepository, certificateRepo: ICertificateRepository, userRepo: IUserRepository) {
         this.repository = repository;
         this.certificateRepo = certificateRepo
+        this.userRepo = userRepo
     }
 
-    async execute(): Promise<{count: number, countProduct: number, totalPrice: number, salesData: any}> {
+    async execute(): Promise<{count: number, countProduct: number, totalPrice: number, salesData: any, countWeekUser: number}> {
 
         const result = await this.repository.getStats()
         const resultCert = await this.certificateRepo.getStats()
+        const userStat  = await this.userRepo.getStats()
 
         console.log(resultCert)
 
@@ -35,6 +39,7 @@ export class GetOrderStats {
         return {
             count: result.count,
             countProduct: countProduct,
+            countWeekUser: userStat.count_week,
             totalPrice: price,
             salesData: result.sales
         }
