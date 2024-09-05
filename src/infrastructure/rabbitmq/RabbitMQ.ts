@@ -43,7 +43,7 @@ class RabbitMQ {
         await this.channel!.consume('sendEmail', async data => {
             try {
                 const bufferData = Buffer.from(data?.content!);
-                const dataMail: { subject: string, to: string, text: string } = JSON.parse(bufferData.toString());
+                const dataMail: { subject: string, to: string, text: string, html?: string } = JSON.parse(bufferData.toString());
                 const checkEmail = Email.create(dataMail.to);
                 if (checkEmail instanceof Error) {
                     console.log('Invalid email format');
@@ -53,6 +53,7 @@ class RabbitMQ {
                 const mailOptions = {
                     to: checkEmail as Email,
                     subject: dataMail.subject,
+                    html: dataMail.html,
                     text: dataMail.text
                 };
                 const newMail = new Mail(mailOptions);
@@ -73,7 +74,8 @@ class RabbitMQ {
     public async sendEmail(data: {
         to: string
         subject: string
-        text: string
+        text: string,
+        html?: string
     }): Promise<void> {
         try {
             await this.assertQueue('sendEmail');

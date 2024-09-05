@@ -11,14 +11,19 @@ import {OrderStatus} from "../../domain/order/valueObjects/OrderStatus";
 import {scheduleSendEmail} from "../../infrastructure/nodecron/scheduleNotification";
 import {CreateBonus} from "../../useCases/bonus/bonusCreate";
 import {PrismaBonusRepository} from "../../infrastructure/prisma/repo/PrismaBonusRepository";
+import {mailCert} from "../../infrastructure/smtp/mailCert";
+import {GetByIdCertificateType} from "../../useCases/certificate/certificateTypeGetById";
+import {PrismaCertificateTypeRepo} from "../../infrastructure/prisma/repo/PrismaCertificateTypeRepo";
 
 const certRepo = new PrismaCertificateRepo();
+const certTypeRepo = new PrismaCertificateTypeRepo();
 const orderRepo = new PrismaOrderRepo()
 const bonusRepo = new PrismaBonusRepository()
 
 export async function getPaymentStatus(request: FastifyRequest, reply: FastifyReply) {
     try {
         const getCertificate = new GetByIdCertificate(certRepo)
+        const getCertificateType = new GetByIdCertificateType(certTypeRepo)
         const getOrder = new GetByIdOrder(orderRepo)
 
         const data: any = request.body
@@ -26,6 +31,7 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
             try {
                 if(data.object.metadata.entity_type === "product") {
                     const order = await getOrder.execute({id: data.object.metadata.entity_id})
+                    if(order.getStatus().getValue() !== 'PENDING') return
                     // @ts-ignore
                     order.props.status = OrderStatus.create(OrderStatus.getAvailables().PENDING)
                     await orderRepo.save(order)
@@ -43,19 +49,36 @@ export async function getPaymentStatus(request: FastifyRequest, reply: FastifyRe
                 console.log('EEEEERRRRRROR: ',e)
             }
         }
+        console.log(data.event)
         if(data.event === "payment.succeeded") {
             const dataObject = data.object.metadata
             const addBonus = new CreateBonus(bonusRepo)
+            console.log(dataObject)
             if(dataObject.entity_type === "certificate") {
                 const cert = await getCertificate.execute({id: dataObject.entity_id})
+                const certType = await getCertificateType.execute({id: cert.getCertificateTypeId()})
 
-                scheduleSendEmail(cert.getDeliveryAt(), undefined, async () => {
+                const deliveryAt = cert.getDeliveryAt();
+
+                if (deliveryAt < new Date()) {
+                    // Если указанная дата меньше текущей, отправляем письмо сразу
                     await rabbit.sendEmail({
                         text: "Пин-код сертификата: " + cert.getCode().toString(),
+                        html: mailCert(cert.getCode(), certType.getValue().toString()),
                         subject: 'Пин-код сертификата',
                         to: cert.getEmail()?.getFull()!
-                    })
-                })
+                    });
+                } else {
+                    // Иначе, запланируем отправку на указанное время
+                    scheduleSendEmail(deliveryAt, undefined, async () => {
+                        await rabbit.sendEmail({
+                            text: "Пин-код сертификата: " + cert.getCode().toString(),
+                            html: mailCert(cert.getCode(), certType.getValue().toString()),
+                            subject: 'Пин-код сертификата',
+                            to: cert.getEmail()?.getFull()!
+                        });
+                    });
+                }
 
             }
             if(dataObject.entity_type === "product") {

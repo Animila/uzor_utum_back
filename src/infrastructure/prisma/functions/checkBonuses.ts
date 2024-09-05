@@ -19,7 +19,7 @@ export async function createMinusBonuses() {
             const newBonus = new Bonus({
                 created_at: new Date(),
                 type: BonusType.create(BonusType.getAvailables().minus) as BonusType,
-                description: `Автоматически созданный минус бонус на основе бонуса ID: ${bonus.id}`,
+                description: `Автосписание`,
                 count: bonus.count,
                 user_id: bonus.user_id
             })
