@@ -31,6 +31,7 @@ interface IOrder {
     status: OrderStatus
     createdAt: Date
     updatedAt: Date
+    deliveryPrice: number
 }
 
 export class Order {
@@ -69,6 +70,7 @@ export class Order {
     getUpdatedAt(): Date { return this.props.updatedAt }
     getCertificateId(): string | undefined { return this.props.certificateId }
     getPromoCode(): string | undefined { return this.props.promocodeId }
+    getDeliveryPrice(): number { return this.props.deliveryPrice }
 }
 
 

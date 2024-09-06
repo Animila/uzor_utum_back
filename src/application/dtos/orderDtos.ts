@@ -40,6 +40,7 @@ interface OrderRequest {
         user_id: string
         created_at: Date
         status: string
+        delivery_cost: number
     }
 }
 

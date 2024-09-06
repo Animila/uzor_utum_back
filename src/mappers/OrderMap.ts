@@ -42,7 +42,8 @@ export class OrderMap {
             items: items,
             status: statusOrError,
             createdAt: raw.created_at,
-            updatedAt: raw.updated_at
+            updatedAt: raw.updated_at,
+            deliveryPrice: raw.delivery_price
         }, raw.id)
 
         if(!result) return null
@@ -85,6 +86,7 @@ export class OrderMap {
         status: string,
         created_at: Date,
         updated_at: Date
+        delivery_price: number
     } {
         return {
             id: data.getId(),
@@ -114,6 +116,7 @@ export class OrderMap {
             user_id: data.getUserId(),
             created_at: data.getCreatedAt(),
             updated_at: data.getUpdatedAt(),
+            delivery_price: data.getDeliveryPrice()
         }
     }
 }

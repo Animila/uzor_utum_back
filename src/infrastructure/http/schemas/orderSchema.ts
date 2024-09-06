@@ -90,6 +90,7 @@ const getOrdersSchema = {
                                     }
                                 },
                                 token: {type: 'string'},
+                                delivery_cost: {type: 'number'}
                             }
                         }
                     },
@@ -194,6 +195,7 @@ const getOrderSchema = {
                                 }
                             },
                             token: {type: 'string'},
+                            delivery_cost: {type: 'number'}
                         }
 
                     }
@@ -244,6 +246,7 @@ const createOrderSchema = {
                 }
             },
             token: {type: 'string'},
+            delivery_cost: {type: 'number'}
         },
         response: {
             200: {
@@ -322,6 +325,7 @@ const editOrderSchema = {
                 }
             },
             token: {type: 'string'},
+            delivery_cost: {type: 'number'}
         },
         response: {
             200: {

@@ -78,6 +78,8 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
         await getReceiver.execute({id: data.receiver_id})
         data.shop_id ? await getShop.execute({id: data.shop_id}) : undefined
 
+        // data.
+
         //@ts-ignore
         const productsOrError = await Promise.all(data.items.map(async item => {
             const data = await getProduct.execute({id: item.product_id})
@@ -92,8 +94,20 @@ export async function createOrderController(request: FastifyRequest<OrderRequest
             return dataPer
         }))
 
-        const typeSend = await getSendType.execute({id: data.send_type_id})
-        totalPrice += typeSend.getPrice()
+        try {
+            await getSendType.execute({id: data.send_type_id})
+            totalPrice += data.delivery_cost
+        } catch (err) {
+            throw new Error(JSON.stringify({
+                status: 400,
+                message: [
+                    {
+                        type: 'send_type_id}',
+                        message: 'Тип доставки не найден'
+                    }
+                ]
+            }))
+        }
 
         if(data.certificate_id) {
             const cart = await getCertificate.execute({id: data.certificate_id})

@@ -29,6 +29,7 @@ interface CreateOrderInput {
     total_amount: number,
     user_id: string,
     token: string,
+    delivery_cost: number
 }
 
 export class CreateOrder {
@@ -63,12 +64,13 @@ export class CreateOrder {
             total_amount,
             use_bonus,
             user_id,
+            delivery_cost
         } = input;
 
         const itemsOrError = Items.create(items as iItems);
         const phoneOrError = Phone.create(phone)
         const emailOrError = Email.create(email)
-        
+
         const errors: Array<{type: string, message: string}> = []
         phoneOrError instanceof Error && errors.push({type: 'phone', message: phoneOrError.message})
         emailOrError instanceof Error && errors.push({type: 'email', message: emailOrError.message})
@@ -105,7 +107,8 @@ export class CreateOrder {
             deliveryAt: delivery_at,
             postalCode: postal_code,
             createdAt: new Date(),
-            updatedAt: new Date()
+            updatedAt: new Date(),
+            deliveryPrice: delivery_cost
         });
         await this.productRepository.save(product);
         return product;

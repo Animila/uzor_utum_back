@@ -275,6 +275,8 @@ model orders {
 	token String
 	created_at DateTime @default(now())
 	updated_at DateTime @default(now())
+	delivery_price Int @default(0)
+
 	reviews reviews[]
 }
 
