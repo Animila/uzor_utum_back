@@ -90,6 +90,7 @@ export class PrismaOrderRepo implements IOrderRepository {
                     total_amount: dataPer.total_amount,
                     use_bonus: dataPer.use_bonus,
                     items: dataPer.items,
+                    delivery_price: dataPer.delivery_price,
                 },
                 update: {
                     id: dataPer.id,
@@ -119,6 +120,7 @@ export class PrismaOrderRepo implements IOrderRepository {
                     total_amount: dataPer.total_amount,
                     use_bonus: dataPer.use_bonus,
                     items: dataPer.items,
+                    delivery_price: dataPer.delivery_price,
                 }
             })
             if(!newUser) return null
