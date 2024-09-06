@@ -49,7 +49,7 @@ export async function getAllBonusController(request: FastifyRequest<BonusRequest
 
         const cacheKey = `bonuses_${limit}_${offset}_${old}_${user_id}`;
         //@ts-ignore
-        let bonuses = await fastify.redis.get(cacheKey);
+        let bonuses = await redis.get(cacheKey);
 
         if (!bonuses) {
             const getData = new GetAllBonus(bonusRepo);
@@ -62,7 +62,7 @@ export async function getAllBonusController(request: FastifyRequest<BonusRequest
 
             bonuses = JSON.stringify(allData.data);
             //@ts-ignore
-            await fastify.redis.set(cacheKey, bonuses, "EX", 3600); // Кэшируем на 1 час
+            await redis.set(cacheKey, bonuses, "EX", 3600); // Кэшируем на 1 час
 
 
             reply.status(200).send({
