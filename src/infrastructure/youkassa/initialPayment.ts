@@ -53,9 +53,13 @@ export async function initialPayment(
             },
             save_method_method: false
         }
+        console.log(params)
+        console.log(headers)
 
         const response = await axios.post(url, params, { headers });
         const res = response.data;
+
+        console.log(res)
 
         return {
             success: true,
